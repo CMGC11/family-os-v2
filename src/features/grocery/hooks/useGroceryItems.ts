@@ -41,9 +41,14 @@ export function useGroceryItems() {
     ]);
   }
 
+  function deleteItem(id: string) {
+    setItems((current) => current.filter((item) => item.id !== id));
+  }
+
   return {
     items,
     toggleItem,
     addItem,
+    deleteItem,
   };
 }

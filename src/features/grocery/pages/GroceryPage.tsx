@@ -5,7 +5,7 @@ import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
 export default function GroceryPage() {
-  const { items, toggleItem, addItem } = useGroceryItems();
+  const { items, toggleItem, addItem, deleteItem } = useGroceryItems();
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Produce');
 
@@ -55,21 +55,29 @@ export default function GroceryPage() {
         <GlassCard className="tasksCard">
           <div className="hubList">
             {items.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className="hubRow"
-                onClick={() => toggleItem(item.id)}
-              >
-                <div className="hubIcon tintLime">{item.checked ? '✓' : '◌'}</div>
+              <div key={item.id} className="groceryRow">
+                <button
+                  type="button"
+                  className="hubRow groceryMainButton"
+                  onClick={() => toggleItem(item.id)}
+                >
+                  <div className="hubIcon tintLime">{item.checked ? '✓' : '◌'}</div>
 
-                <div>
-                  <strong className={item.checked ? 'taskTextDone' : ''}>{item.name}</strong>
-                  <span>{item.category}</span>
-                </div>
+                  <div>
+                    <strong className={item.checked ? 'taskTextDone' : ''}>{item.name}</strong>
+                    <span>{item.category}</span>
+                  </div>
+                </button>
 
-                <span className="chevron">›</span>
-              </button>
+                <button
+                  type="button"
+                  className="groceryDeleteButton"
+                  onClick={() => deleteItem(item.id)}
+                  aria-label={`Delete ${item.name}`}
+                >
+                  Delete
+                </button>
+              </div>
             ))}
           </div>
         </GlassCard>
