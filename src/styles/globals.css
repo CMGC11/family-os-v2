@@ -771,9 +771,12 @@ button {
 }
 
 .featuredCard {
+  display: block;
+  width: 100%;
   border-radius: 28px;
   padding: 20px;
   color: #ffffff;
+  text-align: left;
   box-shadow: 0 18px 35px rgba(59, 130, 246, 0.2);
 }
 
@@ -825,50 +828,10 @@ button {
   width: 48px;
   height: 48px;
   margin-bottom: 0;
+  flex: 0 0 auto;
 }
 
-@media (max-width: 380px) {
-  .pageHeader {
-    padding-right: 16px;
-    padding-left: 16px;
-  }
-
-  .pageSection {
-    padding-right: 16px;
-    padding-left: 16px;
-  }
-
-  .pageHeader h1 {
-    font-size: 31px;
-  }
-
-  .quickGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .hubRow .miniHubCard {
-    display: contents;
-  }
-
-  .hubRow .hubIcon {
-    width: 48px;
-    height: 48px;
-    margin-bottom: 0;
-    flex: 0 0 auto;
-  }
-
-  .hubRow .miniHubCard p,
-  .hubRow .miniHubCard span {
-    display: none;
-  }
-
-  .featuredCard {
-    display: block;
-    width: 100%;
-    text-align: left;
-  }
-
-  .groceryFormCard {
+.groceryFormCard {
   padding: 14px;
 }
 
@@ -905,34 +868,53 @@ button {
   font-weight: 800;
 }
 
+.groceryRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.groceryMainButton {
+  width: 100%;
+}
+
+.groceryDeleteButton {
+  border-radius: 24px;
+  background: rgba(244, 63, 94, 0.1);
+  padding: 0 14px;
+  color: #e11d48;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.groceryDeleteButton:active {
+  transform: scale(0.98);
+}
+
 @media (min-width: 390px) {
   .groceryForm {
     grid-template-columns: 1fr 120px auto;
     align-items: center;
-    }
   }
-
-  .groceryRow {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 8px;
-    align-items: stretch;
-  }
-
-  .groceryMainButton {
-    width: 100%;
-  }
-
-  .groceryDeleteButton {
-    border-radius: 24px;
-    background: rgba(244, 63, 94, 0.1);
-    padding: 0 14px;
-    color: #e11d48;
-    font-size: 13px;
-    font-weight: 800;
-  }
-
-  .groceryDeleteButton:active {
-    transform: scale(0.98);
 }
+
+@media (max-width: 380px) {
+  .pageHeader {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .pageSection {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .pageHeader h1 {
+    font-size: 31px;
+  }
+
+  .quickGrid {
+    grid-template-columns: 1fr;
+  }
 }

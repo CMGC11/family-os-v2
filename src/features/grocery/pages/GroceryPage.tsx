@@ -29,6 +29,9 @@ export default function GroceryPage() {
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') handleAddItem();
+              }}
               placeholder="Add item"
               aria-label="Grocery item name"
             />
@@ -67,6 +70,8 @@ export default function GroceryPage() {
                     <strong className={item.checked ? 'taskTextDone' : ''}>{item.name}</strong>
                     <span>{item.category}</span>
                   </div>
+
+                  <span className="chevron">›</span>
                 </button>
 
                 <button
