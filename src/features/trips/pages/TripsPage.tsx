@@ -1,3 +1,4 @@
+import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
@@ -9,6 +10,7 @@ export default function TripsPage() {
         eyebrow="Trips"
         title="Weekend trip"
         subtitle="Packing, itinerary, documents, and all the tiny logistics that reproduce in the dark."
+        right={<BackButton fallbackTo="/family" label="Family" />}
       />
 
       <PageShell>

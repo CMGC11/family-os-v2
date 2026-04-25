@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useGroceryItems } from '../hooks/useGroceryItems';
+import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
@@ -21,6 +22,7 @@ export default function GroceryPage() {
         eyebrow="Grocery"
         title="Shopping list"
         subtitle="Grouped shopping execution without turning groceries into a project management ritual."
+        right={<BackButton fallbackTo="/family" label="Family" />}
       />
 
       <PageShell>

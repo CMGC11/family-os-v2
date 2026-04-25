@@ -1,3 +1,4 @@
+import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
@@ -9,6 +10,7 @@ export default function HealthPage() {
         eyebrow="Health"
         title="Care notes"
         subtitle="Appointments, medication, emergency info, and the kind of details nobody remembers when needed."
+        right={<BackButton fallbackTo="/family" label="Family" />}
       />
 
       <PageShell>

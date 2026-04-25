@@ -918,3 +918,41 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 7px 13px 7px 9px;
+  color: rgba(17, 17, 19, 0.72);
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  box-shadow: none;
+  backdrop-filter: blur(20px);
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.backButton span {
+  display: block;
+  margin-top: -1px;
+  color: rgba(17, 17, 19, 0.5);
+  font-size: 22px;
+  font-weight: 450;
+  line-height: 0.8;
+}
+
+.backButton:hover {
+  background: rgba(0, 0, 0, 0.055);
+  color: #111113;
+}
+
+.backButton:active {
+  transform: scale(0.98);
+}

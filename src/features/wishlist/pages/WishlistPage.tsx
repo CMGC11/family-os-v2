@@ -1,3 +1,4 @@
+import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
@@ -9,6 +10,7 @@ export default function WishlistPage() {
         eyebrow="Wishlist"
         title="Saved ideas"
         subtitle="Gift ideas, shared wants, useful links, and all the things people pretend they will remember later."
+        right={<BackButton fallbackTo="/family" label="Family" />}
       />
 
       <PageShell>

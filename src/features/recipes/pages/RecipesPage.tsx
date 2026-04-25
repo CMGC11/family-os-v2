@@ -1,3 +1,4 @@
+import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
@@ -9,6 +10,7 @@ export default function RecipesPage() {
         eyebrow="Recipes"
         title="Recipe book"
         subtitle="A calm place for meals that worked, instead of trusting memory like an amateur."
+        right={<BackButton fallbackTo="/family" label="Family" />}
       />
 
       <PageShell>

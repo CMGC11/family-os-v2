@@ -1,11 +1,26 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import type { AppTab } from './types';
 import BottomNav from '../ui/navigation/BottomNav';
+
+function getActiveTab(pathname: string): AppTab {
+  const firstSegment = pathname.split('/').filter(Boolean)[0];
+
+  if (firstSegment === 'calendar') return 'calendar';
+  if (firstSegment === 'todo') return 'todo';
+  if (firstSegment === 'family') return 'hub';
+
+  return 'home';
+}
+
+function getRouteForTab(tab: AppTab) {
+  if (tab === 'hub') return '/family';
+  return `/${tab}`;
+}
 
 export default function AppShell() {
   const location = useLocation();
   const navigate = useNavigate();
-
-  const active = location.pathname.replace('/', '') || 'home';
+  const active = getActiveTab(location.pathname);
 
   return (
     <div className="appRoot">
@@ -16,10 +31,7 @@ export default function AppShell() {
             <Outlet />
           </div>
 
-          <BottomNav
-            active={active as any}
-            setActive={(tab) => navigate(`/${tab === 'hub' ? 'family' : tab}`)}
-          />
+          <BottomNav active={active} setActive={(tab) => navigate(getRouteForTab(tab))} />
         </div>
       </div>
     </div>
