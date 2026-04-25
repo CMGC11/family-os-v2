@@ -3,7 +3,7 @@ import {
   getHouseholdId,
   loadGroceryItems,
   saveGroceryItems,
-} from '../services/groceryLocalService';
+} from '../../../lib/store/familyStore';
 import type { GroceryItem } from '../types';
 
 export function useGroceryItems() {

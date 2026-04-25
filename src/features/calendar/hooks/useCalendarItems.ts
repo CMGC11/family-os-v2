@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   getHouseholdId,
-  getSelectedDate,
   loadCalendarEvents,
   saveCalendarEvents,
-} from '../services/calendarLocalService';
+} from '../../../lib/store/familyStore';
 import type { CalendarEvent } from '../types';
+
+const SELECTED_DATE = '2026-04-24';
 
 export function useCalendarItems() {
   const [events, setEvents] = useState<CalendarEvent[]>(() => loadCalendarEvents());
   const householdId = getHouseholdId();
-  const selectedDate = getSelectedDate();
 
   useEffect(() => {
     saveCalendarEvents(events);
@@ -19,9 +19,9 @@ export function useCalendarItems() {
   const selectedDayEvents = useMemo(
     () =>
       events
-        .filter((event) => event.date === selectedDate)
+        .filter((event) => event.date === SELECTED_DATE)
         .sort((a, b) => a.time.localeCompare(b.time)),
-    [events, selectedDate],
+    [events],
   );
 
   function addEvent(title: string, time = '12:00') {
@@ -36,7 +36,7 @@ export function useCalendarItems() {
         id: crypto.randomUUID(),
         household_id: householdId,
         title: cleanTitle,
-        date: selectedDate,
+        date: SELECTED_DATE,
         time: cleanTime,
         created_at: new Date().toISOString(),
       },
@@ -50,7 +50,7 @@ export function useCalendarItems() {
   return {
     events,
     selectedDayEvents,
-    selectedDate,
+    selectedDate: SELECTED_DATE,
     addEvent,
     deleteEvent,
   };
