@@ -1,0 +1,848 @@
+:root {
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "Segoe UI",
+    sans-serif;
+  color: #111113;
+  background: #f5f5f7;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: #f5f5f7;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #f5f5f7;
+}
+
+button {
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  background: none;
+  cursor: pointer;
+}
+
+.appRoot {
+  min-height: 100vh;
+  width: 100%;
+  background: #f5f5f7;
+  color: #111113;
+}
+
+.phoneShell {
+  min-height: 100vh;
+  max-width: 430px;
+  margin: 0 auto;
+  background: #f5f5f7;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.1);
+}
+
+.screen {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  padding-bottom: 112px;
+}
+
+.topGlow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 320px;
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(255, 255, 255, 0.95),
+    rgba(245, 245, 247, 0.2) 48%,
+    rgba(245, 245, 247, 0) 70%
+  );
+}
+
+.pageContent {
+  position: relative;
+}
+
+.pageHeader {
+  padding: 32px 20px 16px;
+}
+
+.headerTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.avatarStack {
+  display: flex;
+}
+
+.avatar {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  margin-left: -8px;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.avatar:first-child {
+  margin-left: 0;
+}
+
+.avatarBlue {
+  background: #3b82f6;
+}
+
+.avatarRose {
+  background: #f43f5e;
+}
+
+.avatarAmber {
+  background: #fbbf24;
+}
+
+.addButton {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 8px 16px;
+  color: #111113;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(20px);
+}
+
+.eyebrow {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.35);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pageHeader h1 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+
+.subtitle {
+  max-width: 340px;
+  margin: 8px 0 0;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.pageSection {
+  display: grid;
+  gap: 16px;
+  padding: 0 20px;
+}
+
+.glassCard {
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(28px);
+}
+
+.heroCard {
+  overflow: hidden;
+  padding: 20px;
+}
+
+.heroLayout {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.mutedLabel {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.heroLayout h2 {
+  margin: 4px 0 0;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.heroLayout p:last-child {
+  margin: 8px 0 0;
+  color: rgba(0, 0, 0, 0.52);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.heroIcon {
+  display: grid;
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: #ffffff;
+  font-size: 30px;
+  box-shadow: 0 14px 28px rgba(59, 130, 246, 0.25);
+}
+
+.quickGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.quickCard {
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+}
+
+.quickCard p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.quickCard strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.splitCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.darkActionCard,
+.lightActionCard {
+  min-height: 126px;
+  border-radius: 28px;
+  padding: 16px;
+  text-align: left;
+}
+
+.darkActionCard {
+  background: #111113;
+  color: #ffffff;
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.2);
+}
+
+.lightActionCard {
+  background: #ffffff;
+  color: #111113;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+}
+
+.darkActionCard p,
+.lightActionCard p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.darkActionCard p {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.lightActionCard p {
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.darkActionCard strong,
+.lightActionCard strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.darkActionCard span,
+.lightActionCard span {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.darkActionCard span {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.lightActionCard span {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.hubPreview,
+.tasksCard,
+.hubPageCard {
+  padding: 16px;
+}
+
+.sectionHeader,
+.agendaHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionHeader {
+  margin-bottom: 12px;
+}
+
+.sectionHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.sectionHeader button {
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.hubGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.miniHubCard {
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 16px;
+}
+
+.hubIcon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  margin-bottom: 12px;
+  border-radius: 16px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
+}
+
+.miniHubCard p {
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.miniHubCard span {
+  display: block;
+  margin-top: 4px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.tintRose {
+  background: linear-gradient(135deg, #ec4899, #fb7185);
+}
+
+.tintBlue {
+  background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+}
+
+.tintGreen {
+  background: linear-gradient(135deg, #10b981, #2dd4bf);
+}
+
+.tintOrange {
+  background: linear-gradient(135deg, #fb923c, #fbbf24);
+}
+
+.tintLime {
+  background: linear-gradient(135deg, #84cc16, #22c55e);
+}
+
+.bottomNav {
+  position: fixed;
+  z-index: 50;
+  right: 0;
+  bottom: 16px;
+  left: 0;
+  width: min(398px, calc(100% - 32px));
+  margin: 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.75);
+  padding: 8px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.14);
+  backdrop-filter: blur(28px);
+}
+
+.bottomNavGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.navButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border-radius: 26px;
+  padding: 10px 8px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 11px;
+  font-weight: 800;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.navButton:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.navButtonActive {
+  background: #111113;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.navButton:active {
+  transform: scale(0.98);
+}
+
+.navIcon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+
+.calendarCard {
+  overflow: hidden;
+}
+
+.calendarTop {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 20px 20px 16px;
+}
+
+.calendarActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.calendarActions button {
+  color: #2563eb;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.calendarActions div {
+  display: flex;
+  gap: 12px;
+}
+
+.calendarActions div button {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 999px;
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.calendarTop h2 {
+  margin: 12px 0 0;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.calendarBody {
+  padding: 12px 12px 16px;
+}
+
+.weekLabels {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 8px;
+}
+
+.weekLabels div {
+  padding: 4px 0;
+  color: rgba(0, 0, 0, 0.35);
+  text-align: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.monthGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 4px;
+}
+
+.dayCell {
+  position: relative;
+  display: flex;
+  min-height: 62px;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 16px;
+  padding: 6px 4px;
+  transition: background 160ms ease;
+}
+
+.dayCell:hover {
+  background: rgba(0, 0, 0, 0.035);
+}
+
+.dayNumber {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 999px;
+  color: #111113;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.daySelected {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+}
+
+.dayToday {
+  background: #111113;
+  color: #ffffff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.dayMuted {
+  color: rgba(0, 0, 0, 0.18);
+}
+
+.eventDots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 16px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.eventDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #3b82f6;
+}
+
+.dotGreen {
+  background: #10b981;
+}
+
+.dotAmber {
+  background: #fbbf24;
+}
+
+.dotSelected {
+  background: #2563eb;
+}
+
+.dotMuted {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.agendaCard {
+  padding: 20px;
+}
+
+.agendaHeader {
+  margin-bottom: 20px;
+}
+
+.agendaHeader p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.35);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.agendaHeader h2 {
+  margin: 2px 0 0;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.agendaHeader button {
+  border-radius: 999px;
+  background: #2563eb;
+  padding: 8px 16px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+}
+
+.agendaList {
+  display: grid;
+  gap: 12px;
+}
+
+.agendaRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 14px;
+}
+
+.agendaAccent {
+  width: 6px;
+  height: 44px;
+  border-radius: 999px;
+  background: #3b82f6;
+}
+
+.accent1 {
+  background: #10b981;
+}
+
+.accent2 {
+  background: #fbbf24;
+}
+
+.agendaRow div:nth-child(2),
+.taskRow div:nth-child(2),
+.hubRow div:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+}
+
+.agendaRow strong,
+.taskRow strong,
+.hubRow strong {
+  display: block;
+  overflow: hidden;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agendaRow span,
+.taskRow span,
+.hubRow span {
+  display: block;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+}
+
+.chevron {
+  color: rgba(0, 0, 0, 0.2) !important;
+  font-size: 24px !important;
+  line-height: 1;
+}
+
+.taskTabs {
+  display: flex;
+  margin-bottom: 16px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 4px;
+}
+
+.taskTabs button {
+  flex: 1;
+  border-radius: 999px;
+  padding: 8px 0;
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.taskTabs .taskTabActive {
+  background: #ffffff;
+  color: #111113;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+}
+
+.taskList {
+  display: grid;
+  gap: 12px;
+}
+
+.taskRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 26px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 14px;
+}
+
+.taskCheck {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+  background: #ffffff;
+  color: transparent;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.taskDone {
+  border-color: #10b981;
+  background: #10b981;
+  color: #ffffff;
+}
+
+.taskTextDone {
+  color: rgba(0, 0, 0, 0.35);
+  text-decoration: line-through;
+}
+
+.hubPageCard {
+  overflow: hidden;
+}
+
+.featuredCard {
+  border-radius: 28px;
+  padding: 20px;
+  color: #ffffff;
+  box-shadow: 0 18px 35px rgba(59, 130, 246, 0.2);
+}
+
+.featuredCard p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.featuredCard h2 {
+  margin: 4px 0 0;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.featuredCard span {
+  display: block;
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.hubList {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.hubRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-radius: 26px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+  text-align: left;
+  transition: background 160ms ease;
+}
+
+.hubRow:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.hubRow .hubIcon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 380px) {
+  .pageHeader {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .pageSection {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .pageHeader h1 {
+    font-size: 31px;
+  }
+
+  .quickGrid {
+    grid-template-columns: 1fr;
+  }
+}
