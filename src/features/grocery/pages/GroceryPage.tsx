@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useFamilyStore } from '../../../lib/store/useFamilyStore';
+import { useGroceryItems } from '../hooks/useGroceryItems';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
 export default function GroceryPage() {
-  const { grocery, toggleItem, addItem } = useFamilyStore();
+  const { items, toggleItem, addItem } = useGroceryItems();
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Produce');
 
@@ -54,7 +54,7 @@ export default function GroceryPage() {
 
         <GlassCard className="tasksCard">
           <div className="hubList">
-            {grocery.map((item) => (
+            {items.map((item) => (
               <button
                 key={item.id}
                 type="button"
