@@ -1,21 +1,25 @@
-import type { ReactNode } from 'react';
-import type { AppTab } from './types';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import BottomNav from '../ui/navigation/BottomNav';
 
-type AppShellProps = {
-  children: ReactNode;
-  active: AppTab;
-  setActive: (tab: AppTab) => void;
-};
+export default function AppShell() {
+  const location = useLocation();
+  const navigate = useNavigate();
 
-export default function AppShell({ children, active, setActive }: AppShellProps) {
+  const active = location.pathname.replace('/', '') || 'home';
+
   return (
     <div className="appRoot">
       <div className="phoneShell">
         <div className="screen">
           <div className="topGlow" />
-          <div className="pageContent">{children}</div>
-          <BottomNav active={active} setActive={setActive} />
+          <div className="pageContent">
+            <Outlet />
+          </div>
+
+          <BottomNav
+            active={active as any}
+            setActive={(tab) => navigate(`/${tab === 'hub' ? 'family' : tab}`)}
+          />
         </div>
       </div>
     </div>

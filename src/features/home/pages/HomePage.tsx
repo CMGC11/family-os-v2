@@ -1,13 +1,11 @@
-import type { AppTab } from '../../../app/types';
+import { useNavigate } from 'react-router-dom';
 import { hubItems, quickCards } from '../../../data/mockFamilyData';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 
-type HomePageProps = {
-  setActive: (tab: AppTab) => void;
-};
+export default function HomePage() {
+  const navigate = useNavigate();
 
-export default function HomePage({ setActive }: HomePageProps) {
   return (
     <main>
       <PageHeader
@@ -41,13 +39,13 @@ export default function HomePage({ setActive }: HomePageProps) {
         </GlassCard>
 
         <div className="splitCards">
-          <button type="button" onClick={() => setActive('calendar')} className="darkActionCard">
+          <button type="button" onClick={() => navigate('/calendar')} className="darkActionCard">
             <p>Next event</p>
             <strong>15:30</strong>
             <span>Pediatric check</span>
           </button>
 
-          <button type="button" onClick={() => setActive('todo')} className="lightActionCard">
+          <button type="button" onClick={() => navigate('/todo')} className="lightActionCard">
             <p>Open tasks</p>
             <strong>3 left</strong>
             <span>One household, endless admin</span>
@@ -57,7 +55,7 @@ export default function HomePage({ setActive }: HomePageProps) {
         <GlassCard className="hubPreview">
           <div className="sectionHeader">
             <h3>Family hub</h3>
-            <button type="button" onClick={() => setActive('hub')}>
+            <button type="button" onClick={() => navigate('/family')}>
               View all
             </button>
           </div>
