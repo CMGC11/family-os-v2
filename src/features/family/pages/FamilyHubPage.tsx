@@ -1,11 +1,20 @@
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { hubItems } from '../../../data/mockFamilyData';
 import GlassCard from '../../../ui/cards/GlassCard';
-import HubTile from '../../../ui/cards/HubTile';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
+const moduleRoutes: Record<string, string> = {
+  wishlist: '/family/wishlist',
+  trips: '/family/trips',
+  health: '/family/health',
+  recipes: '/family/recipes',
+  grocery: '/family/grocery',
+};
+
 export default function FamilyHubPage() {
+  const navigate = useNavigate();
   const featured = useMemo(() => hubItems[1], []);
 
   return (
@@ -18,16 +27,30 @@ export default function FamilyHubPage() {
 
       <PageShell>
         <GlassCard className="hubPageCard">
-          <div className={`featuredCard ${featured.tint}`}>
+          <button
+            type="button"
+            onClick={() => navigate('/family/trips')}
+            className={`featuredCard ${featured.tint}`}
+          >
             <p>Featured</p>
             <h2>Weekend trip</h2>
             <span>Packing list, documents, route, and bookings in one calm place.</span>
-          </div>
+          </button>
 
           <div className="hubList">
             {hubItems.map((item) => (
-              <button key={item.key} type="button" className="hubRow">
-                <HubTile title={item.title} subtitle={item.subtitle} icon={item.icon} tint={item.tint} />
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => navigate(moduleRoutes[item.key])}
+                className="hubRow"
+              >
+                <div className={`hubIcon ${item.tint}`}>{item.icon}</div>
+
+                <div>
+                  <strong>{item.title}</strong>
+                  <span>{item.subtitle}</span>
+                </div>
 
                 <span className="chevron">›</span>
               </button>

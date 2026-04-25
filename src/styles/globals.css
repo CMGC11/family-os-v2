@@ -861,4 +861,10 @@ button {
   .hubRow .miniHubCard span {
     display: none;
   }
+
+  .featuredCard {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
 }
