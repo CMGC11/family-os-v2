@@ -134,3 +134,18 @@ export function loadCalendarEvents() {
 export function saveCalendarEvents(events: CalendarEvent[]) {
   saveToStorage(STORAGE_KEYS.calendar, events);
 }
+
+export function loadHouseholdSnapshot() {
+  const grocery = loadGroceryItems();
+  const todo = loadTodoItems();
+  const calendar = loadCalendarEvents();
+
+  return {
+    grocery,
+    todo,
+    calendar,
+    groceryOpenCount: grocery.filter((item) => !item.checked).length,
+    todoOpenCount: todo.filter((item) => !item.done).length,
+    calendarEventCount: calendar.length,
+  };
+}

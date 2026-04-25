@@ -1,14 +1,19 @@
 import { useNavigate } from 'react-router-dom';
-import { hubItems, quickCards } from '../../../data/mockFamilyData';
+import { hubItems } from '../../../data/mockFamilyData';
 import GlassCard from '../../../ui/cards/GlassCard';
 import ActionCard from '../../../ui/cards/ActionCard';
 import HubTile from '../../../ui/cards/HubTile';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 import SectionHeader from '../../../ui/layout/SectionHeader';
+import { useHomeSnapshot } from '../hooks/useHomeSnapshot';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const snapshot = useHomeSnapshot();
+
+  const todayItems = snapshot.calendarEventCount + snapshot.todoOpenCount;
+  const openWork = snapshot.todoOpenCount + snapshot.groceryOpenCount;
 
   return (
     <main>
@@ -23,9 +28,10 @@ export default function HomePage() {
           <div className="heroLayout">
             <div>
               <p className="mutedLabel">Today’s rhythm</p>
-              <h2>Mostly calm</h2>
+              <h2>{openWork === 0 ? 'All clear' : 'Mostly calm'}</h2>
               <p>
-                You have a pediatric check, groceries, and two tasks that apparently cannot complete themselves.
+                {snapshot.calendarEventCount} events, {snapshot.todoOpenCount} open tasks, and{' '}
+                {snapshot.groceryOpenCount} grocery items still waiting for human intervention.
               </p>
             </div>
 
@@ -33,12 +39,20 @@ export default function HomePage() {
           </div>
 
           <div className="quickGrid">
-            {quickCards.map((card) => (
-              <div key={card.label} className="quickCard">
-                <p>{card.label}</p>
-                <strong>{card.value}</strong>
-              </div>
-            ))}
+            <div className="quickCard">
+              <p>Today</p>
+              <strong>{todayItems} items</strong>
+            </div>
+
+            <div className="quickCard">
+              <p>Groceries</p>
+              <strong>{snapshot.groceryOpenCount} left</strong>
+            </div>
+
+            <div className="quickCard">
+              <p>Tasks</p>
+              <strong>{snapshot.todoOpenCount} open</strong>
+            </div>
           </div>
         </GlassCard>
 
@@ -46,15 +60,15 @@ export default function HomePage() {
           <ActionCard
             variant="dark"
             label="Next event"
-            value="15:30"
-            detail="Pediatric check"
+            value={snapshot.calendar[0]?.time ?? '—'}
+            detail={snapshot.calendar[0]?.title ?? 'Nothing scheduled'}
             onClick={() => navigate('/calendar')}
           />
 
           <ActionCard
             label="Open tasks"
-            value="3 left"
-            detail="One household, endless admin"
+            value={`${snapshot.todoOpenCount} left`}
+            detail={snapshot.todo.find((task) => !task.done)?.title ?? 'No open tasks'}
             onClick={() => navigate('/todo')}
           />
         </div>
