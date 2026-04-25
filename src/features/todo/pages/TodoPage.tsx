@@ -1,12 +1,21 @@
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { tasks } from '../../../data/mockFamilyData';
+import { useTodoItems } from '../hooks/useTodoItems';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
 export default function TodoPage() {
   const [searchParams] = useSearchParams();
+  const { items, addItem, toggleItem, deleteItem } = useTodoItems();
+  const [title, setTitle] = useState('');
+
   const isCreating = searchParams.get('create') === 'task';
+
+  function handleAddTask() {
+    addItem(title);
+    setTitle('');
+  }
 
   return (
     <main>
@@ -19,7 +28,22 @@ export default function TodoPage() {
       <PageShell>
         {isCreating && (
           <GlassCard className="quickCreateCard">
-            <input placeholder="Add task..." autoFocus aria-label="New task title" />
+            <div className="quickCreateForm">
+              <input
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') handleAddTask();
+                }}
+                placeholder="Add task..."
+                autoFocus
+                aria-label="New task title"
+              />
+
+              <button type="button" onClick={handleAddTask}>
+                Add
+              </button>
+            </div>
           </GlassCard>
         )}
 
@@ -33,18 +57,32 @@ export default function TodoPage() {
           </div>
 
           <div className="taskList">
-            {tasks.map((task) => (
-              <div key={task.title} className="taskRow">
-                <div className={`taskCheck ${task.done ? 'taskDone' : ''}`}>✓</div>
+            {items.map((task) => (
+              <div key={task.id} className="taskRow">
+                <button
+                  type="button"
+                  className={`taskCheck ${task.done ? 'taskDone' : ''}`}
+                  onClick={() => toggleItem(task.id)}
+                  aria-label={task.done ? `Mark ${task.title} not done` : `Mark ${task.title} done`}
+                >
+                  ✓
+                </button>
 
-                <div>
+                <button type="button" className="taskMainButton" onClick={() => toggleItem(task.id)}>
                   <strong className={task.done ? 'taskTextDone' : ''}>{task.title}</strong>
                   <span>
                     {task.area} · {task.due}
                   </span>
-                </div>
+                </button>
 
-                <span className="chevron">›</span>
+                <button
+                  type="button"
+                  className="taskDeleteButton"
+                  onClick={() => deleteItem(task.id)}
+                  aria-label={`Delete ${task.title}`}
+                >
+                  ×
+                </button>
               </div>
             ))}
           </div>
