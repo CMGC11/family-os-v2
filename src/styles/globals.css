@@ -867,4 +867,48 @@ button {
     width: 100%;
     text-align: left;
   }
+
+  .groceryFormCard {
+  padding: 14px;
+}
+
+.groceryForm {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.groceryForm input,
+.groceryForm select {
+  width: 100%;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 13px 14px;
+  color: #111113;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.groceryForm input:focus,
+.groceryForm select:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.groceryForm button {
+  border-radius: 999px;
+  background: #111113;
+  padding: 13px 16px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+@media (min-width: 390px) {
+  .groceryForm {
+    grid-template-columns: 1fr 120px auto;
+    align-items: center;
+  }
+}
 }
