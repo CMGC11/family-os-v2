@@ -1,43 +1,19 @@
+import { useNavigate } from 'react-router-dom';
+
 type CreateActionSheetProps = {
   open: boolean;
   onClose: () => void;
 };
 
-const actions = [
-  {
-    title: 'Event',
-    subtitle: 'Add something to the family calendar',
-    icon: '◷',
-    tint: 'tintBlue',
-  },
-  {
-    title: 'Task',
-    subtitle: 'Create a shared household to-do',
-    icon: '✓',
-    tint: 'tintGreen',
-  },
-  {
-    title: 'Grocery',
-    subtitle: 'Add something to the shopping list',
-    icon: '◌',
-    tint: 'tintLime',
-  },
-  {
-    title: 'Health note',
-    subtitle: 'Capture care info for later',
-    icon: '+',
-    tint: 'tintGreen',
-  },
-  {
-    title: 'Wishlist',
-    subtitle: 'Save an idea, gift, or useful link',
-    icon: '♡',
-    tint: 'tintRose',
-  },
-];
-
 export default function CreateActionSheet({ open, onClose }: CreateActionSheetProps) {
+  const navigate = useNavigate();
+
   if (!open) return null;
+
+  function handleNavigate(path: string) {
+    navigate(path);
+    onClose();
+  }
 
   return (
     <div className="createSheetOverlay" onClick={onClose}>
@@ -50,24 +26,56 @@ export default function CreateActionSheet({ open, onClose }: CreateActionSheetPr
             <h2>Add something</h2>
           </div>
 
-          <button type="button" onClick={onClose} aria-label="Close create sheet">
+          <button type="button" onClick={onClose}>
             ×
           </button>
         </div>
 
         <div className="createActionList">
-          {actions.map((action) => (
-            <button key={action.title} type="button" className="createActionRow" onClick={onClose}>
-              <div className={`createActionIcon ${action.tint}`}>{action.icon}</div>
+          <button className="createActionRow" onClick={() => handleNavigate('/calendar')}>
+            <div className="createActionIcon tintBlue">◷</div>
+            <div>
+              <strong>Event</strong>
+              <span>Add something to the family calendar</span>
+            </div>
+            <span className="chevron">›</span>
+          </button>
 
-              <div>
-                <strong>{action.title}</strong>
-                <span>{action.subtitle}</span>
-              </div>
+          <button className="createActionRow" onClick={() => handleNavigate('/todo')}>
+            <div className="createActionIcon tintGreen">✓</div>
+            <div>
+              <strong>Task</strong>
+              <span>Create a shared household to-do</span>
+            </div>
+            <span className="chevron">›</span>
+          </button>
 
-              <span className="chevron">›</span>
-            </button>
-          ))}
+          <button className="createActionRow" onClick={() => handleNavigate('/family/grocery')}>
+            <div className="createActionIcon tintLime">◌</div>
+            <div>
+              <strong>Grocery</strong>
+              <span>Add something to the shopping list</span>
+            </div>
+            <span className="chevron">›</span>
+          </button>
+
+          <button className="createActionRow" onClick={() => handleNavigate('/family/health')}>
+            <div className="createActionIcon tintGreen">+</div>
+            <div>
+              <strong>Health note</strong>
+              <span>Capture care info for later</span>
+            </div>
+            <span className="chevron">›</span>
+          </button>
+
+          <button className="createActionRow" onClick={() => handleNavigate('/family/wishlist')}>
+            <div className="createActionIcon tintRose">♡</div>
+            <div>
+              <strong>Wishlist</strong>
+              <span>Save an idea or gift</span>
+            </div>
+            <span className="chevron">›</span>
+          </button>
         </div>
       </section>
     </div>
