@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export type GroceryItem = {
   id: string;
@@ -7,20 +7,40 @@ export type GroceryItem = {
   checked: boolean;
 };
 
-const initialGrocery: GroceryItem[] = [
-  { id: '1', name: 'Bananas', category: 'Produce', checked: false },
-  { id: '2', name: 'Oat milk', category: 'Dairy', checked: false },
-  { id: '3', name: 'Diapers', category: 'Baby', checked: false },
-];
+const STORAGE_KEY = 'familyos:grocery';
+
+function loadFromStorage(): GroceryItem[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
 
 export function useFamilyStore() {
-  const [grocery, setGrocery] = useState<GroceryItem[]>(initialGrocery);
+  const [grocery, setGrocery] = useState<GroceryItem[]>(() => {
+    const stored = loadFromStorage();
+
+    if (stored.length > 0) return stored;
+
+    return [
+      { id: '1', name: 'Bananas', category: 'Produce', checked: false },
+      { id: '2', name: 'Oat milk', category: 'Dairy', checked: false },
+      { id: '3', name: 'Diapers', category: 'Baby', checked: false },
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(grocery));
+  }, [grocery]);
 
   function toggleItem(id: string) {
     setGrocery((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, checked: !item.checked } : item,
-      ),
+        item.id === id ? { ...item, checked: !item.checked } : item
+      )
     );
   }
 
