@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useCreateAction } from '../../app/CreateActionContext';
 import { familyMembers } from '../../data/mockFamilyData';
 
 type PageHeaderProps = {
@@ -9,6 +10,8 @@ type PageHeaderProps = {
 };
 
 export default function PageHeader({ eyebrow, title, subtitle, right }: PageHeaderProps) {
+  const { openCreateSheet } = useCreateAction();
+
   return (
     <header className="pageHeader">
       <div className="headerTop">
@@ -21,7 +24,7 @@ export default function PageHeader({ eyebrow, title, subtitle, right }: PageHead
         </div>
 
         {right ?? (
-          <button type="button" className="addButton">
+          <button type="button" className="addButton" onClick={openCreateSheet}>
             + Add
           </button>
         )}

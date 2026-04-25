@@ -956,3 +956,123 @@ button {
 .backButton:active {
   transform: scale(0.98);
 }
+
+.createSheetOverlay {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.24);
+  padding: 0 16px 16px;
+  backdrop-filter: blur(10px);
+}
+
+.createSheet {
+  width: min(398px, 100%);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 34px;
+  background: rgba(245, 245, 247, 0.92);
+  padding: 10px 14px 14px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(28px);
+}
+
+.createSheetHandle {
+  width: 44px;
+  height: 5px;
+  margin: 0 auto 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.createSheetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px 12px;
+}
+
+.createSheetHeader p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.createSheetHeader h2 {
+  margin: 3px 0 0;
+  color: #111113;
+  font-size: 28px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.createSheetHeader button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.055);
+  color: rgba(17, 17, 19, 0.62);
+  font-size: 26px;
+  font-weight: 450;
+}
+
+.createActionList {
+  display: grid;
+  gap: 8px;
+}
+
+.createActionRow {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 12px;
+  text-align: left;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+}
+
+.createActionRow:active {
+  transform: scale(0.99);
+}
+
+.createActionIcon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 18px;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 850;
+}
+
+.createActionRow div:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+}
+
+.createActionRow strong {
+  display: block;
+  color: #111113;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+}
+
+.createActionRow span {
+  display: block;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.46);
+  font-size: 13px;
+  font-weight: 650;
+}
