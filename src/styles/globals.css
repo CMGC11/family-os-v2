@@ -1076,3 +1076,24 @@ button {
   font-size: 13px;
   font-weight: 650;
 }
+
+.quickCreateCard {
+  padding: 14px;
+}
+
+.quickCreateCard input {
+  width: 100%;
+  min-height: 46px;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 14px;
+  color: #111113;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.quickCreateCard input:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}

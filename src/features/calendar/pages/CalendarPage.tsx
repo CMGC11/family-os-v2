@@ -1,9 +1,12 @@
+import { useSearchParams } from 'react-router-dom';
 import { monthDays } from '../../../data/mockFamilyData';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
 export default function CalendarPage() {
+  const [searchParams] = useSearchParams();
+  const isCreating = searchParams.get('create') === 'event';
   const weekLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
   return (
@@ -15,6 +18,12 @@ export default function CalendarPage() {
       />
 
       <PageShell>
+        {isCreating && (
+          <GlassCard className="quickCreateCard">
+            <input placeholder="New event title..." autoFocus aria-label="New event title" />
+          </GlassCard>
+        )}
+
         <GlassCard className="calendarCard">
           <div className="calendarTop">
             <div className="calendarActions">

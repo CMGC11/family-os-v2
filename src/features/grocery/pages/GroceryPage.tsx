@@ -1,14 +1,18 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useGroceryItems } from '../hooks/useGroceryItems';
-import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
+import BackButton from '../../../ui/navigation/BackButton';
 
 export default function GroceryPage() {
   const { items, toggleItem, addItem, deleteItem } = useGroceryItems();
+  const [searchParams] = useSearchParams();
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Produce');
+
+  const shouldFocus = searchParams.get('create') === 'grocery';
 
   function handleAddItem() {
     addItem(name, category);
@@ -29,6 +33,7 @@ export default function GroceryPage() {
         <GlassCard className="tasksCard groceryFormCard">
           <div className="groceryForm">
             <input
+              autoFocus={shouldFocus}
               value={name}
               onChange={(event) => setName(event.target.value)}
               onKeyDown={(event) => {

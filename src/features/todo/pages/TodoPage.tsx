@@ -1,9 +1,13 @@
+import { useSearchParams } from 'react-router-dom';
 import { tasks } from '../../../data/mockFamilyData';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
 export default function TodoPage() {
+  const [searchParams] = useSearchParams();
+  const isCreating = searchParams.get('create') === 'task';
+
   return (
     <main>
       <PageHeader
@@ -13,6 +17,12 @@ export default function TodoPage() {
       />
 
       <PageShell>
+        {isCreating && (
+          <GlassCard className="quickCreateCard">
+            <input placeholder="Add task..." autoFocus aria-label="New task title" />
+          </GlassCard>
+        )}
+
         <GlassCard className="tasksCard">
           <div className="taskTabs">
             {['Today', 'Week', 'Done'].map((tab, index) => (

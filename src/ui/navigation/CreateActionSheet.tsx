@@ -26,13 +26,13 @@ export default function CreateActionSheet({ open, onClose }: CreateActionSheetPr
             <h2>Add something</h2>
           </div>
 
-          <button type="button" onClick={onClose}>
+          <button type="button" onClick={onClose} aria-label="Close create sheet">
             ×
           </button>
         </div>
 
         <div className="createActionList">
-          <button className="createActionRow" onClick={() => handleNavigate('/calendar')}>
+          <button type="button" className="createActionRow" onClick={() => handleNavigate('/calendar?create=event')}>
             <div className="createActionIcon tintBlue">◷</div>
             <div>
               <strong>Event</strong>
@@ -41,7 +41,7 @@ export default function CreateActionSheet({ open, onClose }: CreateActionSheetPr
             <span className="chevron">›</span>
           </button>
 
-          <button className="createActionRow" onClick={() => handleNavigate('/todo')}>
+          <button type="button" className="createActionRow" onClick={() => handleNavigate('/todo?create=task')}>
             <div className="createActionIcon tintGreen">✓</div>
             <div>
               <strong>Task</strong>
@@ -50,7 +50,7 @@ export default function CreateActionSheet({ open, onClose }: CreateActionSheetPr
             <span className="chevron">›</span>
           </button>
 
-          <button className="createActionRow" onClick={() => handleNavigate('/family/grocery')}>
+          <button type="button" className="createActionRow" onClick={() => handleNavigate('/family/grocery?create=grocery')}>
             <div className="createActionIcon tintLime">◌</div>
             <div>
               <strong>Grocery</strong>
@@ -59,7 +59,7 @@ export default function CreateActionSheet({ open, onClose }: CreateActionSheetPr
             <span className="chevron">›</span>
           </button>
 
-          <button className="createActionRow" onClick={() => handleNavigate('/family/health')}>
+          <button type="button" className="createActionRow" onClick={() => handleNavigate('/family/health?create=health')}>
             <div className="createActionIcon tintGreen">+</div>
             <div>
               <strong>Health note</strong>
@@ -68,7 +68,7 @@ export default function CreateActionSheet({ open, onClose }: CreateActionSheetPr
             <span className="chevron">›</span>
           </button>
 
-          <button className="createActionRow" onClick={() => handleNavigate('/family/wishlist')}>
+          <button type="button" className="createActionRow" onClick={() => handleNavigate('/family/wishlist?create=wishlist')}>
             <div className="createActionIcon tintRose">♡</div>
             <div>
               <strong>Wishlist</strong>
