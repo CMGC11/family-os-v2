@@ -1,8 +1,11 @@
+import { useFamilyStore } from '../../../lib/store/useFamilyStore';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
 export default function GroceryPage() {
+  const { grocery, toggleItem } = useFamilyStore();
+
   return (
     <main>
       <PageHeader
@@ -14,15 +17,23 @@ export default function GroceryPage() {
       <PageShell>
         <GlassCard className="tasksCard">
           <div className="hubList">
-            {['Produce · Bananas, apples, lettuce', 'Dairy · Oat milk, yogurt', 'Baby · Diapers, wipes'].map((item) => (
-              <div key={item} className="hubRow">
-                <div className="hubIcon tintLime">◌</div>
-                <div>
-                  <strong>{item.split(' · ')[0]}</strong>
-                  <span>{item.split(' · ')[1]}</span>
+            {grocery.map((item) => (
+              <button
+                key={item.id}
+                className="hubRow"
+                onClick={() => toggleItem(item.id)}
+              >
+                <div className="hubIcon tintLime">
+                  {item.checked ? '✓' : '◌'}
                 </div>
+
+                <div>
+                  <strong>{item.name}</strong>
+                  <span>{item.category}</span>
+                </div>
+
                 <span className="chevron">›</span>
-              </div>
+              </button>
             ))}
           </div>
         </GlassCard>
