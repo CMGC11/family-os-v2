@@ -1136,3 +1136,59 @@ button {
   background: rgba(244, 63, 94, 0.09);
   color: #e11d48;
 }
+
+.calendarCreateForm {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.calendarCreateForm input {
+  width: 100%;
+  min-height: 46px;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 14px;
+  color: #111113;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.calendarCreateForm input:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.calendarCreateForm button {
+  min-height: 46px;
+  border-radius: 999px;
+  background: #111113;
+  padding: 0 16px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.agendaDeleteButton {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 999px;
+  color: rgba(244, 63, 94, 0.72);
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.agendaDeleteButton:hover {
+  background: rgba(244, 63, 94, 0.09);
+  color: #e11d48;
+}
+
+@media (min-width: 390px) {
+  .calendarCreateForm {
+    grid-template-columns: minmax(0, 1fr) 110px 72px;
+  }
+}

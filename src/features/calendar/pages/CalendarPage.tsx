@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useCalendarItems } from '../hooks/useCalendarItems';
 import { monthDays } from '../../../data/mockFamilyData';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
@@ -6,8 +8,18 @@ import PageShell from '../../../ui/layout/PageShell';
 
 export default function CalendarPage() {
   const [searchParams] = useSearchParams();
+  const { selectedDayEvents, addEvent, deleteEvent } = useCalendarItems();
+  const [title, setTitle] = useState('');
+  const [time, setTime] = useState('12:00');
+
   const isCreating = searchParams.get('create') === 'event';
   const weekLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+  function handleAddEvent() {
+    addEvent(title, time);
+    setTitle('');
+    setTime('12:00');
+  }
 
   return (
     <main>
@@ -20,7 +32,29 @@ export default function CalendarPage() {
       <PageShell>
         {isCreating && (
           <GlassCard className="quickCreateCard">
-            <input placeholder="New event title..." autoFocus aria-label="New event title" />
+            <div className="calendarCreateForm">
+              <input
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') handleAddEvent();
+                }}
+                placeholder="New event title..."
+                autoFocus
+                aria-label="New event title"
+              />
+
+              <input
+                value={time}
+                onChange={(event) => setTime(event.target.value)}
+                type="time"
+                aria-label="New event time"
+              />
+
+              <button type="button" onClick={handleAddEvent}>
+                Add
+              </button>
+            </div>
           </GlassCard>
         )}
 
@@ -105,14 +139,23 @@ export default function CalendarPage() {
           </div>
 
           <div className="agendaList">
-            {['09:00 · Daycare visit', '15:30 · Pediatric check', '18:00 · Dinner prep'].map((event, index) => (
-              <div key={event} className="agendaRow">
-                <div className={`agendaAccent accent${index}`} />
+            {selectedDayEvents.map((event, index) => (
+              <div key={event.id} className="agendaRow">
+                <div className={`agendaAccent accent${index % 3}`} />
+
                 <div>
-                  <strong>{event.split(' · ')[1]}</strong>
-                  <span>{event.split(' · ')[0]}</span>
+                  <strong>{event.title}</strong>
+                  <span>{event.time}</span>
                 </div>
-                <span className="chevron">›</span>
+
+                <button
+                  type="button"
+                  className="agendaDeleteButton"
+                  onClick={() => deleteEvent(event.id)}
+                  aria-label={`Delete ${event.title}`}
+                >
+                  ×
+                </button>
               </div>
             ))}
           </div>
