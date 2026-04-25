@@ -26,24 +26,32 @@ function mapRowToItem(row: GroceryRow): GroceryItem {
 export async function fetchGroceryItems(): Promise<GroceryItem[]> {
   const supabase = requireSupabaseClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  console.log('Current Supabase user:', user?.id ?? null);
-
   const { data, error } = await supabase
     .from('grocery_items')
     .select('id, household_id, name, category, is_checked, created_at')
     .eq('household_id', HOUSEHOLD_ID)
     .order('created_at', { ascending: false });
 
-  console.log('Grocery rows:', data);
-  console.log('Grocery error:', error);
-
   if (error) {
     throw error;
   }
 
   return (data ?? []).map(mapRowToItem);
+}
+
+export async function updateGroceryItemChecked(id: string, checked: boolean): Promise<void> {
+  const supabase = requireSupabaseClient();
+
+  const { error } = await supabase
+    .from('grocery_items')
+    .update({
+      is_checked: checked,
+      checked_at: checked ? new Date().toISOString() : null,
+    })
+    .eq('id', id)
+    .eq('household_id', HOUSEHOLD_ID);
+
+  if (error) {
+    throw error;
+  }
 }

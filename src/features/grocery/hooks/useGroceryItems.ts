@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { fetchGroceryItems } from '../services/grocerySupabaseService';
+import {
+  fetchGroceryItems,
+  updateGroceryItemChecked,
+} from '../services/grocerySupabaseService';
 import type { GroceryItem } from '../types';
 
 export function useGroceryItems() {
@@ -24,11 +27,7 @@ export function useGroceryItems() {
         console.error('Failed to load grocery items:', error);
 
         if (!cancelled) {
-          if (error instanceof Error) {
-            setErrorMessage(error.message);
-          } else {
-            setErrorMessage(JSON.stringify(error));
-          }
+          setErrorMessage(error instanceof Error ? error.message : 'Failed to load grocery items.');
         }
       } finally {
         if (!cancelled) {
@@ -44,12 +43,32 @@ export function useGroceryItems() {
     };
   }, []);
 
-  function toggleItem(id: string) {
+  async function toggleItem(id: string) {
+    const target = items.find((item) => item.id === id);
+
+    if (!target) return;
+
+    const nextChecked = !target.checked;
+
     setItems((current) =>
       current.map((item) =>
-        item.id === id ? { ...item, checked: !item.checked } : item,
+        item.id === id ? { ...item, checked: nextChecked } : item,
       ),
     );
+
+    try {
+      await updateGroceryItemChecked(id, nextChecked);
+    } catch (error) {
+      console.error('Failed to update grocery item:', error);
+
+      setItems((current) =>
+        current.map((item) =>
+          item.id === id ? { ...item, checked: target.checked } : item,
+        ),
+      );
+
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to update grocery item.');
+    }
   }
 
   function addItem(name: string, category: string) {
