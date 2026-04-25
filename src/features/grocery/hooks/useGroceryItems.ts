@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react';
-import { loadGroceryItems, saveGroceryItems } from '../services/groceryLocalService';
+import {
+  getHouseholdId,
+  loadGroceryItems,
+  saveGroceryItems,
+} from '../services/groceryLocalService';
 import type { GroceryItem } from '../types';
 
 export function useGroceryItems() {
   const [items, setItems] = useState<GroceryItem[]>(() => loadGroceryItems());
+  const householdId = getHouseholdId();
 
   useEffect(() => {
     saveGroceryItems(items);
   }, [items]);
 
   function toggleItem(id: string) {
-    setItems((currentItems) =>
-      currentItems.map((item) =>
+    setItems((current) =>
+      current.map((item) =>
         item.id === id ? { ...item, checked: !item.checked } : item,
       ),
     );
@@ -23,13 +28,15 @@ export function useGroceryItems() {
 
     if (!cleanName) return;
 
-    setItems((currentItems) => [
-      ...currentItems,
+    setItems((current) => [
+      ...current,
       {
         id: crypto.randomUUID(),
+        household_id: householdId,
         name: cleanName,
         category: cleanCategory,
         checked: false,
+        created_at: new Date().toISOString(),
       },
     ]);
   }
