@@ -1,6 +1,6 @@
 type AppEnv = {
   supabaseUrl: string;
-  supabasePublishableKey: string;
+  supabaseAnonKey: string;
   hasSupabaseConfig: boolean;
 };
 
@@ -16,8 +16,8 @@ function readEnvValue(key: string) {
 
 export const env: AppEnv = {
   supabaseUrl: readEnvValue('VITE_SUPABASE_URL'),
-  supabasePublishableKey: readEnvValue('VITE_SUPABASE_PUBLISHABLE_KEY'),
+  supabaseAnonKey: readEnvValue('VITE_SUPABASE_ANON_KEY'),
   hasSupabaseConfig:
     Boolean(readEnvValue('VITE_SUPABASE_URL')) &&
-    Boolean(readEnvValue('VITE_SUPABASE_PUBLISHABLE_KEY')),
+    Boolean(readEnvValue('VITE_SUPABASE_ANON_KEY')),
 };

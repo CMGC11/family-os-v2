@@ -1,18 +1,48 @@
 import { useEffect, useState } from 'react';
-import {
-  getHouseholdId,
-  loadGroceryItems,
-  saveGroceryItems,
-} from '../../../lib/store/familyStore';
+import { fetchGroceryItems } from '../services/grocerySupabaseService';
 import type { GroceryItem } from '../types';
 
 export function useGroceryItems() {
-  const [items, setItems] = useState<GroceryItem[]>(() => loadGroceryItems());
-  const householdId = getHouseholdId();
+  const [items, setItems] = useState<GroceryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    saveGroceryItems(items);
-  }, [items]);
+    let cancelled = false;
+
+    async function loadItems() {
+      try {
+        setIsLoading(true);
+        setErrorMessage('');
+
+        const nextItems = await fetchGroceryItems();
+
+        if (!cancelled) {
+          setItems(nextItems);
+        }
+      } catch (error) {
+        console.error('Failed to load grocery items:', error);
+
+        if (!cancelled) {
+          if (error instanceof Error) {
+            setErrorMessage(error.message);
+          } else {
+            setErrorMessage(JSON.stringify(error));
+          }
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadItems();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function toggleItem(id: string) {
     setItems((current) =>
@@ -29,15 +59,15 @@ export function useGroceryItems() {
     if (!cleanName) return;
 
     setItems((current) => [
-      ...current,
       {
         id: crypto.randomUUID(),
-        household_id: householdId,
+        household_id: '11111111-1111-1111-1111-111111111111',
         name: cleanName,
         category: cleanCategory,
         checked: false,
         created_at: new Date().toISOString(),
       },
+      ...current,
     ]);
   }
 
@@ -47,6 +77,8 @@ export function useGroceryItems() {
 
   return {
     items,
+    isLoading,
+    errorMessage,
     toggleItem,
     addItem,
     deleteItem,

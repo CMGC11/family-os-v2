@@ -7,7 +7,7 @@ import PageShell from '../../../ui/layout/PageShell';
 import BackButton from '../../../ui/navigation/BackButton';
 
 export default function GroceryPage() {
-  const { items, toggleItem, addItem, deleteItem } = useGroceryItems();
+  const { items, isLoading, errorMessage, toggleItem, addItem, deleteItem } = useGroceryItems();
   const [searchParams] = useSearchParams();
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Produce');
@@ -62,37 +62,51 @@ export default function GroceryPage() {
           </div>
         </GlassCard>
 
-        <GlassCard className="tasksCard">
-          <div className="hubList">
-            {items.map((item) => (
-              <div key={item.id} className="groceryRow">
-                <button
-                  type="button"
-                  className="hubRow groceryMainButton"
-                  onClick={() => toggleItem(item.id)}
-                >
-                  <div className="hubIcon tintLime">{item.checked ? '✓' : '◌'}</div>
+        {isLoading && (
+          <GlassCard className="tasksCard">
+            <p className="mutedLabel">Loading groceries...</p>
+          </GlassCard>
+        )}
 
-                  <div>
-                    <strong className={item.checked ? 'taskTextDone' : ''}>{item.name}</strong>
-                    <span>{item.category}</span>
-                  </div>
+        {errorMessage && (
+          <GlassCard className="tasksCard">
+            <p className="mutedLabel">{errorMessage}</p>
+          </GlassCard>
+        )}
 
-                  <span className="chevron">›</span>
-                </button>
+        {!isLoading && !errorMessage && (
+          <GlassCard className="tasksCard">
+            <div className="hubList">
+              {items.map((item) => (
+                <div key={item.id} className="groceryRow">
+                  <button
+                    type="button"
+                    className="hubRow groceryMainButton"
+                    onClick={() => toggleItem(item.id)}
+                  >
+                    <div className="hubIcon tintLime">{item.checked ? '✓' : '◌'}</div>
 
-                <button
-                  type="button"
-                  className="groceryDeleteButton"
-                  onClick={() => deleteItem(item.id)}
-                  aria-label={`Delete ${item.name}`}
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
-        </GlassCard>
+                    <div>
+                      <strong className={item.checked ? 'taskTextDone' : ''}>{item.name}</strong>
+                      <span>{item.category}</span>
+                    </div>
+
+                    <span className="chevron">›</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="groceryDeleteButton"
+                    onClick={() => deleteItem(item.id)}
+                    aria-label={`Delete ${item.name}`}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+          </GlassCard>
+        )}
       </PageShell>
     </main>
   );
