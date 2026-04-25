@@ -1,6 +1,7 @@
 import { tasks } from '../../../data/mockFamilyData';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
+import PageShell from '../../../ui/layout/PageShell';
 
 export default function TodoPage() {
   return (
@@ -11,7 +12,7 @@ export default function TodoPage() {
         subtitle="Shared chores, household admin, and the sacred ritual of moving tasks from one day to the next."
       />
 
-      <section className="pageSection">
+      <PageShell>
         <GlassCard className="tasksCard">
           <div className="taskTabs">
             {['Today', 'Week', 'Done'].map((tab, index) => (
@@ -38,7 +39,7 @@ export default function TodoPage() {
             ))}
           </div>
         </GlassCard>
-      </section>
+      </PageShell>
     </main>
   );
 }

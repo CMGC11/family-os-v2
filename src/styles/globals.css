@@ -845,4 +845,20 @@ button {
   .quickGrid {
     grid-template-columns: 1fr;
   }
+
+  .hubRow .miniHubCard {
+    display: contents;
+  }
+
+  .hubRow .hubIcon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 0;
+    flex: 0 0 auto;
+  }
+
+  .hubRow .miniHubCard p,
+  .hubRow .miniHubCard span {
+    display: none;
+  }
 }

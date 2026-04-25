@@ -1,6 +1,7 @@
 import { monthDays } from '../../../data/mockFamilyData';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
+import PageShell from '../../../ui/layout/PageShell';
 
 export default function CalendarPage() {
   const weekLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -13,7 +14,7 @@ export default function CalendarPage() {
         subtitle="A familiar Apple-style monthly view: clean grid, quiet event indicators, and the selected day’s agenda below."
       />
 
-      <section className="pageSection">
+      <PageShell>
         <GlassCard className="calendarCard">
           <div className="calendarTop">
             <div className="calendarActions">
@@ -107,7 +108,7 @@ export default function CalendarPage() {
             ))}
           </div>
         </GlassCard>
-      </section>
+      </PageShell>
     </main>
   );
 }

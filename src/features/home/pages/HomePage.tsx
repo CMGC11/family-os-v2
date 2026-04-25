@@ -1,7 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { hubItems, quickCards } from '../../../data/mockFamilyData';
 import GlassCard from '../../../ui/cards/GlassCard';
+import ActionCard from '../../../ui/cards/ActionCard';
+import HubTile from '../../../ui/cards/HubTile';
 import PageHeader from '../../../ui/layout/PageHeader';
+import PageShell from '../../../ui/layout/PageShell';
+import SectionHeader from '../../../ui/layout/SectionHeader';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -14,7 +18,7 @@ export default function HomePage() {
         subtitle="A calm command center for the tiny empire humans keep calling a household."
       />
 
-      <section className="pageSection">
+      <PageShell>
         <GlassCard className="heroCard">
           <div className="heroLayout">
             <div>
@@ -39,38 +43,45 @@ export default function HomePage() {
         </GlassCard>
 
         <div className="splitCards">
-          <button type="button" onClick={() => navigate('/calendar')} className="darkActionCard">
-            <p>Next event</p>
-            <strong>15:30</strong>
-            <span>Pediatric check</span>
-          </button>
+          <ActionCard
+            variant="dark"
+            label="Next event"
+            value="15:30"
+            detail="Pediatric check"
+            onClick={() => navigate('/calendar')}
+          />
 
-          <button type="button" onClick={() => navigate('/todo')} className="lightActionCard">
-            <p>Open tasks</p>
-            <strong>3 left</strong>
-            <span>One household, endless admin</span>
-          </button>
+          <ActionCard
+            label="Open tasks"
+            value="3 left"
+            detail="One household, endless admin"
+            onClick={() => navigate('/todo')}
+          />
         </div>
 
         <GlassCard className="hubPreview">
-          <div className="sectionHeader">
-            <h3>Family hub</h3>
-            <button type="button" onClick={() => navigate('/family')}>
-              View all
-            </button>
-          </div>
+          <SectionHeader
+            title="Family hub"
+            action={
+              <button type="button" onClick={() => navigate('/family')}>
+                View all
+              </button>
+            }
+          />
 
           <div className="hubGrid">
             {hubItems.slice(0, 4).map((item) => (
-              <div key={item.key} className="miniHubCard">
-                <div className={`hubIcon ${item.tint}`}>{item.icon}</div>
-                <p>{item.title}</p>
-                <span>{item.subtitle}</span>
-              </div>
+              <HubTile
+                key={item.key}
+                title={item.title}
+                subtitle={item.subtitle}
+                icon={item.icon}
+                tint={item.tint}
+              />
             ))}
           </div>
         </GlassCard>
-      </section>
+      </PageShell>
     </main>
   );
 }

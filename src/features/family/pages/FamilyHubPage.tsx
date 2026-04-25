@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
 import { hubItems } from '../../../data/mockFamilyData';
 import GlassCard from '../../../ui/cards/GlassCard';
+import HubTile from '../../../ui/cards/HubTile';
 import PageHeader from '../../../ui/layout/PageHeader';
+import PageShell from '../../../ui/layout/PageShell';
 
 export default function FamilyHubPage() {
   const featured = useMemo(() => hubItems[1], []);
@@ -14,7 +16,7 @@ export default function FamilyHubPage() {
         subtitle="Wishlist, trips, health, recipes, and grocery. Basically the drawer where real life throws its cables."
       />
 
-      <section className="pageSection">
+      <PageShell>
         <GlassCard className="hubPageCard">
           <div className={`featuredCard ${featured.tint}`}>
             <p>Featured</p>
@@ -25,19 +27,14 @@ export default function FamilyHubPage() {
           <div className="hubList">
             {hubItems.map((item) => (
               <button key={item.key} type="button" className="hubRow">
-                <div className={`hubIcon ${item.tint}`}>{item.icon}</div>
-
-                <div>
-                  <strong>{item.title}</strong>
-                  <span>{item.subtitle}</span>
-                </div>
+                <HubTile title={item.title} subtitle={item.subtitle} icon={item.icon} tint={item.tint} />
 
                 <span className="chevron">›</span>
               </button>
             ))}
           </div>
         </GlassCard>
-      </section>
+      </PageShell>
     </main>
   );
 }
