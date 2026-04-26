@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  deleteCalendarEvent,
   fetchCalendarEvents,
   insertCalendarEvent,
 } from '../services/calendarSupabaseService';
@@ -80,8 +81,20 @@ export function useCalendarItems() {
     }
   }
 
-  function deleteEvent(id: string) {
+  async function deleteEvent(id: string) {
+    const previousEvents = events;
+
     setEvents((current) => current.filter((event) => event.id !== id));
+
+    try {
+      setErrorMessage('');
+      await deleteCalendarEvent(id);
+    } catch (error) {
+      console.error('Failed to delete calendar event:', error);
+
+      setEvents(previousEvents);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to delete event.');
+    }
   }
 
   return {
