@@ -5,7 +5,10 @@ import {
   insertTodoItem,
   updateTodoItemDone,
 } from '../services/todoSupabaseService';
+import { requireSupabaseClient } from '../../../lib/supabase/client';
 import type { TaskItem } from '../types';
+
+const HOUSEHOLD_ID = '11111111-1111-1111-1111-111111111111';
 
 export function useTodoItems() {
   const [items, setItems] = useState<TaskItem[]>([]);
@@ -42,6 +45,36 @@ export function useTodoItems() {
 
     return () => {
       cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const supabase = requireSupabaseClient();
+
+    const channel = supabase
+      .channel('todo-items-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'todo_items',
+          filter: `household_id=eq.${HOUSEHOLD_ID}`,
+        },
+        async () => {
+          try {
+            const nextItems = await fetchTodoItems();
+            setItems(nextItems);
+          } catch (error) {
+            console.error('Failed to refresh todo items after realtime event:', error);
+            setErrorMessage(error instanceof Error ? error.message : 'Failed to sync todo items.');
+          }
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
     };
   }, []);
 
