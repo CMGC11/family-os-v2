@@ -5,6 +5,7 @@ import {
   insertCalendarEvent,
 } from '../services/calendarSupabaseService';
 import { requireSupabaseClient } from '../../../lib/supabase/client';
+import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import type { CalendarEvent } from '../types';
 
 const SELECTED_DATE = '2026-04-24';
@@ -54,29 +55,48 @@ export function useCalendarItems() {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
     const supabase = requireSupabaseClient();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
 
-    const channel = supabase
-      .channel('calendar-events-realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'events',
-        },
-        async () => {
-          try {
-            await refreshEvents();
-          } catch (error) {
-            console.error('Realtime calendar sync failed:', error);
-          }
-        },
-      )
-      .subscribe();
+    async function subscribe() {
+      try {
+        const householdId = await getCurrentHouseholdId();
+
+        if (cancelled) return;
+
+        channel = supabase
+          .channel(`calendar-events-realtime-${householdId}`)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'events',
+              filter: `household_id=eq.${householdId}`,
+            },
+            async () => {
+              try {
+                await refreshEvents();
+              } catch (error) {
+                console.error('Realtime calendar sync failed:', error);
+              }
+            },
+          )
+          .subscribe();
+      } catch (error) {
+        console.error('Failed to subscribe to calendar realtime:', error);
+      }
+    }
+
+    subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      cancelled = true;
+
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, [refreshEvents]);
 

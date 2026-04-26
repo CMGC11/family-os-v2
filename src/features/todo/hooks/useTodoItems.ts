@@ -6,9 +6,8 @@ import {
   updateTodoItemDone,
 } from '../services/todoSupabaseService';
 import { requireSupabaseClient } from '../../../lib/supabase/client';
+import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import type { TaskItem } from '../types';
-
-const HOUSEHOLD_ID = '11111111-1111-1111-1111-111111111111';
 
 export function useTodoItems() {
   const [items, setItems] = useState<TaskItem[]>([]);
@@ -49,32 +48,51 @@ export function useTodoItems() {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
     const supabase = requireSupabaseClient();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
 
-    const channel = supabase
-      .channel('todo-items-realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'todo_items',
-          filter: `household_id=eq.${HOUSEHOLD_ID}`,
-        },
-        async () => {
-          try {
-            const nextItems = await fetchTodoItems();
-            setItems(nextItems);
-          } catch (error) {
-            console.error('Failed to refresh todo items after realtime event:', error);
-            setErrorMessage(error instanceof Error ? error.message : 'Failed to sync todo items.');
-          }
-        },
-      )
-      .subscribe();
+    async function subscribe() {
+      try {
+        const householdId = await getCurrentHouseholdId();
+
+        if (cancelled) return;
+
+        channel = supabase
+          .channel(`todo-items-realtime-${householdId}`)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'todo_items',
+              filter: `household_id=eq.${householdId}`,
+            },
+            async () => {
+              try {
+                const nextItems = await fetchTodoItems();
+                setItems(nextItems);
+              } catch (error) {
+                console.error('Failed to refresh todo items after realtime event:', error);
+                setErrorMessage(error instanceof Error ? error.message : 'Failed to sync todo items.');
+              }
+            },
+          )
+          .subscribe();
+      } catch (error) {
+        console.error('Failed to subscribe to todo realtime:', error);
+        setErrorMessage(error instanceof Error ? error.message : 'Failed to subscribe to todo sync.');
+      }
+    }
+
+    subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      cancelled = true;
+
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, []);
 

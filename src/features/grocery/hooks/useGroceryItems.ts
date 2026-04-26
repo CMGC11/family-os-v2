@@ -6,9 +6,8 @@ import {
   updateGroceryItemChecked,
 } from '../services/grocerySupabaseService';
 import { requireSupabaseClient } from '../../../lib/supabase/client';
+import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import type { GroceryItem } from '../types';
-
-const HOUSEHOLD_ID = '11111111-1111-1111-1111-111111111111';
 
 export function useGroceryItems() {
   const [items, setItems] = useState<GroceryItem[]>([]);
@@ -49,32 +48,51 @@ export function useGroceryItems() {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
     const supabase = requireSupabaseClient();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
 
-    const channel = supabase
-      .channel('grocery-items-realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'grocery_items',
-          filter: `household_id=eq.${HOUSEHOLD_ID}`,
-        },
-        async () => {
-          try {
-            const nextItems = await fetchGroceryItems();
-            setItems(nextItems);
-          } catch (error) {
-            console.error('Failed to refresh grocery items after realtime event:', error);
-            setErrorMessage(error instanceof Error ? error.message : 'Failed to sync grocery items.');
-          }
-        },
-      )
-      .subscribe();
+    async function subscribe() {
+      try {
+        const householdId = await getCurrentHouseholdId();
+
+        if (cancelled) return;
+
+        channel = supabase
+          .channel(`grocery-items-realtime-${householdId}`)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'grocery_items',
+              filter: `household_id=eq.${householdId}`,
+            },
+            async () => {
+              try {
+                const nextItems = await fetchGroceryItems();
+                setItems(nextItems);
+              } catch (error) {
+                console.error('Failed to refresh grocery items after realtime event:', error);
+                setErrorMessage(error instanceof Error ? error.message : 'Failed to sync grocery items.');
+              }
+            },
+          )
+          .subscribe();
+      } catch (error) {
+        console.error('Failed to subscribe to grocery realtime:', error);
+        setErrorMessage(error instanceof Error ? error.message : 'Failed to subscribe to grocery sync.');
+      }
+    }
+
+    subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      cancelled = true;
+
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, []);
 
