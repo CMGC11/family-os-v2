@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { requireSupabaseClient } from '../lib/supabase/client';
 import { clearCachedHouseholdId } from '../lib/supabase/household';
 import { getCurrentSession, signInWithEmailPassword, signOut } from '../lib/supabase/auth';
+import { clearCachedPersonId } from '../lib/supabase/person';
 
 type AuthGateProps = {
   children: React.ReactNode;
@@ -41,16 +42,15 @@ export default function AuthGate({ children }: AuthGateProps) {
 
     checkSession();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const authListener = supabase.auth.onAuthStateChange((_event, session) => {
       clearCachedHouseholdId();
+      clearCachedPersonId();
       setIsAuthenticated(Boolean(session));
     });
 
     return () => {
       cancelled = true;
-      subscription.unsubscribe();
+      authListener.data.subscription.unsubscribe();
     };
   }, []);
 
@@ -75,6 +75,7 @@ export default function AuthGate({ children }: AuthGateProps) {
     try {
       setErrorMessage('');
       clearCachedHouseholdId();
+      clearCachedPersonId();
       await signOut();
       setIsAuthenticated(false);
     } catch (error) {

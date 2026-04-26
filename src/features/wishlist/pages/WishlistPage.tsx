@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useWishlistItems } from '../hooks/useWishlistItems';
 import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
@@ -5,7 +6,15 @@ import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
 export default function WishlistPage() {
-  const { items, isLoading, errorMessage } = useWishlistItems();
+  const { items, isLoading, errorMessage, addItem } = useWishlistItems();
+  const [title, setTitle] = useState('');
+  const [note, setNote] = useState('');
+
+  function handleAddItem() {
+    addItem(title, note);
+    setTitle('');
+    setNote('');
+  }
 
   return (
     <main>
@@ -17,6 +26,34 @@ export default function WishlistPage() {
       />
 
       <PageShell>
+        <GlassCard className="quickCreateCard">
+          <div className="wishlistCreateForm">
+            <input
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') handleAddItem();
+              }}
+              placeholder="Add idea"
+              aria-label="Wishlist item title"
+            />
+
+            <input
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') handleAddItem();
+              }}
+              placeholder="Note"
+              aria-label="Wishlist item note"
+            />
+
+            <button type="button" onClick={handleAddItem}>
+              Add
+            </button>
+          </div>
+        </GlassCard>
+
         {isLoading && (
           <GlassCard className="tasksCard">
             <p className="mutedLabel">Loading wishlist...</p>

@@ -1285,3 +1285,43 @@ button {
 .logoutButton:active {
   transform: scale(0.98);
 }
+
+.wishlistCreateForm {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.wishlistCreateForm input {
+  width: 100%;
+  min-height: 46px;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 14px;
+  color: #111113;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.wishlistCreateForm input:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.wishlistCreateForm button {
+  min-height: 46px;
+  border-radius: 999px;
+  background: #111113;
+  padding: 0 16px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+@media (min-width: 390px) {
+  .wishlistCreateForm {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 72px;
+  }
+}
