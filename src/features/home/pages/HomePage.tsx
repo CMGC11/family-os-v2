@@ -14,6 +14,8 @@ export default function HomePage() {
 
   const todayItems = snapshot.calendarEventCount + snapshot.todoOpenCount;
   const openWork = snapshot.todoOpenCount + snapshot.groceryOpenCount;
+  const nextEvent = snapshot.calendar[0];
+  const nextTask = snapshot.todo.find((task) => !task.done);
 
   return (
     <main>
@@ -24,14 +26,21 @@ export default function HomePage() {
       />
 
       <PageShell>
+        {snapshot.errorMessage && (
+          <GlassCard className="tasksCard">
+            <p className="mutedLabel">{snapshot.errorMessage}</p>
+          </GlassCard>
+        )}
+
         <GlassCard className="heroCard">
           <div className="heroLayout">
             <div>
               <p className="mutedLabel">Today’s rhythm</p>
-              <h2>{openWork === 0 ? 'All clear' : 'Mostly calm'}</h2>
+              <h2>{snapshot.isLoading ? 'Loading' : openWork === 0 ? 'All clear' : 'Mostly calm'}</h2>
               <p>
-                {snapshot.calendarEventCount} events, {snapshot.todoOpenCount} open tasks, and{' '}
-                {snapshot.groceryOpenCount} grocery items still waiting for human intervention.
+                {snapshot.isLoading
+                  ? 'Checking the household chaos levels...'
+                  : `${snapshot.calendarEventCount} events, ${snapshot.todoOpenCount} open tasks, and ${snapshot.groceryOpenCount} grocery items still waiting for human intervention.`}
               </p>
             </div>
 
@@ -41,17 +50,17 @@ export default function HomePage() {
           <div className="quickGrid">
             <div className="quickCard">
               <p>Today</p>
-              <strong>{todayItems} items</strong>
+              <strong>{snapshot.isLoading ? '—' : `${todayItems} items`}</strong>
             </div>
 
             <div className="quickCard">
               <p>Groceries</p>
-              <strong>{snapshot.groceryOpenCount} left</strong>
+              <strong>{snapshot.isLoading ? '—' : `${snapshot.groceryOpenCount} left`}</strong>
             </div>
 
             <div className="quickCard">
               <p>Tasks</p>
-              <strong>{snapshot.todoOpenCount} open</strong>
+              <strong>{snapshot.isLoading ? '—' : `${snapshot.todoOpenCount} open`}</strong>
             </div>
           </div>
         </GlassCard>
@@ -60,15 +69,15 @@ export default function HomePage() {
           <ActionCard
             variant="dark"
             label="Next event"
-            value={snapshot.calendar[0]?.time ?? '—'}
-            detail={snapshot.calendar[0]?.title ?? 'Nothing scheduled'}
+            value={nextEvent?.time ?? '—'}
+            detail={nextEvent?.title ?? 'Nothing scheduled'}
             onClick={() => navigate('/calendar')}
           />
 
           <ActionCard
             label="Open tasks"
-            value={`${snapshot.todoOpenCount} left`}
-            detail={snapshot.todo.find((task) => !task.done)?.title ?? 'No open tasks'}
+            value={snapshot.isLoading ? '—' : `${snapshot.todoOpenCount} left`}
+            detail={nextTask?.title ?? 'No open tasks'}
             onClick={() => navigate('/todo')}
           />
         </div>
