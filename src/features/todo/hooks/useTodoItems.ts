@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { fetchTodoItems } from '../services/todoSupabaseService';
-import { insertTodoItem } from '../services/todoSupabaseService';
+import {
+  fetchTodoItems,
+  insertTodoItem,
+  updateTodoItemDone,
+} from '../services/todoSupabaseService';
 import type { TaskItem } from '../types';
-
-const HOUSEHOLD_ID = '11111111-1111-1111-1111-111111111111';
 
 export function useTodoItems() {
   const [items, setItems] = useState<TaskItem[]>([]);
@@ -43,39 +44,60 @@ export function useTodoItems() {
     };
   }, []);
 
-async function addItem(title: string, area = 'Family', due = 'Today') {
-  const cleanTitle = title.trim();
+  async function addItem(title: string, area = 'Family', due = 'Today') {
+    const cleanTitle = title.trim();
 
-  if (!cleanTitle) return;
+    if (!cleanTitle) return;
 
-  try {
-    setErrorMessage('');
+    try {
+      setErrorMessage('');
 
-    const row = await insertTodoItem(cleanTitle, area, due);
+      const row = await insertTodoItem(cleanTitle, area, due);
 
-    const newItem: TaskItem = {
-      id: row.id,
-      household_id: row.household_id,
-      title: row.title,
-      area: row.area || 'Family',
-      due: row.due || 'Today',
-      done: Boolean(row.is_done),
-      created_at: row.created_at ?? new Date().toISOString(),
-    };
+      const newItem: TaskItem = {
+        id: row.id,
+        household_id: row.household_id,
+        title: row.title,
+        area: row.area || 'Family',
+        due: row.due || 'Today',
+        done: Boolean(row.is_done),
+        created_at: row.created_at ?? new Date().toISOString(),
+      };
 
-    setItems((current) => [newItem, ...current]);
-  } catch (error) {
-    console.error('Failed to insert todo item:', error);
-    setErrorMessage(error instanceof Error ? error.message : 'Failed to add task.');
+      setItems((current) => [newItem, ...current]);
+    } catch (error) {
+      console.error('Failed to insert todo item:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to add task.');
+    }
   }
-}
 
-  function toggleItem(id: string) {
+  async function toggleItem(id: string) {
+    const target = items.find((item) => item.id === id);
+
+    if (!target) return;
+
+    const nextDone = !target.done;
+
     setItems((current) =>
       current.map((item) =>
-        item.id === id ? { ...item, done: !item.done } : item,
+        item.id === id ? { ...item, done: nextDone } : item,
       ),
     );
+
+    try {
+      setErrorMessage('');
+      await updateTodoItemDone(id, nextDone);
+    } catch (error) {
+      console.error('Failed to update todo item:', error);
+
+      setItems((current) =>
+        current.map((item) =>
+          item.id === id ? { ...item, done: target.done } : item,
+        ),
+      );
+
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to update task.');
+    }
   }
 
   function deleteItem(id: string) {
