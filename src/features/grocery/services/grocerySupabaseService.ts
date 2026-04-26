@@ -55,3 +55,38 @@ export async function updateGroceryItemChecked(id: string, checked: boolean): Pr
     throw error;
   }
 }
+
+export async function insertGroceryItem(name: string, category: string) {
+  const supabase = requireSupabaseClient();
+
+  const { data, error } = await supabase
+    .from('grocery_items')
+    .insert({
+      household_id: '11111111-1111-1111-1111-111111111111',
+      name,
+      category,
+      is_checked: false,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+export async function deleteGroceryItem(id: string): Promise<void> {
+  const supabase = requireSupabaseClient();
+
+  const { error } = await supabase
+    .from('grocery_items')
+    .delete()
+    .eq('id', id)
+    .eq('household_id', '11111111-1111-1111-1111-111111111111');
+
+  if (error) {
+    throw error;
+  }
+}

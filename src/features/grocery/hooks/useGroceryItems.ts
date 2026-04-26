@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import {
+  deleteGroceryItem,
   fetchGroceryItems,
+  insertGroceryItem,
   updateGroceryItemChecked,
 } from '../services/grocerySupabaseService';
 import type { GroceryItem } from '../types';
@@ -57,6 +59,7 @@ export function useGroceryItems() {
     );
 
     try {
+      setErrorMessage('');
       await updateGroceryItemChecked(id, nextChecked);
     } catch (error) {
       console.error('Failed to update grocery item:', error);
@@ -71,27 +74,47 @@ export function useGroceryItems() {
     }
   }
 
-  function addItem(name: string, category: string) {
+  async function addItem(name: string, category: string) {
     const cleanName = name.trim();
     const cleanCategory = category.trim() || 'Other';
 
     if (!cleanName) return;
 
-    setItems((current) => [
-      {
-        id: crypto.randomUUID(),
-        household_id: '11111111-1111-1111-1111-111111111111',
-        name: cleanName,
-        category: cleanCategory,
-        checked: false,
-        created_at: new Date().toISOString(),
-      },
-      ...current,
-    ]);
+    try {
+      setErrorMessage('');
+
+      const row = await insertGroceryItem(cleanName, cleanCategory);
+
+      const newItem: GroceryItem = {
+        id: row.id,
+        household_id: row.household_id,
+        name: row.name,
+        category: row.category?.trim() || 'Other',
+        checked: Boolean(row.is_checked),
+        created_at: row.created_at ?? new Date().toISOString(),
+      };
+
+      setItems((current) => [newItem, ...current]);
+    } catch (error) {
+      console.error('Failed to insert grocery item:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to add item.');
+    }
   }
 
-  function deleteItem(id: string) {
+  async function deleteItem(id: string) {
+    const previousItems = items;
+
     setItems((current) => current.filter((item) => item.id !== id));
+
+    try {
+      setErrorMessage('');
+      await deleteGroceryItem(id);
+    } catch (error) {
+      console.error('Failed to delete grocery item:', error);
+
+      setItems(previousItems);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to delete item.');
+    }
   }
 
   return {
