@@ -1,17 +1,24 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   deleteCalendarEvent,
   fetchCalendarEvents,
   insertCalendarEvent,
 } from '../services/calendarSupabaseService';
+import { requireSupabaseClient } from '../../../lib/supabase/client';
 import type { CalendarEvent } from '../types';
 
 const SELECTED_DATE = '2026-04-24';
+const POLL_INTERVAL_MS = 3000;
 
 export function useCalendarItems() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const refreshEvents = useCallback(async () => {
+    const nextEvents = await fetchCalendarEvents();
+    setEvents(nextEvents);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,6 +53,47 @@ export function useCalendarItems() {
     };
   }, []);
 
+  useEffect(() => {
+    const supabase = requireSupabaseClient();
+
+    const channel = supabase
+      .channel('calendar-events-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'events',
+        },
+        async () => {
+          try {
+            await refreshEvents();
+          } catch (error) {
+            console.error('Realtime calendar sync failed:', error);
+          }
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refreshEvents]);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(async () => {
+      try {
+        await refreshEvents();
+      } catch (error) {
+        console.error('Calendar polling sync failed:', error);
+      }
+    }, POLL_INTERVAL_MS);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [refreshEvents]);
+
   const selectedDayEvents = useMemo(
     () =>
       events
@@ -74,7 +122,10 @@ export function useCalendarItems() {
         created_at: row.created_at ?? new Date().toISOString(),
       };
 
-      setEvents((current) => [...current, newEvent]);
+      setEvents((current) => {
+        const withoutDuplicate = current.filter((event) => event.id !== newEvent.id);
+        return [...withoutDuplicate, newEvent];
+      });
     } catch (error) {
       console.error('Failed to insert calendar event:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Failed to add event.');
