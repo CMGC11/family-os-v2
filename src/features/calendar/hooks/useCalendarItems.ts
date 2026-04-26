@@ -8,11 +8,15 @@ import { requireSupabaseClient } from '../../../lib/supabase/client';
 import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import type { CalendarEvent } from '../types';
 
-const SELECTED_DATE = '2026-04-24';
 const POLL_INTERVAL_MS = 3000;
+
+function getTodayDateString() {
+  return new Date().toISOString().slice(0, 10);
+}
 
 export function useCalendarItems() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [selectedDate, setSelectedDate] = useState(() => getTodayDateString());
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -117,9 +121,9 @@ export function useCalendarItems() {
   const selectedDayEvents = useMemo(
     () =>
       events
-        .filter((event) => event.date === SELECTED_DATE)
+        .filter((event) => event.date === selectedDate)
         .sort((a, b) => a.time.localeCompare(b.time)),
-    [events],
+    [events, selectedDate],
   );
 
   async function addEvent(title: string, time = '12:00') {
@@ -131,7 +135,7 @@ export function useCalendarItems() {
     try {
       setErrorMessage('');
 
-      const row = await insertCalendarEvent(cleanTitle, SELECTED_DATE, cleanTime);
+      const row = await insertCalendarEvent(cleanTitle, selectedDate, cleanTime);
 
       const newEvent: CalendarEvent = {
         id: row.id,
@@ -171,7 +175,8 @@ export function useCalendarItems() {
   return {
     events,
     selectedDayEvents,
-    selectedDate: SELECTED_DATE,
+    selectedDate,
+    setSelectedDate,
     isLoading,
     errorMessage,
     addEvent,
