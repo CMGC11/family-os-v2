@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { fetchCalendarEvents } from '../services/calendarSupabaseService';
+import {
+  fetchCalendarEvents,
+  insertCalendarEvent,
+} from '../services/calendarSupabaseService';
 import type { CalendarEvent } from '../types';
 
 const SELECTED_DATE = '2026-04-24';
@@ -50,23 +53,31 @@ export function useCalendarItems() {
     [events],
   );
 
-  function addEvent(title: string, time = '12:00') {
+  async function addEvent(title: string, time = '12:00') {
     const cleanTitle = title.trim();
     const cleanTime = time.trim() || '12:00';
 
     if (!cleanTitle) return;
 
-    setEvents((current) => [
-      ...current,
-      {
-        id: crypto.randomUUID(),
-        household_id: '11111111-1111-1111-1111-111111111111',
-        title: cleanTitle,
-        date: SELECTED_DATE,
-        time: cleanTime,
-        created_at: new Date().toISOString(),
-      },
-    ]);
+    try {
+      setErrorMessage('');
+
+      const row = await insertCalendarEvent(cleanTitle, SELECTED_DATE, cleanTime);
+
+      const newEvent: CalendarEvent = {
+        id: row.id,
+        household_id: row.household_id,
+        title: row.title?.trim() || 'Untitled event',
+        date: row.date,
+        time: row.start_time?.trim() || '12:00',
+        created_at: row.created_at ?? new Date().toISOString(),
+      };
+
+      setEvents((current) => [...current, newEvent]);
+    } catch (error) {
+      console.error('Failed to insert calendar event:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to add event.');
+    }
   }
 
   function deleteEvent(id: string) {

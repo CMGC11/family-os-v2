@@ -39,3 +39,27 @@ export async function fetchCalendarEvents(): Promise<CalendarEvent[]> {
 
   return (data ?? []).map(mapRowToEvent);
 }
+
+export async function insertCalendarEvent(title: string, date: string, time: string) {
+  const supabase = requireSupabaseClient();
+
+  const { data, error } = await supabase
+    .from('events')
+    .insert({
+      household_id: '11111111-1111-1111-1111-111111111111',
+      title,
+      date,
+      start_time: time,
+      all_day: false,
+      visibility: 'shared',
+      is_busy: false,
+    })
+    .select('id, household_id, title, date, start_time, created_at')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
