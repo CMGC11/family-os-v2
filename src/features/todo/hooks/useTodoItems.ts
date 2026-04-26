@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  deleteTodoItem,
   fetchTodoItems,
   insertTodoItem,
   updateTodoItemDone,
@@ -100,8 +101,20 @@ export function useTodoItems() {
     }
   }
 
-  function deleteItem(id: string) {
+  async function deleteItem(id: string) {
+    const previousItems = items;
+
     setItems((current) => current.filter((item) => item.id !== id));
+
+    try {
+      setErrorMessage('');
+      await deleteTodoItem(id);
+    } catch (error) {
+      console.error('Failed to delete todo item:', error);
+
+      setItems(previousItems);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to delete task.');
+    }
   }
 
   return {
