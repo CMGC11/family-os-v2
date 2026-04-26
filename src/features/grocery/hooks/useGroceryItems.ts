@@ -5,7 +5,10 @@ import {
   insertGroceryItem,
   updateGroceryItemChecked,
 } from '../services/grocerySupabaseService';
+import { requireSupabaseClient } from '../../../lib/supabase/client';
 import type { GroceryItem } from '../types';
+
+const HOUSEHOLD_ID = '11111111-1111-1111-1111-111111111111';
 
 export function useGroceryItems() {
   const [items, setItems] = useState<GroceryItem[]>([]);
@@ -42,6 +45,36 @@ export function useGroceryItems() {
 
     return () => {
       cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const supabase = requireSupabaseClient();
+
+    const channel = supabase
+      .channel('grocery-items-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'grocery_items',
+          filter: `household_id=eq.${HOUSEHOLD_ID}`,
+        },
+        async () => {
+          try {
+            const nextItems = await fetchGroceryItems();
+            setItems(nextItems);
+          } catch (error) {
+            console.error('Failed to refresh grocery items after realtime event:', error);
+            setErrorMessage(error instanceof Error ? error.message : 'Failed to sync grocery items.');
+          }
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
     };
   }, []);
 

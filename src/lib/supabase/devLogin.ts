@@ -15,8 +15,8 @@ export async function ensureDevSession() {
   }
 
   await supabase.auth.signInWithPassword({
-    email: 'your-email',
-    password: 'your-password',
+    email: 'bm_teixeira@hotmail.com',
+    password: 'Castelo.11',
   });
 
   hasLoggedIn = true;
