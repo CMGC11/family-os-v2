@@ -8,7 +8,7 @@ import PageShell from '../../../ui/layout/PageShell';
 
 export default function CalendarPage() {
   const [searchParams] = useSearchParams();
-  const { selectedDayEvents, addEvent, deleteEvent } = useCalendarItems();
+  const { selectedDayEvents, isLoading, errorMessage, addEvent, deleteEvent } = useCalendarItems();
   const [title, setTitle] = useState('');
   const [time, setTime] = useState('12:00');
 
@@ -55,6 +55,18 @@ export default function CalendarPage() {
                 Add
               </button>
             </div>
+          </GlassCard>
+        )}
+
+        {isLoading && (
+          <GlassCard className="tasksCard">
+            <p className="mutedLabel">Loading calendar...</p>
+          </GlassCard>
+        )}
+
+        {errorMessage && (
+          <GlassCard className="tasksCard">
+            <p className="mutedLabel">{errorMessage}</p>
           </GlassCard>
         )}
 
@@ -128,38 +140,40 @@ export default function CalendarPage() {
           </div>
         </GlassCard>
 
-        <GlassCard className="agendaCard">
-          <div className="agendaHeader">
-            <div>
-              <p>Selected day</p>
-              <h2>Thursday 24</h2>
+        {!isLoading && !errorMessage && (
+          <GlassCard className="agendaCard">
+            <div className="agendaHeader">
+              <div>
+                <p>Selected day</p>
+                <h2>Thursday 24</h2>
+              </div>
+
+              <button type="button">New</button>
             </div>
 
-            <button type="button">New</button>
-          </div>
+            <div className="agendaList">
+              {selectedDayEvents.map((event, index) => (
+                <div key={event.id} className="agendaRow">
+                  <div className={`agendaAccent accent${index % 3}`} />
 
-          <div className="agendaList">
-            {selectedDayEvents.map((event, index) => (
-              <div key={event.id} className="agendaRow">
-                <div className={`agendaAccent accent${index % 3}`} />
+                  <div>
+                    <strong>{event.title}</strong>
+                    <span>{event.time}</span>
+                  </div>
 
-                <div>
-                  <strong>{event.title}</strong>
-                  <span>{event.time}</span>
+                  <button
+                    type="button"
+                    className="agendaDeleteButton"
+                    onClick={() => deleteEvent(event.id)}
+                    aria-label={`Delete ${event.title}`}
+                  >
+                    ×
+                  </button>
                 </div>
-
-                <button
-                  type="button"
-                  className="agendaDeleteButton"
-                  onClick={() => deleteEvent(event.id)}
-                  aria-label={`Delete ${event.title}`}
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        </GlassCard>
+              ))}
+            </div>
+          </GlassCard>
+        )}
       </PageShell>
     </main>
   );
