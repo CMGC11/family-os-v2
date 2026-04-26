@@ -1,7 +1,6 @@
 import { requireSupabaseClient } from '../../../lib/supabase/client';
+import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import type { GroceryItem } from '../types';
-
-const HOUSEHOLD_ID = '11111111-1111-1111-1111-111111111111';
 
 type GroceryRow = {
   id: string;
@@ -25,11 +24,12 @@ function mapRowToItem(row: GroceryRow): GroceryItem {
 
 export async function fetchGroceryItems(): Promise<GroceryItem[]> {
   const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
 
   const { data, error } = await supabase
     .from('grocery_items')
     .select('id, household_id, name, category, is_checked, created_at')
-    .eq('household_id', HOUSEHOLD_ID)
+    .eq('household_id', householdId)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -39,35 +39,19 @@ export async function fetchGroceryItems(): Promise<GroceryItem[]> {
   return (data ?? []).map(mapRowToItem);
 }
 
-export async function updateGroceryItemChecked(id: string, checked: boolean): Promise<void> {
-  const supabase = requireSupabaseClient();
-
-  const { error } = await supabase
-    .from('grocery_items')
-    .update({
-      is_checked: checked,
-      checked_at: checked ? new Date().toISOString() : null,
-    })
-    .eq('id', id)
-    .eq('household_id', HOUSEHOLD_ID);
-
-  if (error) {
-    throw error;
-  }
-}
-
 export async function insertGroceryItem(name: string, category: string) {
   const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
 
   const { data, error } = await supabase
     .from('grocery_items')
     .insert({
-      household_id: '11111111-1111-1111-1111-111111111111',
+      household_id: householdId,
       name,
       category,
       is_checked: false,
     })
-    .select()
+    .select('id, household_id, name, category, is_checked, created_at')
     .single();
 
   if (error) {
@@ -77,14 +61,33 @@ export async function insertGroceryItem(name: string, category: string) {
   return data;
 }
 
+export async function updateGroceryItemChecked(id: string, checked: boolean): Promise<void> {
+  const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
+
+  const { error } = await supabase
+    .from('grocery_items')
+    .update({
+      is_checked: checked,
+      checked_at: checked ? new Date().toISOString() : null,
+    })
+    .eq('id', id)
+    .eq('household_id', householdId);
+
+  if (error) {
+    throw error;
+  }
+}
+
 export async function deleteGroceryItem(id: string): Promise<void> {
   const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
 
   const { error } = await supabase
     .from('grocery_items')
     .delete()
     .eq('id', id)
-    .eq('household_id', '11111111-1111-1111-1111-111111111111');
+    .eq('household_id', householdId);
 
   if (error) {
     throw error;

@@ -1,7 +1,6 @@
 import { requireSupabaseClient } from '../../../lib/supabase/client';
+import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import type { TaskItem } from '../types';
-
-const HOUSEHOLD_ID = '11111111-1111-1111-1111-111111111111';
 
 type TodoRow = {
   id: string;
@@ -27,11 +26,12 @@ function mapRowToTask(row: TodoRow): TaskItem {
 
 export async function fetchTodoItems(): Promise<TaskItem[]> {
   const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
 
   const { data, error } = await supabase
     .from('todo_items')
     .select('id, household_id, title, area, due, is_done, created_at')
-    .eq('household_id', HOUSEHOLD_ID)
+    .eq('household_id', householdId)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -43,17 +43,18 @@ export async function fetchTodoItems(): Promise<TaskItem[]> {
 
 export async function insertTodoItem(title: string, area: string, due: string) {
   const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
 
   const { data, error } = await supabase
     .from('todo_items')
     .insert({
-      household_id: '11111111-1111-1111-1111-111111111111',
+      household_id: householdId,
       title,
       area,
       due,
       is_done: false,
     })
-    .select()
+    .select('id, household_id, title, area, due, is_done, created_at')
     .single();
 
   if (error) {
@@ -65,6 +66,7 @@ export async function insertTodoItem(title: string, area: string, due: string) {
 
 export async function updateTodoItemDone(id: string, done: boolean): Promise<void> {
   const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
 
   const { error } = await supabase
     .from('todo_items')
@@ -72,7 +74,7 @@ export async function updateTodoItemDone(id: string, done: boolean): Promise<voi
       is_done: done,
     })
     .eq('id', id)
-    .eq('household_id', '11111111-1111-1111-1111-111111111111');
+    .eq('household_id', householdId);
 
   if (error) {
     throw error;
@@ -81,12 +83,13 @@ export async function updateTodoItemDone(id: string, done: boolean): Promise<voi
 
 export async function deleteTodoItem(id: string): Promise<void> {
   const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
 
   const { error } = await supabase
     .from('todo_items')
     .delete()
     .eq('id', id)
-    .eq('household_id', '11111111-1111-1111-1111-111111111111');
+    .eq('household_id', householdId);
 
   if (error) {
     throw error;

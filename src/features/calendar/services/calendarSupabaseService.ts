@@ -1,7 +1,6 @@
 import { requireSupabaseClient } from '../../../lib/supabase/client';
+import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import type { CalendarEvent } from '../types';
-
-const HOUSEHOLD_ID = '11111111-1111-1111-1111-111111111111';
 
 type EventRow = {
   id: string;
@@ -25,11 +24,12 @@ function mapRowToEvent(row: EventRow): CalendarEvent {
 
 export async function fetchCalendarEvents(): Promise<CalendarEvent[]> {
   const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
 
   const { data, error } = await supabase
     .from('events')
     .select('id, household_id, title, date, start_time, created_at')
-    .eq('household_id', HOUSEHOLD_ID)
+    .eq('household_id', householdId)
     .order('date', { ascending: true })
     .order('start_time', { ascending: true });
 
@@ -42,11 +42,12 @@ export async function fetchCalendarEvents(): Promise<CalendarEvent[]> {
 
 export async function insertCalendarEvent(title: string, date: string, time: string) {
   const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
 
   const { data, error } = await supabase
     .from('events')
     .insert({
-      household_id: '11111111-1111-1111-1111-111111111111',
+      household_id: householdId,
       title,
       date,
       start_time: time,
@@ -66,12 +67,13 @@ export async function insertCalendarEvent(title: string, date: string, time: str
 
 export async function deleteCalendarEvent(id: string): Promise<void> {
   const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
 
   const { error } = await supabase
     .from('events')
     .delete()
     .eq('id', id)
-    .eq('household_id', '11111111-1111-1111-1111-111111111111');
+    .eq('household_id', householdId);
 
   if (error) {
     throw error;
