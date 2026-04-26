@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  deleteWishlistItem,
   fetchWishlistItems,
   insertWishlistItem,
 } from '../services/wishlistSupabaseService';
@@ -61,10 +62,27 @@ export function useWishlistItems() {
     }
   }
 
+  async function deleteItem(id: string) {
+    const previousItems = items;
+
+    setItems((current) => current.filter((item) => item.id !== id));
+
+    try {
+      setErrorMessage('');
+      await deleteWishlistItem(id);
+    } catch (error) {
+      console.error('Failed to delete wishlist item:', error);
+
+      setItems(previousItems);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to delete wishlist item.');
+    }
+  }
+
   return {
     items,
     isLoading,
     errorMessage,
     addItem,
+    deleteItem,
   };
 }

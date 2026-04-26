@@ -6,7 +6,7 @@ import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
 export default function WishlistPage() {
-  const { items, isLoading, errorMessage, addItem } = useWishlistItems();
+  const { items, isLoading, errorMessage, addItem, deleteItem } = useWishlistItems();
   const [title, setTitle] = useState('');
   const [note, setNote] = useState('');
 
@@ -79,18 +79,29 @@ export default function WishlistPage() {
                 </div>
               ) : (
                 items.map((item) => (
-                  <div key={item.id} className="hubRow">
-                    <div className="hubIcon tintRose">♡</div>
+                  <div key={item.id} className="groceryRow">
+                    <div className="hubRow groceryMainButton">
+                      <div className="hubIcon tintRose">♡</div>
 
-                    <div>
-                      <strong>{item.title}</strong>
-                      <span>
-                        {item.occasion || item.priority}
-                        {item.note ? ` · ${item.note}` : ''}
-                      </span>
+                      <div>
+                        <strong>{item.title}</strong>
+                        <span>
+                          {item.occasion || item.priority}
+                          {item.note ? ` · ${item.note}` : ''}
+                        </span>
+                      </div>
+
+                      <span className="chevron">›</span>
                     </div>
 
-                    <span className="chevron">›</span>
+                    <button
+                      type="button"
+                      className="groceryDeleteButton"
+                      onClick={() => deleteItem(item.id)}
+                      aria-label={`Delete ${item.title}`}
+                    >
+                      Delete
+                    </button>
                   </div>
                 ))
               )}

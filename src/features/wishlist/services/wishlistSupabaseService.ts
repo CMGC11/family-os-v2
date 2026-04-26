@@ -71,3 +71,18 @@ export async function insertWishlistItem(title: string, note = '') {
 
   return mapRowToWishlistItem(data);
 }
+
+export async function deleteWishlistItem(id: string): Promise<void> {
+  const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
+
+  const { error } = await supabase
+    .from('wishlist_items')
+    .delete()
+    .eq('id', id)
+    .eq('household_id', householdId);
+
+  if (error) {
+    throw error;
+  }
+}
