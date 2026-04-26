@@ -4,6 +4,8 @@ import {
   fetchWishlistItems,
   insertWishlistItem,
 } from '../services/wishlistSupabaseService';
+import { requireSupabaseClient } from '../../../lib/supabase/client';
+import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import type { WishlistItem } from '../types';
 
 export function useWishlistItems() {
@@ -44,6 +46,55 @@ export function useWishlistItems() {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    const supabase = requireSupabaseClient();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    async function subscribe() {
+      try {
+        const householdId = await getCurrentHouseholdId();
+
+        if (cancelled) return;
+
+        channel = supabase
+          .channel(`wishlist-items-realtime-${householdId}`)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'wishlist_items',
+              filter: `household_id=eq.${householdId}`,
+            },
+            async () => {
+              try {
+                const nextItems = await fetchWishlistItems();
+                setItems(nextItems);
+              } catch (error) {
+                console.error('Failed to refresh wishlist items after realtime event:', error);
+                setErrorMessage(error instanceof Error ? error.message : 'Failed to sync wishlist items.');
+              }
+            },
+          )
+          .subscribe();
+      } catch (error) {
+        console.error('Failed to subscribe to wishlist realtime:', error);
+        setErrorMessage(error instanceof Error ? error.message : 'Failed to subscribe to wishlist sync.');
+      }
+    }
+
+    subscribe();
+
+    return () => {
+      cancelled = true;
+
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, []);
+
   async function addItem(title: string, note = '') {
     const cleanTitle = title.trim();
     const cleanNote = note.trim();
@@ -55,7 +106,10 @@ export function useWishlistItems() {
 
       const newItem = await insertWishlistItem(cleanTitle, cleanNote);
 
-      setItems((current) => [newItem, ...current]);
+      setItems((current) => {
+        const withoutDuplicate = current.filter((item) => item.id !== newItem.id);
+        return [newItem, ...withoutDuplicate];
+      });
     } catch (error) {
       console.error('Failed to insert wishlist item:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Failed to add wishlist item.');
