@@ -283,6 +283,29 @@ Known remaining UI work:
 
 ---
 
+## Detail view baseline
+
+Completed detail views:
+- Recipes opens a selected recipe detail card from the compact list.
+- Trips opens a selected trip detail card from the compact list.
+- Health opens a selected medical note detail card from the compact list.
+- Wishlist opens a selected idea detail card from the compact list.
+- Grocery remains an execution-only checklist and intentionally has no detail view.
+
+Current detail-view rules:
+- Detail views are local UI selections, not separate routes yet.
+- No backend schema changes were made for detail views.
+- Delete actions remain small trailing actions on rows.
+- Detail cards should use shared detail styling where possible.
+- Do not wire richer backend subfeatures yet unless explicitly scoped.
+
+Still not wired:
+- Health allergies, medications, medical_shares.
+- Trips packing_items and prep_items.
+- Calendar edit/update, recurrence, multi-day, and availability.
+
+---
+
 ## Design Rules
 
 Mobile-first  

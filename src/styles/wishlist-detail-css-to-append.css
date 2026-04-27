@@ -1,0 +1,145 @@
+/* Wishlist detail view */
+.wishlistDetailCard {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.wishlistDetailHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.wishlistDetailHeader p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.wishlistDetailHeader h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 28px;
+  font-weight: 850;
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+}
+
+.wishlistDetailHeader span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.48);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.wishlistDetailIcon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #ec4899, #fb7185);
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 850;
+  box-shadow: 0 16px 28px rgba(236, 72, 153, 0.18);
+}
+
+.wishlistDetailMetaGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.wishlistDetailMetaGrid div {
+  min-width: 0;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+}
+
+.wishlistDetailMetaGrid span {
+  display: block;
+  overflow: hidden;
+  color: rgba(0, 0, 0, 0.38);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.wishlistDetailMetaGrid strong {
+  display: block;
+  overflow: hidden;
+  margin-top: 4px;
+  color: #111113;
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wishlistDetailSection {
+  display: grid;
+  gap: 8px;
+}
+
+.wishlistDetailSection p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.wishlistDetailText {
+  border-radius: 22px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 14px;
+  color: rgba(0, 0, 0, 0.68);
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.wishlistDetailLink {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.moduleRowSelected {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.moduleRowSelected:hover {
+  background: rgba(37, 99, 235, 0.1);
+}
+
+@media (max-width: 380px) {
+  .wishlistDetailMetaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .wishlistDetailHeader h2 {
+    font-size: 25px;
+  }
+}
