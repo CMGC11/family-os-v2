@@ -283,6 +283,22 @@ Known remaining UI work:
 
 ---
 
+## Current visual repair baseline
+
+Completed:
+- Recipes form layout was repaired with scoped recipe CSS.
+- Health visual layout was repaired with scoped health CSS.
+- Current CSS strategy is append-only scoped repair blocks unless a full stylesheet replacement is explicitly necessary.
+- Avoid broad globals.css rewrites unless the current file is inspected and preserved exactly.
+
+Current styling rule:
+- Do not replace globals.css wholesale during feature work.
+- Prefer isolated class names per module.
+- Prefer scoped append blocks for visual fixes.
+- Remove temporary paste-source CSS files after copying their content into globals.css.
+
+---
+
 ## Detail view baseline
 
 Completed detail views:
