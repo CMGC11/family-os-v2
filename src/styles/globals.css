@@ -2424,71 +2424,22 @@ button {
   }
 }
 
-/* Calendar clean visual pass - isolated classes to avoid old agenda/module row collisions. */
-.calendarCreateCard,
-.calendarMonthCard,
-.calendarAgendaCard {
-  max-width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
+/* To-do visual alignment */
+.todoCreateCard {
+  padding: 14px;
 }
 
-.calendarCreateCard {
+.todoCreateForm {
   display: grid;
-  gap: 14px;
-  padding: 16px;
-}
-
-.calendarCreateHeaderClean {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.calendarCreateHeaderClean div {
-  min-width: 0;
-}
-
-.calendarCreateHeaderClean p,
-.calendarMonthHeader p,
-.calendarAgendaHeader p {
-  margin: 0;
-  color: rgba(0, 0, 0, 0.38);
-  font-size: 12px;
-  font-weight: 850;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.calendarCreateHeaderClean h2 {
-  margin: 3px 0 0;
-  color: #111113;
-  font-size: 20px;
-  font-weight: 850;
-  line-height: 1.12;
-  letter-spacing: -0.035em;
-}
-
-.calendarCreateHeaderClean button {
-  flex: 0 0 auto;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.045);
-  padding: 8px 13px;
-  color: rgba(0, 0, 0, 0.58);
-  font-size: 13px;
-  font-weight: 850;
-}
-
-.calendarCreateFormClean {
-  display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr) 82px;
   gap: 10px;
+  align-items: center;
 }
 
-.calendarCreateFormClean input {
+.todoCreateForm input {
   width: 100%;
-  min-height: 46px;
+  min-width: 0;
+  min-height: 48px;
   border: 0;
   border-radius: 20px;
   background: rgba(0, 0, 0, 0.045);
@@ -2499,12 +2450,12 @@ button {
   outline: none;
 }
 
-.calendarCreateFormClean input:focus {
+.todoCreateForm input:focus {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
 }
 
-.calendarCreateFormClean button {
-  min-height: 46px;
+.todoCreateForm button {
+  min-height: 48px;
   border-radius: 999px;
   background: #111113;
   padding: 0 16px;
@@ -2513,304 +2464,226 @@ button {
   font-weight: 850;
 }
 
-.calendarCreateFormClean button:disabled {
+.todoCreateForm button:disabled {
   cursor: not-allowed;
-  opacity: 0.44;
+  opacity: 0.42;
 }
 
-.calendarMonthCard {
-  overflow: hidden;
-  padding: 0;
-}
-
-.calendarMonthHeader {
+.todoSummaryCard {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.055);
-  padding: 20px 20px 16px;
+  padding: 20px;
 }
 
-.calendarMonthHeader > div:first-child {
-  min-width: 0;
-}
-
-.calendarMonthHeader h2 {
-  margin: 8px 0 0;
+.todoSummaryCard h2 {
+  margin: 4px 0 0;
   color: #111113;
-  font-size: 34px;
+  font-size: 36px;
   font-weight: 850;
   line-height: 1;
   letter-spacing: -0.06em;
 }
 
-.calendarMonthControls {
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 8px;
+.todoSummaryCard span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+  font-weight: 700;
 }
 
-.calendarMonthControls button {
+.todoSummaryIcon {
   display: grid;
-  min-width: 34px;
-  height: 34px;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
   place-items: center;
-  border-radius: 999px;
-  color: #2563eb;
-  font-size: 25px;
-  font-weight: 500;
-  line-height: 1;
+  border-radius: 22px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 850;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.16);
 }
 
-.calendarMonthControls button:first-child {
-  min-width: auto;
-  height: 34px;
-  background: rgba(37, 99, 235, 0.08);
-  padding: 0 12px;
+.todoListCard {
+  padding: 16px;
+}
+
+.todoTabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 4px;
+}
+
+.todoTabs button {
+  min-width: 0;
+  border-radius: 999px;
+  padding: 9px 0;
+  color: rgba(0, 0, 0, 0.45);
   font-size: 14px;
   font-weight: 850;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
 }
 
-.calendarMonthControls button:hover {
-  background: rgba(37, 99, 235, 0.1);
+.todoTabs .todoTabActive {
+  background: #ffffff;
+  color: #111113;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
 }
 
-.calendarWeekLabels {
+.todoList {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  padding: 14px 18px 4px;
+  gap: 10px;
 }
 
-.calendarWeekLabels div {
+.todoRow,
+.todoEmptyRow {
+  display: grid;
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
-  color: rgba(0, 0, 0, 0.36);
-  text-align: center;
-  font-size: 12px;
-  font-weight: 850;
-}
-
-.calendarMonthGrid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 2px;
-  padding: 4px 14px 18px;
-}
-
-.calendarDayCell {
-  display: grid;
-  min-width: 0;
-  min-height: 56px;
-  place-items: start center;
-  border-radius: 18px;
-  padding: 7px 2px 5px;
+  grid-template-columns: 38px minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 12px;
+  border-radius: 26px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+  box-sizing: border-box;
   transition:
     background 160ms ease,
     opacity 160ms ease,
     transform 160ms ease;
 }
 
-.calendarDayCell:hover {
-  background: rgba(0, 0, 0, 0.035);
+.todoEmptyRow {
+  grid-template-columns: 38px minmax(0, 1fr);
 }
 
-.calendarDayCell:active {
-  transform: scale(0.97);
+.todoRow:hover {
+  background: rgba(0, 0, 0, 0.055);
 }
 
-.calendarDayCellMuted {
-  opacity: 0.34;
+.todoRow:active {
+  transform: scale(0.99);
 }
 
-.calendarDayCellSelected {
-  background: rgba(37, 99, 235, 0.1);
+.todoRowDone {
+  opacity: 0.58;
 }
 
-.calendarDayNumber {
+.todoCheck {
   display: grid;
-  width: 31px;
-  height: 31px;
+  width: 32px;
+  height: 32px;
   place-items: center;
+  justify-self: center;
+  border: 1px solid rgba(0, 0, 0, 0.14);
   border-radius: 999px;
-  color: #111113;
-  font-size: 15px;
-  font-weight: 850;
-  letter-spacing: -0.02em;
-}
-
-.calendarDayNumberSelected {
-  background: #2563eb;
-  color: #ffffff;
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
-}
-
-.calendarDayNumberToday {
-  background: #111113;
-  color: #ffffff;
-}
-
-.calendarEventDots {
-  display: flex;
-  max-width: 32px;
-  min-height: 9px;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  margin-top: 5px;
-  overflow: hidden;
-}
-
-.calendarEventDot {
-  width: 6px;
-  height: 6px;
-  flex: 0 0 auto;
-  border-radius: 999px;
-  background: #4f7ee8;
-}
-
-.calendarEventDotGreen {
-  background: #53b88b;
-}
-
-.calendarEventDotAmber {
-  background: #f3ba42;
-}
-
-.calendarEventDotMuted {
-  background: rgba(0, 0, 0, 0.22);
-}
-
-.calendarAgendaCard {
-  padding: 16px;
-}
-
-.calendarAgendaHeader {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-
-.calendarAgendaHeader div {
-  min-width: 0;
-}
-
-.calendarAgendaHeader h2 {
-  overflow: hidden;
-  margin: 4px 0 0;
-  color: #111113;
-  font-size: 22px;
-  font-weight: 850;
-  line-height: 1.08;
-  letter-spacing: -0.045em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.calendarAgendaHeader button {
-  flex: 0 0 auto;
-  border-radius: 999px;
-  background: #2563eb;
-  padding: 8px 15px;
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.8);
+  color: transparent;
   font-size: 14px;
-  font-weight: 850;
-  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.18);
+  font-weight: 900;
 }
 
-.calendarAgendaList {
+.todoCheckDone {
+  border-color: transparent;
+  background: #34c759;
+  color: #ffffff;
+}
+
+.todoEmptyIcon {
   display: grid;
-  gap: 8px;
-}
-
-.calendarAgendaRow,
-.calendarAgendaEmptyRow {
-  display: grid;
-  width: 100%;
-  min-width: 0;
-  grid-template-columns: 54px minmax(0, 1fr) 34px;
-  align-items: center;
-  gap: 10px;
-  border-radius: 22px;
-  background: rgba(0, 0, 0, 0.035);
-  padding: 10px;
-  box-sizing: border-box;
-}
-
-.calendarAgendaEmptyRow {
-  grid-template-columns: 34px minmax(0, 1fr);
-}
-
-.calendarAgendaTime,
-.calendarAgendaEmptyIcon {
-  display: grid;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   place-items: center;
-  border-radius: 999px;
+  border-radius: 16px;
   background: #111113;
   color: #ffffff;
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 850;
-  letter-spacing: -0.02em;
 }
 
-.calendarAgendaEmptyIcon {
-  width: 34px;
-  border: 1px solid rgba(0, 0, 0, 0.18);
-  background: rgba(255, 255, 255, 0.72);
-}
-
-.calendarAgendaText,
-.calendarAgendaEmptyRow div {
+.todoMainButton,
+.todoEmptyRow div:nth-child(2) {
   min-width: 0;
+  text-align: left;
 }
 
-.calendarAgendaText strong,
-.calendarAgendaEmptyRow strong {
+.todoMainButton strong,
+.todoEmptyRow strong {
   display: block;
   overflow: hidden;
   color: #111113;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 850;
   letter-spacing: -0.025em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.calendarAgendaText p,
-.calendarAgendaEmptyRow p {
+.todoRowDone .todoMainButton strong {
+  color: rgba(0, 0, 0, 0.45);
+  text-decoration: line-through;
+}
+
+.todoMainButton span,
+.todoEmptyRow span {
   display: block;
   overflow: hidden;
-  margin: 2px 0 0;
-  color: rgba(0, 0, 0, 0.46);
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
   font-size: 13px;
-  line-height: 1.3;
+  line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.calendarAgendaDeleteButton {
+.todoDeleteButton {
   display: grid;
   width: 32px;
   height: 32px;
   place-items: center;
+  justify-self: end;
   border-radius: 999px;
-  color: rgba(225, 29, 72, 0.72);
-  font-size: 24px;
+  color: rgba(244, 63, 94, 0.72);
+  font-size: 23px;
   font-weight: 450;
   line-height: 1;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
 }
 
-.calendarAgendaDeleteButton:hover {
-  background: rgba(244, 63, 94, 0.08);
+.todoDeleteButton:hover {
+  background: rgba(244, 63, 94, 0.09);
   color: #e11d48;
 }
 
-@media (min-width: 390px) {
-  .calendarCreateFormClean {
-    grid-template-columns: minmax(0, 1fr) 110px 72px;
-    align-items: center;
+.todoDeleteButton:active {
+  transform: scale(0.92);
+}
+
+@media (max-width: 380px) {
+  .todoRow,
+  .todoEmptyRow {
+    border-radius: 24px;
+    padding: 11px;
+    gap: 10px;
+  }
+
+  .todoMainButton strong,
+  .todoEmptyRow strong {
+    font-size: 15px;
   }
 }
