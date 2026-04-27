@@ -48,3 +48,36 @@ export async function fetchTrips(): Promise<Trip[]> {
 
   return (data ?? []).map(mapRowToTrip);
 }
+
+export async function insertTrip(input: {
+  title: string;
+  destination: string;
+  start_date: string;
+  end_date: string;
+}) {
+  const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
+
+  const { data, error } = await supabase
+    .from('trips')
+    .insert({
+      household_id: householdId,
+      title: input.title,
+      destination: input.destination,
+      start_date: input.start_date,
+      end_date: input.end_date,
+      participant_ids: [],
+      accommodation_link: '',
+      notes: '',
+    })
+    .select(
+      'id, household_id, title, destination, start_date, end_date, participant_ids, accommodation_link, notes, created_at',
+    )
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return mapRowToTrip(data);
+}
