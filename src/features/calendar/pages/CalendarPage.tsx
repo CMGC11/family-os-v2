@@ -1,22 +1,126 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useCalendarItems } from '../hooks/useCalendarItems';
-import { monthDays } from '../../../data/mockFamilyData';
+import type { CalendarEvent } from '../types';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
+type MonthDay = {
+  date: Date;
+  dateString: string;
+  dayNumber: number;
+  isCurrentMonth: boolean;
+};
+
+const WEEK_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+function createLocalDate(dateString: string) {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day, 12, 0, 0, 0);
+}
+
+function toDateString(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+function getTodayDateString() {
+  return toDateString(new Date());
+}
+
+function getMonthTitle(date: Date) {
+  return date.toLocaleDateString('en-GB', {
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
+function getMonthHeaderTitle(date: Date) {
+  return date.toLocaleDateString('en-GB', {
+    month: 'long',
+  });
+}
+
 function formatSelectedDayLabel(dateString: string) {
-  const date = new Date(`${dateString}T12:00:00`);
+  const date = createLocalDate(dateString);
+
   return date.toLocaleDateString('en-GB', {
     weekday: 'long',
     day: 'numeric',
+    month: 'long',
   });
+}
+
+function getDaysInMonth(year: number, monthIndex: number) {
+  return new Date(year, monthIndex + 1, 0).getDate();
+}
+
+function getMondayBasedStartOffset(date: Date) {
+  const day = date.getDay();
+
+  return day === 0 ? 6 : day - 1;
+}
+
+function buildMonthDays(viewMonth: Date): MonthDay[] {
+  const year = viewMonth.getFullYear();
+  const monthIndex = viewMonth.getMonth();
+  const firstDayOfMonth = new Date(year, monthIndex, 1, 12, 0, 0, 0);
+  const startOffset = getMondayBasedStartOffset(firstDayOfMonth);
+  const daysInCurrentMonth = getDaysInMonth(year, monthIndex);
+  const daysInPreviousMonth = getDaysInMonth(year, monthIndex - 1);
+  const days: MonthDay[] = [];
+
+  for (let index = startOffset - 1; index >= 0; index -= 1) {
+    const dayNumber = daysInPreviousMonth - index;
+    const date = new Date(year, monthIndex - 1, dayNumber, 12, 0, 0, 0);
+
+    days.push({
+      date,
+      dateString: toDateString(date),
+      dayNumber,
+      isCurrentMonth: false,
+    });
+  }
+
+  for (let dayNumber = 1; dayNumber <= daysInCurrentMonth; dayNumber += 1) {
+    const date = new Date(year, monthIndex, dayNumber, 12, 0, 0, 0);
+
+    days.push({
+      date,
+      dateString: toDateString(date),
+      dayNumber,
+      isCurrentMonth: true,
+    });
+  }
+
+  const remainingDays = 42 - days.length;
+
+  for (let dayNumber = 1; dayNumber <= remainingDays; dayNumber += 1) {
+    const date = new Date(year, monthIndex + 1, dayNumber, 12, 0, 0, 0);
+
+    days.push({
+      date,
+      dateString: toDateString(date),
+      dayNumber,
+      isCurrentMonth: false,
+    });
+  }
+
+  return days;
+}
+
+function sortEventsByTime(events: CalendarEvent[]) {
+  return [...events].sort((a, b) => a.time.localeCompare(b.time));
 }
 
 export default function CalendarPage() {
   const [searchParams] = useSearchParams();
   const {
+    events,
     selectedDayEvents,
     selectedDate,
     setSelectedDate,
@@ -26,14 +130,90 @@ export default function CalendarPage() {
     deleteEvent,
   } = useCalendarItems();
 
+  const [viewMonth, setViewMonth] = useState(() => {
+    const selected = createLocalDate(selectedDate);
+
+    return new Date(selected.getFullYear(), selected.getMonth(), 1, 12, 0, 0, 0);
+  });
+
   const [title, setTitle] = useState('');
   const [time, setTime] = useState('12:00');
 
   const isCreating = searchParams.get('create') === 'event';
-  const weekLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  const todayDateString = getTodayDateString();
+
+  const monthDays = useMemo(() => buildMonthDays(viewMonth), [viewMonth]);
+
+  const eventsByDate = useMemo(() => {
+    const groupedEvents = new Map<string, CalendarEvent[]>();
+
+    events.forEach((event) => {
+      const currentEvents = groupedEvents.get(event.date) ?? [];
+      groupedEvents.set(event.date, [...currentEvents, event]);
+    });
+
+    groupedEvents.forEach((dateEvents, date) => {
+      groupedEvents.set(date, sortEventsByTime(dateEvents));
+    });
+
+    return groupedEvents;
+  }, [events]);
+
+  const currentMonthTitle = getMonthTitle(viewMonth);
+  const headerMonthTitle = getMonthHeaderTitle(viewMonth);
+
+  function selectDate(dateString: string) {
+    const nextDate = createLocalDate(dateString);
+
+    setSelectedDate(dateString);
+    setViewMonth(new Date(nextDate.getFullYear(), nextDate.getMonth(), 1, 12, 0, 0, 0));
+  }
+
+  function moveMonth(direction: -1 | 1) {
+    setViewMonth((currentMonth) => {
+      const nextMonth = new Date(
+        currentMonth.getFullYear(),
+        currentMonth.getMonth() + direction,
+        1,
+        12,
+        0,
+        0,
+        0,
+      );
+
+      const currentSelectedDate = createLocalDate(selectedDate);
+      const preferredDay = currentSelectedDate.getDate();
+      const nextMonthLastDay = getDaysInMonth(nextMonth.getFullYear(), nextMonth.getMonth());
+      const nextSelectedDate = new Date(
+        nextMonth.getFullYear(),
+        nextMonth.getMonth(),
+        Math.min(preferredDay, nextMonthLastDay),
+        12,
+        0,
+        0,
+        0,
+      );
+
+      setSelectedDate(toDateString(nextSelectedDate));
+
+      return nextMonth;
+    });
+  }
+
+  function goToToday() {
+    const today = new Date();
+    const todayString = toDateString(today);
+
+    setSelectedDate(todayString);
+    setViewMonth(new Date(today.getFullYear(), today.getMonth(), 1, 12, 0, 0, 0));
+  }
 
   function handleAddEvent() {
-    addEvent(title, time);
+    const cleanTitle = title.trim();
+
+    if (!cleanTitle) return;
+
+    addEvent(cleanTitle, time);
     setTitle('');
     setTime('12:00');
   }
@@ -42,8 +222,8 @@ export default function CalendarPage() {
     <main>
       <PageHeader
         eyebrow="Calendar"
-        title="April"
-        subtitle="A familiar Apple-style monthly view: clean grid, quiet event indicators, and the selected day’s agenda below."
+        title={headerMonthTitle}
+        subtitle="A clean monthly view with real household events and a focused agenda below."
       />
 
       <PageShell>
@@ -90,78 +270,90 @@ export default function CalendarPage() {
         <GlassCard className="calendarCard">
           <div className="calendarTop">
             <div className="calendarActions">
-              <button type="button" onClick={() => setSelectedDate(new Date().toISOString().slice(0, 10))}>
+              <button type="button" onClick={goToToday}>
                 Today
               </button>
 
               <div>
-                <button type="button" aria-label="Previous month">
+                <button type="button" onClick={() => moveMonth(-1)} aria-label="Previous month">
                   ‹
                 </button>
-                <button type="button" aria-label="Next month">
+                <button type="button" onClick={() => moveMonth(1)} aria-label="Next month">
                   ›
                 </button>
               </div>
             </div>
 
-            <h2>April 2026</h2>
+            <h2>{currentMonthTitle}</h2>
           </div>
 
           <div className="calendarBody">
             <div className="weekLabels">
-              {weekLabels.map((label, index) => (
+              {WEEK_LABELS.map((label, index) => (
                 <div key={`${label}-${index}`}>{label}</div>
               ))}
             </div>
 
             <div className="monthGrid">
-              {monthDays.map((day, index) => {
-                const dayNumber = String(day.date).padStart(2, '0');
-                const dateString = `2026-04-${dayNumber}`;
-                const isSelected = selectedDate === dateString;
-                const isToday = day.today;
-                const hasEvents = day.events.length > 0;
+              {monthDays.map((day) => {
+                const dayEvents = eventsByDate.get(day.dateString) ?? [];
+                const isSelected = selectedDate === day.dateString;
+                const isToday = todayDateString === day.dateString;
+                const visibleDots = dayEvents.slice(0, 3);
+                const hiddenEventCount = Math.max(dayEvents.length - visibleDots.length, 0);
 
                 return (
                   <button
-                    key={`${day.date}-${index}`}
+                    key={day.dateString}
                     type="button"
-                    className="dayCell"
-                    onClick={() => {
-                      if (!day.muted) {
-                        setSelectedDate(dateString);
-                      }
-                    }}
+                    className={[
+                      'dayCell',
+                      !day.isCurrentMonth ? 'dayCellMuted' : '',
+                      isSelected ? 'dayCellSelected' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    onClick={() => selectDate(day.dateString)}
+                    aria-label={`${formatSelectedDayLabel(day.dateString)}${
+                      dayEvents.length > 0
+                        ? `, ${dayEvents.length} event${dayEvents.length === 1 ? '' : 's'}`
+                        : ', no events'
+                    }`}
                   >
                     <span
                       className={[
                         'dayNumber',
                         isSelected ? 'daySelected' : '',
                         isToday ? 'dayToday' : '',
-                        day.muted ? 'dayMuted' : '',
+                        !day.isCurrentMonth ? 'dayMuted' : '',
                       ]
                         .filter(Boolean)
                         .join(' ')}
                     >
-                      {day.date}
+                      {day.dayNumber}
                     </span>
 
-                    <span className="eventDots">
-                      {hasEvents &&
-                        day.events.slice(0, 3).map((event, eventIndex) => (
-                          <span
-                            key={`${event}-${eventIndex}`}
-                            className={[
-                              'eventDot',
-                              day.muted ? 'dotMuted' : '',
-                              isSelected ? 'dotSelected' : '',
-                              eventIndex === 1 ? 'dotGreen' : '',
-                              eventIndex === 2 ? 'dotAmber' : '',
-                            ]
-                              .filter(Boolean)
-                              .join(' ')}
-                          />
-                        ))}
+                    <span className="eventDots" aria-hidden="true">
+                      {visibleDots.map((event, eventIndex) => (
+                        <span
+                          key={event.id}
+                          className={[
+                            'eventDot',
+                            !day.isCurrentMonth ? 'dotMuted' : '',
+                            isSelected ? 'dotSelected' : '',
+                            eventIndex === 1 ? 'dotGreen' : '',
+                            eventIndex === 2 ? 'dotAmber' : '',
+                          ]
+                            .filter(Boolean)
+                            .join(' ')}
+                        />
+                      ))}
+
+                      {hiddenEventCount > 0 && (
+                        <span className={['eventMoreCount', isSelected ? 'eventMoreCountSelected' : ''].join(' ')}>
+                          +{hiddenEventCount}
+                        </span>
+                      )}
                     </span>
                   </button>
                 );

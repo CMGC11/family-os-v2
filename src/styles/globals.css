@@ -503,6 +503,10 @@ button {
   line-height: 1;
 }
 
+.calendarActions div button:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+
 .calendarTop h2 {
   margin: 12px 0 0;
   font-size: 32px;
@@ -543,11 +547,30 @@ button {
   align-items: center;
   border-radius: 16px;
   padding: 6px 4px;
-  transition: background 160ms ease;
+  transition:
+    background 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
 }
 
 .dayCell:hover {
   background: rgba(0, 0, 0, 0.035);
+}
+
+.dayCell:active {
+  transform: scale(0.98);
+}
+
+.dayCellMuted {
+  opacity: 0.58;
+}
+
+.dayCellSelected {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.dayCellSelected:hover {
+  background: rgba(37, 99, 235, 0.1);
 }
 
 .dayNumber {
@@ -573,8 +596,14 @@ button {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
+.daySelected.dayToday {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+}
+
 .dayMuted {
-  color: rgba(0, 0, 0, 0.18);
+  color: rgba(0, 0, 0, 0.25);
 }
 
 .eventDots {
@@ -590,6 +619,7 @@ button {
 .eventDot {
   width: 6px;
   height: 6px;
+  flex: 0 0 auto;
   border-radius: 999px;
   background: #3b82f6;
 }
@@ -607,7 +637,19 @@ button {
 }
 
 .dotMuted {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.eventMoreCount {
+  margin-left: 2px;
+  color: rgba(0, 0, 0, 0.38);
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.eventMoreCountSelected {
+  color: rgba(37, 99, 235, 0.9);
 }
 
 .agendaCard {
@@ -615,6 +657,10 @@ button {
 }
 
 .agendaHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
   margin-bottom: 20px;
 }
 
@@ -633,6 +679,7 @@ button {
 }
 
 .agendaHeader button {
+  flex: 0 0 auto;
   border-radius: 999px;
   background: #2563eb;
   padding: 8px 16px;
@@ -654,6 +701,49 @@ button {
   border-radius: 24px;
   background: rgba(0, 0, 0, 0.035);
   padding: 14px;
+}
+
+.agendaAccent {
+  width: 6px;
+  height: 44px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #3b82f6;
+}
+
+.accent1 {
+  background: #10b981;
+}
+
+.accent2 {
+  background: #fbbf24;
+}
+
+.agendaRow div:nth-child(2),
+.taskRow div:nth-child(2),
+.hubRow div:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+}
+
+.agendaRow strong,
+.taskRow strong,
+.hubRow strong {
+  display: block;
+  overflow: hidden;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agendaRow span,
+.taskRow span,
+.hubRow span {
+  display: block;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
 }
 
 .agendaAccent {
