@@ -1927,241 +1927,7 @@ button {
   font-size: 13px !important;
   font-weight: 700;
 }
-
-.logoutButton:active {
-  transform: scale(0.98);
-}
-
-.logoutButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.logoutButtonIcon {
-  display: grid;
-  width: 24px;
-  height: 24px;
-  place-items: center;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.055);
-  color: rgba(17, 17, 19, 0.62);
-  font-size: 15px;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.wishlistCreateForm {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-  align-items: center;
-}
-
-.wishlistCreateForm input {
-  width: 100%;
-  min-height: 46px;
-  border: 0;
-  border-radius: 20px;
-  background: rgba(0, 0, 0, 0.045);
-  padding: 0 14px;
-  color: #111113;
-  font: inherit;
-  font-size: 15px;
-  outline: none;
-}
-
-.wishlistCreateForm input:focus {
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
-}
-
-.wishlistCreateForm button {
-  min-height: 46px;
-  border-radius: 999px;
-  background: #111113;
-  padding: 0 16px;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 850;
-}
-
-@media (min-width: 390px) {
-  .wishlistCreateForm {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 72px;
-  }
-}
-
-.healthCreateForm {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-  align-items: center;
-}
-
-.healthCreateForm input {
-  width: 100%;
-  min-height: 46px;
-  border: 0;
-  border-radius: 20px;
-  background: rgba(0, 0, 0, 0.045);
-  padding: 0 14px;
-  color: #111113;
-  font: inherit;
-  font-size: 15px;
-  outline: none;
-}
-
-.healthCreateForm input:focus {
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
-}
-
-.healthCreateForm button {
-  min-height: 46px;
-  border-radius: 999px;
-  background: #111113;
-  padding: 0 16px;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 850;
-}
-
-@media (min-width: 390px) {
-  .healthCreateForm {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 132px 72px;
-  }
-}
-
-.recipeCreateForm {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-
-.recipeCreateForm input {
-  width: 100%;
-  min-width: 0;
-  min-height: 46px;
-  border: 0;
-  border-radius: 20px;
-  background: rgba(0, 0, 0, 0.045);
-  padding: 0 14px;
-  color: #111113;
-  font: inherit;
-  font-size: 15px;
-  outline: none;
-}
-
-.recipeCreateForm input:focus {
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
-}
-
-.recipeCreateForm button {
-  width: 100%;
-  min-height: 46px;
-  border-radius: 999px;
-  background: #111113;
-  padding: 0 16px;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 850;
-}
-
-.screen,
-.pageContent,
-.pageSection,
-.glassCard,
-.quickCreateCard,
-.tasksCard,
-.hubList,
-.grocerySummaryCard,
-.groceryFormCard,
-.groceryForm,
-.groceryListCard,
-.groceryGroupedList,
-.groceryGroup,
-.groceryItemsList,
-.groceryCleanRow,
-.groceryRowMain,
-.groceryRow,
-.hubRow,
-.groceryMainButton,
-.recipeCreateForm {
-  max-width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-}
-
-.screen,
-.pageContent,
-.pageSection,
-.glassCard {
-  overflow-x: hidden;
-}
-
-.groceryRow {
-  width: 100%;
-}
-
-.groceryMainButton,
-.hubRow,
-.groceryRowMain {
-  min-width: 0;
-  overflow: hidden;
-}
-
-.groceryDeleteButton {
-  flex: 0 0 34px;
-  width: 34px;
-  min-width: 34px;
-  max-width: 34px;
-  padding: 0;
-}
-
-.recipeCreateForm {
-  width: 100%;
-}
-
-.recipeCreateForm input,
-.recipeCreateForm button {
-  max-width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-}
-
-.tripCreateForm {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-
-.tripCreateForm input {
-  width: 100%;
-  min-width: 0;
-  min-height: 46px;
-  border: 0;
-  border-radius: 20px;
-  background: rgba(0, 0, 0, 0.045);
-  padding: 0 14px;
-  color: #111113;
-  font: inherit;
-  font-size: 15px;
-  outline: none;
-}
-
-.tripCreateForm input:focus {
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
-}
-
-.tripCreateForm button {
-  width: 100%;
-  min-height: 46px;
-  border-radius: 999px;
-  background: #111113;
-  padding: 0 16px;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 850;
-}
-/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
 /* FamilyOS v2 module page cleanup                                           */
 /* Shared list-page grammar for Grocery, Wishlist, Health, Recipes, Trips.   */
 /* -------------------------------------------------------------------------- */
@@ -2393,22 +2159,71 @@ button {
   }
 }
 
-/* To-do visual alignment */
-.todoCreateCard {
-  padding: 14px;
-}
-
-.todoCreateForm {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 82px;
-  gap: 10px;
-  align-items: center;
-}
-
-.todoCreateForm input {
-  width: 100%;
+/* Calendar clean visual pass - isolated classes to avoid old agenda/module row collisions. */
+.calendarCreateCard,
+.calendarMonthCard,
+.calendarAgendaCard {
+  max-width: 100%;
   min-width: 0;
-  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.calendarCreateCard {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.calendarCreateHeaderClean {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.calendarCreateHeaderClean div {
+  min-width: 0;
+}
+
+.calendarCreateHeaderClean p,
+.calendarMonthHeader p,
+.calendarAgendaHeader p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.38);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.calendarCreateHeaderClean h2 {
+  margin: 3px 0 0;
+  color: #111113;
+  font-size: 20px;
+  font-weight: 850;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+
+.calendarCreateHeaderClean button {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 8px 13px;
+  color: rgba(0, 0, 0, 0.58);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.calendarCreateFormClean {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.calendarCreateFormClean input {
+  width: 100%;
+  min-height: 46px;
   border: 0;
   border-radius: 20px;
   background: rgba(0, 0, 0, 0.045);
@@ -2419,12 +2234,12 @@ button {
   outline: none;
 }
 
-.todoCreateForm input:focus {
+.calendarCreateFormClean input:focus {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
 }
 
-.todoCreateForm button {
-  min-height: 48px;
+.calendarCreateFormClean button {
+  min-height: 46px;
   border-radius: 999px;
   background: #111113;
   padding: 0 16px;
@@ -2433,227 +2248,305 @@ button {
   font-weight: 850;
 }
 
-.todoCreateForm button:disabled {
+.calendarCreateFormClean button:disabled {
   cursor: not-allowed;
-  opacity: 0.42;
+  opacity: 0.44;
 }
 
-.todoSummaryCard {
+.calendarMonthCard {
+  overflow: hidden;
+  padding: 0;
+}
+
+.calendarMonthHeader {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  padding: 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.055);
+  padding: 20px 20px 16px;
 }
 
-.todoSummaryCard h2 {
-  margin: 4px 0 0;
+.calendarMonthHeader > div:first-child {
+  min-width: 0;
+}
+
+.calendarMonthHeader h2 {
+  margin: 8px 0 0;
   color: #111113;
-  font-size: 36px;
+  font-size: 34px;
   font-weight: 850;
   line-height: 1;
   letter-spacing: -0.06em;
 }
 
-.todoSummaryCard span {
-  display: block;
-  margin-top: 6px;
-  color: rgba(0, 0, 0, 0.45);
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.todoSummaryIcon {
-  display: grid;
-  width: 58px;
-  height: 58px;
+.calendarMonthControls {
+  display: flex;
   flex: 0 0 auto;
-  place-items: center;
-  border-radius: 22px;
-  background: #111113;
-  color: #ffffff;
-  font-size: 28px;
-  font-weight: 850;
-  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.16);
+  align-items: center;
+  gap: 8px;
 }
 
-.todoListCard {
-  padding: 16px;
-}
-
-.todoTabs {
+.calendarMonthControls button {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
-  margin-bottom: 14px;
+  min-width: 34px;
+  height: 34px;
+  place-items: center;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.045);
-  padding: 4px;
+  color: #2563eb;
+  font-size: 25px;
+  font-weight: 500;
+  line-height: 1;
 }
 
-.todoTabs button {
-  min-width: 0;
-  border-radius: 999px;
-  padding: 9px 0;
-  color: rgba(0, 0, 0, 0.45);
+.calendarMonthControls button:first-child {
+  min-width: auto;
+  height: 34px;
+  background: rgba(37, 99, 235, 0.08);
+  padding: 0 12px;
   font-size: 14px;
   font-weight: 850;
-  transition:
-    background 160ms ease,
-    color 160ms ease,
-    box-shadow 160ms ease;
 }
 
-.todoTabs .todoTabActive {
-  background: #ffffff;
-  color: #111113;
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+.calendarMonthControls button:hover {
+  background: rgba(37, 99, 235, 0.1);
 }
 
-.todoList {
+.calendarWeekLabels {
   display: grid;
-  gap: 10px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  padding: 14px 18px 4px;
 }
 
-.todoRow,
-.todoEmptyRow {
-  display: grid;
-  width: 100%;
-  max-width: 100%;
+.calendarWeekLabels div {
   min-width: 0;
-  grid-template-columns: 38px minmax(0, 1fr) 34px;
-  align-items: center;
-  gap: 12px;
-  border-radius: 26px;
-  background: rgba(0, 0, 0, 0.035);
-  padding: 12px;
-  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.36);
+  text-align: center;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.calendarMonthGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+  padding: 4px 14px 18px;
+}
+
+.calendarDayCell {
+  display: grid;
+  min-width: 0;
+  min-height: 56px;
+  place-items: start center;
+  border-radius: 18px;
+  padding: 7px 2px 5px;
   transition:
     background 160ms ease,
     opacity 160ms ease,
     transform 160ms ease;
 }
 
-.todoEmptyRow {
-  grid-template-columns: 38px minmax(0, 1fr);
+.calendarDayCell:hover {
+  background: rgba(0, 0, 0, 0.035);
 }
 
-.todoRow:hover {
-  background: rgba(0, 0, 0, 0.055);
+.calendarDayCell:active {
+  transform: scale(0.97);
 }
 
-.todoRow:active {
-  transform: scale(0.99);
+.calendarDayCellMuted {
+  opacity: 0.34;
 }
 
-.todoRowDone {
-  opacity: 0.58;
+.calendarDayCellSelected {
+  background: rgba(37, 99, 235, 0.1);
 }
 
-.todoCheck {
+.calendarDayNumber {
   display: grid;
-  width: 32px;
-  height: 32px;
+  width: 31px;
+  height: 31px;
   place-items: center;
-  justify-self: center;
-  border: 1px solid rgba(0, 0, 0, 0.14);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.8);
-  color: transparent;
-  font-size: 14px;
-  font-weight: 900;
+  color: #111113;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.02em;
 }
 
-.todoCheckDone {
-  border-color: transparent;
-  background: #34c759;
+.calendarDayNumberSelected {
+  background: #2563eb;
   color: #ffffff;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
 }
 
-.todoEmptyIcon {
-  display: grid;
-  width: 38px;
-  height: 38px;
-  place-items: center;
-  border-radius: 16px;
+.calendarDayNumberToday {
   background: #111113;
   color: #ffffff;
-  font-size: 18px;
-  font-weight: 850;
 }
 
-.todoMainButton,
-.todoEmptyRow div:nth-child(2) {
+.calendarEventDots {
+  display: flex;
+  max-width: 32px;
+  min-height: 9px;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 5px;
+  overflow: hidden;
+}
+
+.calendarEventDot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #4f7ee8;
+}
+
+.calendarEventDotGreen {
+  background: #53b88b;
+}
+
+.calendarEventDotAmber {
+  background: #f3ba42;
+}
+
+.calendarEventDotMuted {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.calendarAgendaCard {
+  padding: 16px;
+}
+
+.calendarAgendaHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.calendarAgendaHeader div {
   min-width: 0;
-  text-align: left;
 }
 
-.todoMainButton strong,
-.todoEmptyRow strong {
+.calendarAgendaHeader h2 {
+  overflow: hidden;
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 22px;
+  font-weight: 850;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendarAgendaHeader button {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #2563eb;
+  padding: 8px 15px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 850;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.18);
+}
+
+.calendarAgendaList {
+  display: grid;
+  gap: 8px;
+}
+
+.calendarAgendaRow,
+.calendarAgendaEmptyRow {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: 54px minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 22px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.calendarAgendaEmptyRow {
+  grid-template-columns: 34px minmax(0, 1fr);
+}
+
+.calendarAgendaTime,
+.calendarAgendaEmptyIcon {
+  display: grid;
+  height: 34px;
+  place-items: center;
+  border-radius: 999px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+}
+
+.calendarAgendaEmptyIcon {
+  width: 34px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.calendarAgendaText,
+.calendarAgendaEmptyRow div {
+  min-width: 0;
+}
+
+.calendarAgendaText strong,
+.calendarAgendaEmptyRow strong {
   display: block;
   overflow: hidden;
   color: #111113;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 850;
   letter-spacing: -0.025em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.todoRowDone .todoMainButton strong {
-  color: rgba(0, 0, 0, 0.45);
-  text-decoration: line-through;
-}
-
-.todoMainButton span,
-.todoEmptyRow span {
+.calendarAgendaText p,
+.calendarAgendaEmptyRow p {
   display: block;
   overflow: hidden;
-  margin-top: 2px;
-  color: rgba(0, 0, 0, 0.45);
+  margin: 2px 0 0;
+  color: rgba(0, 0, 0, 0.46);
   font-size: 13px;
-  line-height: 1.35;
+  line-height: 1.3;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.todoDeleteButton {
+.calendarAgendaDeleteButton {
   display: grid;
   width: 32px;
   height: 32px;
   place-items: center;
-  justify-self: end;
   border-radius: 999px;
-  color: rgba(244, 63, 94, 0.72);
-  font-size: 23px;
+  color: rgba(225, 29, 72, 0.72);
+  font-size: 24px;
   font-weight: 450;
   line-height: 1;
-  transition:
-    background 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
 }
 
-.todoDeleteButton:hover {
-  background: rgba(244, 63, 94, 0.09);
+.calendarAgendaDeleteButton:hover {
+  background: rgba(244, 63, 94, 0.08);
   color: #e11d48;
 }
 
-.todoDeleteButton:active {
-  transform: scale(0.92);
-}
-
-@media (max-width: 380px) {
-  .todoRow,
-  .todoEmptyRow {
-    border-radius: 24px;
-    padding: 11px;
-    gap: 10px;
-  }
-
-  .todoMainButton strong,
-  .todoEmptyRow strong {
-    font-size: 15px;
+@media (min-width: 390px) {
+  .calendarCreateFormClean {
+    grid-template-columns: minmax(0, 1fr) 110px 72px;
+    align-items: center;
   }
 }
 
@@ -2753,538 +2646,9 @@ button {
 }
 
 /* -------------------------------------------------------------------------- */
-/* FamilyOS v2 emergency visual repair                                        */
-/* Restores Family Hub + isolated Calendar classes after the CSS creature ate  */
-/* its own tail.                                                              */
+/* Repair pack: detail views + health cleanup + trip checklist                */
+/* Appended after calendar edit CSS so newer module classes do not render raw. */
 /* -------------------------------------------------------------------------- */
-
-/* Family Hub legacy page layout */
-.hubPageCard {
-  padding: 16px;
-  overflow: hidden;
-}
-
-.featuredCard {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  border-radius: 28px;
-  padding: 20px;
-  color: #ffffff;
-  text-align: left;
-  box-shadow: 0 18px 35px rgba(59, 130, 246, 0.2);
-}
-
-.featuredCard p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 13px;
-  font-weight: 850;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.featuredCard h2 {
-  margin: 8px 0 0;
-  color: #ffffff;
-  font-size: 30px;
-  font-weight: 850;
-  line-height: 1;
-  letter-spacing: -0.05em;
-}
-
-.featuredCard span {
-  display: block;
-  max-width: 280px;
-  margin-top: 10px;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 14px;
-  line-height: 1.45;
-}
-
-.hubList {
-  display: grid;
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.hubRow {
-  display: grid;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  grid-template-columns: 48px minmax(0, 1fr) 24px;
-  align-items: center;
-  gap: 14px;
-  border-radius: 26px;
-  background: rgba(0, 0, 0, 0.035);
-  padding: 12px;
-  text-align: left;
-  box-sizing: border-box;
-  transition:
-    background 160ms ease,
-    transform 160ms ease;
-}
-
-.hubRow:hover {
-  background: rgba(0, 0, 0, 0.055);
-}
-
-.hubRow:active {
-  transform: scale(0.985);
-}
-
-.hubRow .hubIcon {
-  width: 48px;
-  height: 48px;
-  margin: 0;
-  flex: 0 0 auto;
-}
-
-.hubRow > div:nth-child(2) {
-  min-width: 0;
-}
-
-.hubRow > div:nth-child(2) strong {
-  display: block;
-  overflow: hidden;
-  color: #111113;
-  font-size: 16px;
-  font-weight: 850;
-  letter-spacing: -0.025em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.hubRow > div:nth-child(2) span {
-  display: block;
-  overflow: hidden;
-  margin-top: 2px;
-  color: rgba(0, 0, 0, 0.45);
-  font-size: 13px;
-  line-height: 1.35;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.hubRow .chevron {
-  justify-self: end;
-  color: rgba(0, 0, 0, 0.24) !important;
-  font-size: 28px !important;
-  font-weight: 350 !important;
-  line-height: 1 !important;
-}
-
-/* Calendar isolated layout */
-.calendarCreateCard {
-  display: grid;
-  gap: 14px;
-  padding: 14px;
-}
-
-.calendarCreateHeaderClean {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 2px 2px 0;
-}
-
-.calendarCreateHeaderClean p {
-  margin: 0;
-  color: rgba(0, 0, 0, 0.36);
-  font-size: 12px;
-  font-weight: 850;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.calendarCreateHeaderClean h2 {
-  margin: 3px 0 0;
-  color: #111113;
-  font-size: 20px;
-  font-weight: 850;
-  line-height: 1.12;
-  letter-spacing: -0.035em;
-}
-
-.calendarCreateHeaderClean button {
-  flex: 0 0 auto;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.045);
-  padding: 8px 13px;
-  color: rgba(0, 0, 0, 0.55);
-  font-size: 13px;
-  font-weight: 850;
-}
-
-.calendarCreateFormClean {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-
-.calendarCreateFormClean input {
-  width: 100%;
-  min-width: 0;
-  min-height: 46px;
-  border: 0;
-  border-radius: 20px;
-  background: rgba(0, 0, 0, 0.045);
-  padding: 0 14px;
-  color: #111113;
-  font: inherit;
-  font-size: 15px;
-  outline: none;
-}
-
-.calendarCreateFormClean input:focus {
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
-}
-
-.calendarCreateFormClean button {
-  min-height: 46px;
-  border-radius: 999px;
-  background: #111113;
-  padding: 0 16px;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 850;
-}
-
-.calendarCreateFormClean button:disabled {
-  cursor: not-allowed;
-  opacity: 0.45;
-}
-
-.calendarMonthCard {
-  overflow: hidden;
-  padding: 0;
-}
-
-.calendarMonthHeader {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.055);
-  padding: 18px 18px 14px;
-}
-
-.calendarMonthHeader p {
-  margin: 0;
-  color: rgba(0, 0, 0, 0.42);
-  font-size: 12px;
-  font-weight: 850;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.calendarMonthHeader h2 {
-  margin: 6px 0 0;
-  color: #111113;
-  font-size: 30px;
-  font-weight: 850;
-  line-height: 1;
-  letter-spacing: -0.055em;
-}
-
-.calendarMonthControls {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-  flex-wrap: wrap;
-}
-
-.calendarMonthControls button {
-  display: grid;
-  min-width: 34px;
-  height: 34px;
-  place-items: center;
-  border-radius: 999px;
-  color: #2563eb;
-  font-size: 24px;
-  font-weight: 450;
-  line-height: 1;
-}
-
-.calendarMonthControls button:first-child {
-  min-width: auto;
-  padding: 0 10px;
-  font-size: 14px;
-  font-weight: 850;
-}
-
-.calendarMonthControls button:hover {
-  background: rgba(37, 99, 235, 0.08);
-}
-
-.calendarWeekLabels {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  padding: 12px 12px 4px;
-}
-
-.calendarWeekLabels div {
-  min-width: 0;
-  color: rgba(0, 0, 0, 0.35);
-  text-align: center;
-  font-size: 12px;
-  font-weight: 850;
-}
-
-.calendarMonthGrid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  row-gap: 4px;
-  padding: 4px 12px 16px;
-}
-
-.calendarDayCell {
-  display: flex;
-  min-width: 0;
-  min-height: 58px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  border-radius: 18px;
-  padding: 6px 2px;
-  transition:
-    background 160ms ease,
-    opacity 160ms ease,
-    transform 160ms ease;
-}
-
-.calendarDayCell:hover {
-  background: rgba(0, 0, 0, 0.035);
-}
-
-.calendarDayCell:active {
-  transform: scale(0.98);
-}
-
-.calendarDayCellMuted {
-  opacity: 0.42;
-}
-
-.calendarDayCellSelected {
-  background: rgba(37, 99, 235, 0.08);
-}
-
-.calendarDayNumber {
-  display: grid;
-  width: 32px;
-  height: 32px;
-  place-items: center;
-  border-radius: 999px;
-  color: #111113;
-  font-size: 15px;
-  font-weight: 850;
-}
-
-.calendarDayNumberSelected {
-  background: #2563eb;
-  color: #ffffff;
-  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.22);
-}
-
-.calendarDayNumberToday {
-  background: #111113;
-  color: #ffffff;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.14);
-}
-
-.calendarEventDots {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  height: 14px;
-  margin-top: 5px;
-  overflow: hidden;
-}
-
-.calendarEventDot {
-  width: 6px;
-  height: 6px;
-  flex: 0 0 auto;
-  border-radius: 999px;
-  background: #3b82f6;
-}
-
-.calendarEventDotGreen {
-  background: #10b981;
-}
-
-.calendarEventDotAmber {
-  background: #fbbf24;
-}
-
-.calendarEventDotMuted {
-  background: rgba(0, 0, 0, 0.22);
-}
-
-.calendarAgendaCard {
-  padding: 16px;
-}
-
-.calendarAgendaHeader {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-
-.calendarAgendaHeader p {
-  margin: 0;
-  color: rgba(0, 0, 0, 0.36);
-  font-size: 12px;
-  font-weight: 850;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.calendarAgendaHeader h2 {
-  margin: 4px 0 0;
-  color: #111113;
-  font-size: 22px;
-  font-weight: 850;
-  line-height: 1.1;
-  letter-spacing: -0.04em;
-}
-
-.calendarAgendaHeader button {
-  flex: 0 0 auto;
-  border-radius: 999px;
-  background: #2563eb;
-  padding: 8px 15px;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 850;
-  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.18);
-}
-
-.calendarAgendaList {
-  display: grid;
-  gap: 10px;
-}
-
-.calendarAgendaRow,
-.calendarAgendaEmptyRow {
-  display: grid;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  grid-template-columns: 54px minmax(0, 1fr) 34px;
-  align-items: center;
-  gap: 12px;
-  border-radius: 24px;
-  background: rgba(0, 0, 0, 0.035);
-  padding: 12px;
-  box-sizing: border-box;
-}
-
-.calendarAgendaEmptyRow {
-  grid-template-columns: 38px minmax(0, 1fr);
-}
-
-.calendarAgendaTime {
-  display: grid;
-  width: 54px;
-  min-height: 38px;
-  place-items: center;
-  border-radius: 16px;
-  background: #111113;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 850;
-  letter-spacing: -0.02em;
-}
-
-.calendarAgendaEmptyIcon {
-  display: grid;
-  width: 32px;
-  height: 32px;
-  place-items: center;
-  border: 1px solid rgba(0, 0, 0, 0.14);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.8);
-}
-
-.calendarAgendaText,
-.calendarAgendaEmptyRow div:nth-child(2) {
-  min-width: 0;
-}
-
-.calendarAgendaText strong,
-.calendarAgendaEmptyRow strong {
-  display: block;
-  overflow: hidden;
-  color: #111113;
-  font-size: 16px;
-  font-weight: 850;
-  letter-spacing: -0.025em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.calendarAgendaText p,
-.calendarAgendaEmptyRow p {
-  overflow: hidden;
-  margin: 2px 0 0;
-  color: rgba(0, 0, 0, 0.45);
-  font-size: 13px;
-  line-height: 1.35;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.calendarAgendaDeleteButton {
-  display: grid;
-  width: 32px;
-  height: 32px;
-  place-items: center;
-  justify-self: end;
-  border-radius: 999px;
-  color: rgba(244, 63, 94, 0.72);
-  font-size: 23px;
-  font-weight: 450;
-  line-height: 1;
-}
-
-.calendarAgendaDeleteButton:hover {
-  background: rgba(244, 63, 94, 0.09);
-  color: #e11d48;
-}
-
-@media (min-width: 390px) {
-  .calendarCreateFormClean {
-    grid-template-columns: minmax(0, 1fr) 110px 72px;
-  }
-}
-
-@media (max-width: 380px) {
-  .calendarMonthHeader {
-    flex-direction: column;
-  }
-
-  .calendarMonthControls {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .calendarDayCell {
-    min-height: 54px;
-  }
-
-  .calendarAgendaHeader h2 {
-    font-size: 20px;
-  }
-}
-
 /* Health detail view */
 .healthDetailCard {
   display: grid;
@@ -3789,556 +3153,8 @@ button {
   }
 }
 
-/* Trips packing + prep items */
-.tripDetailDivider {
-  height: 1px;
-  background: rgba(0, 0, 0, 0.06);
-}
-
-.tripDetailStatus,
-.tripDetailError {
-  margin: 0;
-  border-radius: 20px;
-  padding: 12px 14px;
-  font-size: 13px;
-  font-weight: 750;
-}
-
-.tripDetailStatus {
-  background: rgba(0, 0, 0, 0.035);
-  color: rgba(0, 0, 0, 0.48);
-}
-
-.tripDetailError {
-  background: rgba(244, 63, 94, 0.1);
-  color: #be123c;
-}
-
-.tripChecklistGrid {
-  display: grid;
-  gap: 14px;
-}
-
-.tripChecklistSection {
-  display: grid;
-  gap: 10px;
-  border-radius: 26px;
-  background: rgba(0, 0, 0, 0.025);
-  padding: 12px;
-}
-
-.tripChecklistHeader {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.tripChecklistHeader h3 {
-  margin: 0;
-  color: #111113;
-  font-size: 17px;
-  font-weight: 850;
-  letter-spacing: -0.03em;
-}
-
-.tripChecklistHeader p {
-  margin: 3px 0 0;
-  color: rgba(0, 0, 0, 0.42);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.tripChecklistForm {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 70px;
-  gap: 8px;
-}
-
-.tripChecklistForm input {
-  width: 100%;
-  min-width: 0;
-  min-height: 42px;
-  border: 0;
-  border-radius: 18px;
-  background: rgba(0, 0, 0, 0.045);
-  padding: 0 12px;
-  color: #111113;
-  font: inherit;
-  font-size: 14px;
-  outline: none;
-}
-
-.tripChecklistForm input:focus {
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
-}
-
-.tripChecklistForm button {
-  min-height: 42px;
-  border-radius: 999px;
-  background: #111113;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 850;
-}
-
-.tripChecklistForm button:disabled {
-  cursor: not-allowed;
-  opacity: 0.42;
-}
-
-.tripChecklistList {
-  display: grid;
-  gap: 8px;
-}
-
-.tripChecklistRow,
-.tripChecklistEmptyRow {
-  display: grid;
-  width: 100%;
-  min-width: 0;
-  grid-template-columns: 34px minmax(0, 1fr) 32px;
-  align-items: center;
-  gap: 10px;
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.66);
-  padding: 10px;
-  transition:
-    background 160ms ease,
-    opacity 160ms ease,
-    transform 160ms ease;
-}
-
-.tripChecklistEmptyRow {
-  grid-template-columns: 34px minmax(0, 1fr);
-}
-
-.tripChecklistRow:active {
-  transform: scale(0.99);
-}
-
-.tripChecklistRowDone {
-  opacity: 0.6;
-}
-
-.tripChecklistCheck,
-.tripChecklistEmptyIcon {
-  display: grid;
-  width: 30px;
-  height: 30px;
-  place-items: center;
-  justify-self: center;
-  border: 1px solid rgba(0, 0, 0, 0.14);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.8);
-  color: transparent;
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.tripChecklistEmptyIcon {
-  border-color: transparent;
-  background: #111113;
-  color: #ffffff;
-}
-
-.tripChecklistCheckDone {
-  border-color: transparent;
-  background: #34c759;
-  color: #ffffff;
-}
-
-.tripChecklistMain,
-.tripChecklistEmptyRow div:nth-child(2) {
-  min-width: 0;
-  text-align: left;
-}
-
-.tripChecklistMain strong,
-.tripChecklistEmptyRow strong {
-  display: block;
-  overflow: hidden;
-  color: #111113;
-  font-size: 15px;
-  font-weight: 850;
-  letter-spacing: -0.025em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tripChecklistRowDone .tripChecklistMain strong {
-  color: rgba(0, 0, 0, 0.45);
-  text-decoration: line-through;
-}
-
-.tripChecklistMain span,
-.tripChecklistEmptyRow span {
-  display: block;
-  overflow: hidden;
-  margin-top: 2px;
-  color: rgba(0, 0, 0, 0.45);
-  font-size: 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tripChecklistDelete {
-  display: grid;
-  width: 30px;
-  height: 30px;
-  place-items: center;
-  justify-self: end;
-  border-radius: 999px;
-  color: rgba(244, 63, 94, 0.72);
-  font-size: 22px;
-  font-weight: 450;
-  line-height: 1;
-}
-
-.tripChecklistDelete:hover {
-  background: rgba(244, 63, 94, 0.09);
-  color: #e11d48;
-}
-
-.tripChecklistDelete:active {
-  transform: scale(0.92);
-}
-
-@media (max-width: 380px) {
-  .tripChecklistSection {
-    border-radius: 24px;
-    padding: 10px;
-  }
-
-  .tripChecklistForm {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Health allergies + medications */
-.healthSummaryCard {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 20px;
-}
-
-.healthSummaryCard h2 {
-  margin: 4px 0 0;
-  color: #111113;
-  font-size: 36px;
-  font-weight: 850;
-  line-height: 1;
-  letter-spacing: -0.06em;
-}
-
-.healthSummaryCard span {
-  display: block;
-  margin-top: 6px;
-  color: rgba(0, 0, 0, 0.45);
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.healthSummaryIcon {
-  display: grid;
-  width: 58px;
-  height: 58px;
-  flex: 0 0 auto;
-  place-items: center;
-  border-radius: 22px;
-  background: #111113;
-  color: #ffffff;
-  font-size: 28px;
-  font-weight: 850;
-  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.16);
-}
-
-.moduleRowSelected {
-  background: rgba(37, 99, 235, 0.08);
-}
-
-.healthDetailCard,
-.healthSubsectionCard {
-  display: grid;
-  gap: 16px;
-  padding: 18px;
-}
-
-.healthDetailHeader,
-.healthSubsectionHeader {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.healthDetailHeader p,
-.healthSubsectionHeader p {
-  margin: 0;
-  color: rgba(0, 0, 0, 0.36);
-  font-size: 11px;
-  font-weight: 850;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-}
-
-.healthDetailHeader h2,
-.healthSubsectionHeader h2 {
-  margin: 3px 0 0;
-  color: #111113;
-  font-size: 24px;
-  font-weight: 850;
-  line-height: 1.05;
-  letter-spacing: -0.045em;
-}
-
-.healthDetailHeader span {
-  display: block;
-  margin-top: 5px;
-  color: rgba(0, 0, 0, 0.46);
-  font-size: 13px;
-  font-weight: 750;
-}
-
-.healthDetailIcon {
-  display: grid;
-  width: 48px;
-  height: 48px;
-  flex: 0 0 auto;
-  place-items: center;
-  border-radius: 20px;
-  background: #111113;
-  color: #ffffff;
-  font-size: 24px;
-  font-weight: 850;
-}
-
-.healthDetailMetaGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-}
-
-.healthDetailMetaGrid div {
-  border-radius: 20px;
-  background: rgba(0, 0, 0, 0.035);
-  padding: 12px;
-}
-
-.healthDetailMetaGrid span,
-.healthDetailSection p {
-  display: block;
-  margin: 0;
-  color: rgba(0, 0, 0, 0.38);
-  font-size: 11px;
-  font-weight: 850;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.healthDetailMetaGrid strong {
-  display: block;
-  margin-top: 3px;
-  color: #111113;
-  font-size: 14px;
-  font-weight: 850;
-  letter-spacing: -0.02em;
-}
-
-.healthDetailSection {
-  display: grid;
-  gap: 8px;
-}
-
-.healthDetailText {
-  border-radius: 22px;
-  background: rgba(0, 0, 0, 0.035);
-  padding: 14px;
-  color: rgba(0, 0, 0, 0.68);
-  font-size: 14px;
-  line-height: 1.55;
-  white-space: pre-wrap;
-}
-
-.healthInlineForm {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-}
-
-.healthInlineForm input,
-.healthInlineForm select {
-  width: 100%;
-  min-width: 0;
-  min-height: 42px;
-  border: 0;
-  border-radius: 18px;
-  background: rgba(0, 0, 0, 0.045);
-  padding: 0 12px;
-  color: #111113;
-  font: inherit;
-  font-size: 14px;
-  outline: none;
-}
-
-.healthInlineForm input:focus,
-.healthInlineForm select:focus {
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
-}
-
-.healthInlineForm button {
-  min-height: 42px;
-  border-radius: 999px;
-  background: #111113;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 850;
-}
-
-.healthInlineForm button:disabled {
-  cursor: not-allowed;
-  opacity: 0.42;
-}
-
-.healthCompactList {
-  display: grid;
-  gap: 8px;
-}
-
-.healthCompactRow,
-.healthCompactEmptyRow {
-  display: grid;
-  width: 100%;
-  min-width: 0;
-  grid-template-columns: 38px minmax(0, 1fr) auto 32px;
-  align-items: center;
-  gap: 10px;
-  border-radius: 24px;
-  background: rgba(0, 0, 0, 0.035);
-  padding: 10px;
-}
-
-.healthMedicationRow {
-  grid-template-columns: 38px minmax(0, 1fr) 32px;
-}
-
-.healthCompactEmptyRow {
-  grid-template-columns: 38px minmax(0, 1fr);
-}
-
-.healthCompactIcon {
-  display: grid;
-  width: 38px;
-  height: 38px;
-  place-items: center;
-  border-radius: 16px;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 850;
-}
-
-.healthCompactText,
-.healthCompactEmptyRow div:nth-child(2) {
-  min-width: 0;
-}
-
-.healthCompactText strong,
-.healthCompactEmptyRow strong {
-  display: block;
-  overflow: hidden;
-  color: #111113;
-  font-size: 15px;
-  font-weight: 850;
-  letter-spacing: -0.025em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.healthCompactText span,
-.healthCompactEmptyRow span {
-  display: block;
-  overflow: hidden;
-  margin-top: 2px;
-  color: rgba(0, 0, 0, 0.45);
-  font-size: 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.healthSeverityPill {
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.055);
-  padding: 5px 9px;
-  color: rgba(0, 0, 0, 0.56);
-  font-size: 11px;
-  font-weight: 850;
-  text-transform: capitalize;
-}
-
-.healthSeveritysevere {
-  background: rgba(244, 63, 94, 0.12);
-  color: #be123c;
-}
-
-.healthSeveritymoderate {
-  background: rgba(251, 191, 36, 0.16);
-  color: #92400e;
-}
-
-.healthSeveritymild {
-  background: rgba(16, 185, 129, 0.12);
-  color: #047857;
-}
-
-.healthDeleteButton {
-  display: grid;
-  width: 30px;
-  height: 30px;
-  place-items: center;
-  justify-self: end;
-  border-radius: 999px;
-  color: rgba(244, 63, 94, 0.72);
-  font-size: 22px;
-  font-weight: 450;
-  line-height: 1;
-}
-
-.healthDeleteButton:hover {
-  background: rgba(244, 63, 94, 0.09);
-  color: #e11d48;
-}
-
-@media (min-width: 390px) {
-  .healthInlineFormAllergy {
-    grid-template-columns: minmax(0, 1fr) 112px minmax(0, 1fr) 68px;
-  }
-
-  .healthInlineFormMedication {
-    grid-template-columns: minmax(0, 1fr) 90px 100px;
-  }
-
-  .healthInlineFormMedication input:nth-child(4),
-  .healthInlineFormMedication button {
-    grid-column: auto;
-  }
-}
-
-@media (max-width: 380px) {
-  .healthDetailMetaGrid,
-  .healthCompactRow,
-  .healthCompactEmptyRow,
-  .healthMedicationRow {
-    grid-template-columns: 1fr;
-  }
-
-  .healthCompactIcon,
-  .healthDeleteButton {
-    justify-self: start;
-  }
-}
-
+/* -------------------------------------------------------------------------- */
+/* Health visual cleanup repair                                               */
 /* -------------------------------------------------------------------------- */
 /* Health visual cleanup                                                      */
 /* Final override layer for the combined notes / allergies / medications page. */
@@ -4565,6 +3381,859 @@ button {
   }
 
   .healthNoticeIcon {
+    justify-self: start;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Trips packing + prep visual repair                                         */
+/* -------------------------------------------------------------------------- */
+/* Trips packing + prep items */
+.tripDetailDivider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.tripDetailStatus,
+.tripDetailError {
+  margin: 0;
+  border-radius: 20px;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.tripDetailStatus {
+  background: rgba(0, 0, 0, 0.035);
+  color: rgba(0, 0, 0, 0.48);
+}
+
+.tripDetailError {
+  background: rgba(244, 63, 94, 0.1);
+  color: #be123c;
+}
+
+.tripChecklistGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.tripChecklistSection {
+  display: grid;
+  gap: 10px;
+  border-radius: 26px;
+  background: rgba(0, 0, 0, 0.025);
+  padding: 12px;
+}
+
+.tripChecklistHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tripChecklistHeader h3 {
+  margin: 0;
+  color: #111113;
+  font-size: 17px;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+}
+
+.tripChecklistHeader p {
+  margin: 3px 0 0;
+  color: rgba(0, 0, 0, 0.42);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.tripChecklistForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 70px;
+  gap: 8px;
+}
+
+.tripChecklistForm input {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  border: 0;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 12px;
+  color: #111113;
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.tripChecklistForm input:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.tripChecklistForm button {
+  min-height: 42px;
+  border-radius: 999px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.tripChecklistForm button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.tripChecklistList {
+  display: grid;
+  gap: 8px;
+}
+
+.tripChecklistRow,
+.tripChecklistEmptyRow {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: 34px minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.66);
+  padding: 10px;
+  transition:
+    background 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.tripChecklistEmptyRow {
+  grid-template-columns: 34px minmax(0, 1fr);
+}
+
+.tripChecklistRow:active {
+  transform: scale(0.99);
+}
+
+.tripChecklistRowDone {
+  opacity: 0.6;
+}
+
+.tripChecklistCheck,
+.tripChecklistEmptyIcon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  justify-self: center;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  color: transparent;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.tripChecklistEmptyIcon {
+  border-color: transparent;
+  background: #111113;
+  color: #ffffff;
+}
+
+.tripChecklistCheckDone {
+  border-color: transparent;
+  background: #34c759;
+  color: #ffffff;
+}
+
+.tripChecklistMain,
+.tripChecklistEmptyRow div:nth-child(2) {
+  min-width: 0;
+  text-align: left;
+}
+
+.tripChecklistMain strong,
+.tripChecklistEmptyRow strong {
+  display: block;
+  overflow: hidden;
+  color: #111113;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tripChecklistRowDone .tripChecklistMain strong {
+  color: rgba(0, 0, 0, 0.45);
+  text-decoration: line-through;
+}
+
+.tripChecklistMain span,
+.tripChecklistEmptyRow span {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tripChecklistDelete {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  justify-self: end;
+  border-radius: 999px;
+  color: rgba(244, 63, 94, 0.72);
+  font-size: 22px;
+  font-weight: 450;
+  line-height: 1;
+}
+
+.tripChecklistDelete:hover {
+  background: rgba(244, 63, 94, 0.09);
+  color: #e11d48;
+}
+
+.tripChecklistDelete:active {
+  transform: scale(0.92);
+}
+
+@media (max-width: 380px) {
+  .tripChecklistSection {
+    border-radius: 24px;
+    padding: 10px;
+  }
+
+  .tripChecklistForm {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Calendar single-event edit action repair                                   */
+/* -------------------------------------------------------------------------- */
+.calendarAgendaActionGroup {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+}
+
+.calendarAgendaEditButton,
+.calendarAgendaDeleteButton {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.calendarAgendaEditButton {
+  color: rgba(37, 99, 235, 0.78);
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.calendarAgendaDeleteButton {
+  color: rgba(244, 63, 94, 0.74);
+  font-size: 23px;
+  font-weight: 450;
+}
+
+.calendarAgendaEditButton:hover {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+}
+
+.calendarAgendaDeleteButton:hover {
+  background: rgba(244, 63, 94, 0.09);
+  color: #e11d48;
+}
+
+.calendarAgendaEditButton:active,
+.calendarAgendaDeleteButton:active {
+  transform: scale(0.92);
+}
+
+/* -------------------------------------------------------------------------- */
+/* FINAL CURRENT-VIEW REPAIR LAYER                                            */
+/* Matches the TSX currently in src.zip. Keep at the bottom of globals.css.    */
+/* -------------------------------------------------------------------------- */
+
+/* To-do current layout */
+.todoCreateCard {
+  padding: 14px;
+}
+
+.todoCreateForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 82px;
+  gap: 10px;
+  align-items: center;
+}
+
+.todoCreateForm input {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 14px;
+  color: #111113;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.todoCreateForm input:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.todoCreateForm button {
+  min-height: 48px;
+  border-radius: 999px;
+  background: #111113;
+  padding: 0 16px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.todoCreateForm button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.todoSummaryCard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+}
+
+.todoSummaryCard h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 36px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.todoSummaryCard span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.todoSummaryIcon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 22px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 850;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.16);
+}
+
+.todoListCard {
+  padding: 16px;
+}
+
+.todoTabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 4px;
+}
+
+.todoTabs button {
+  min-width: 0;
+  border-radius: 999px;
+  padding: 9px 0;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.todoTabs .todoTabActive {
+  background: #ffffff;
+  color: #111113;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+}
+
+.todoList {
+  display: grid;
+  gap: 10px;
+}
+
+.todoRow,
+.todoEmptyRow {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: 38px minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 12px;
+  border-radius: 26px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.todoEmptyRow {
+  grid-template-columns: 38px minmax(0, 1fr);
+}
+
+.todoRowDone {
+  opacity: 0.58;
+}
+
+.todoCheck,
+.todoEmptyIcon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  justify-self: center;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  color: transparent;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.todoEmptyIcon {
+  border-color: transparent;
+  background: #111113;
+  color: #ffffff;
+}
+
+.todoCheckDone {
+  border-color: transparent;
+  background: #34c759;
+  color: #ffffff;
+}
+
+.todoMainButton,
+.todoEmptyRow div:nth-child(2) {
+  min-width: 0;
+  text-align: left;
+}
+
+.todoMainButton strong,
+.todoEmptyRow strong {
+  display: block;
+  overflow: hidden;
+  color: #111113;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.todoRowDone .todoMainButton strong {
+  color: rgba(0, 0, 0, 0.45);
+  text-decoration: line-through;
+}
+
+.todoMainButton span,
+.todoEmptyRow span {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 13px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.todoDeleteButton {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  justify-self: end;
+  border-radius: 999px;
+  color: rgba(244, 63, 94, 0.72);
+  font-size: 23px;
+  font-weight: 450;
+  line-height: 1;
+}
+
+.todoDeleteButton:hover {
+  background: rgba(244, 63, 94, 0.09);
+  color: #e11d48;
+}
+
+/* Family hub current layout */
+.hubPageCard {
+  overflow: hidden;
+  padding: 16px;
+}
+
+.featuredCard {
+  display: block;
+  width: 100%;
+  min-height: 154px;
+  border-radius: 28px;
+  padding: 20px;
+  color: #ffffff;
+  text-align: left;
+  box-shadow: 0 18px 35px rgba(59, 130, 246, 0.2);
+}
+
+.featuredCard p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.featuredCard h2 {
+  margin: 10px 0 0;
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.featuredCard span {
+  display: block;
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.hubList {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.hubRow {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 48px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 14px;
+  border-radius: 26px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+  text-align: left;
+}
+
+.hubRow .hubIcon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0;
+}
+
+.hubRow div:nth-child(2) {
+  min-width: 0;
+}
+
+.hubRow strong {
+  display: block;
+  overflow: hidden;
+  color: #111113;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hubRow span:not(.chevron) {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 13px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Recipe create/detail current layout */
+.recipeCreateCard {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.recipeCreateHeader p {
+  margin: 0;
+}
+
+.recipeCreateHeader h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 28px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.recipeCreateGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.recipeCreateGrid input,
+.recipeCreateGrid textarea {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 14px;
+  color: #111113;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.recipeCreateGrid input {
+  min-height: 46px;
+}
+
+.recipeCreateGrid textarea {
+  min-height: 88px;
+  padding-top: 12px;
+  resize: vertical;
+}
+
+.recipeCreateGrid input:focus,
+.recipeCreateGrid textarea:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.recipeCreateGrid button {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 999px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.recipeCreateGrid button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+/* Health current layout */
+.healthSummaryCard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+}
+
+.healthSummaryCard h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 36px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.healthSummaryCard span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.healthSummaryIcon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 22px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 850;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.16);
+}
+
+.healthCompactList {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.healthCompactRow,
+.healthCompactEmptyRow {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: 38px minmax(0, 1fr) auto 32px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+}
+
+.healthMedicationRow {
+  grid-template-columns: 38px minmax(0, 1fr) 32px;
+}
+
+.healthCompactEmptyRow {
+  grid-template-columns: 38px minmax(0, 1fr);
+}
+
+.healthCompactIcon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 16px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.healthCompactText,
+.healthCompactEmptyRow div:nth-child(2) {
+  min-width: 0;
+}
+
+.healthCompactText strong,
+.healthCompactEmptyRow strong {
+  display: block;
+  overflow: hidden;
+  color: #111113;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.healthCompactText span,
+.healthCompactEmptyRow span {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 13px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.healthSeverityPill {
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.055);
+  padding: 6px 9px;
+  color: rgba(0, 0, 0, 0.58);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: capitalize;
+}
+
+.healthSeveritysevere {
+  background: rgba(244, 63, 94, 0.12);
+  color: #be123c;
+}
+
+.healthSeveritymoderate {
+  background: rgba(251, 191, 36, 0.18);
+  color: #92400e;
+}
+
+.healthSeveritymild {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+}
+
+.healthDeleteButton {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  justify-self: end;
+  border-radius: 999px;
+  color: rgba(244, 63, 94, 0.72);
+  font-size: 23px;
+  font-weight: 450;
+  line-height: 1;
+}
+
+.healthDeleteButton:hover {
+  background: rgba(244, 63, 94, 0.09);
+  color: #e11d48;
+}
+
+.healthDetailHeader > div:first-child {
+  min-width: 0;
+}
+
+@media (min-width: 390px) {
+  .recipeCreateGrid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr);
+  }
+
+  .recipeCreateGrid input:nth-child(3),
+  .recipeCreateGrid textarea,
+  .recipeCreateGrid button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 380px) {
+  .todoCreateForm,
+  .recipeCreateGrid,
+  .healthCleanForm,
+  .healthCompactRow,
+  .healthMedicationRow {
+    grid-template-columns: 1fr;
+  }
+
+  .healthSeverityPill,
+  .healthDeleteButton,
+  .todoDeleteButton,
+  .moduleDeleteButton {
     justify-self: start;
   }
 }
