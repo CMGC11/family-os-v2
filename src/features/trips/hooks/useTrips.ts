@@ -4,6 +4,8 @@ import {
   fetchTrips,
   insertTrip,
 } from '../services/tripsSupabaseService';
+import { requireSupabaseClient } from '../../../lib/supabase/client';
+import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import type { Trip } from '../types';
 
 export function useTrips() {
@@ -44,6 +46,55 @@ export function useTrips() {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    const supabase = requireSupabaseClient();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    async function subscribe() {
+      try {
+        const householdId = await getCurrentHouseholdId();
+
+        if (cancelled) return;
+
+        channel = supabase
+          .channel(`trips-realtime-${householdId}`)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'trips',
+              filter: `household_id=eq.${householdId}`,
+            },
+            async () => {
+              try {
+                const nextItems = await fetchTrips();
+                setItems(nextItems);
+              } catch (error) {
+                console.error('Failed to refresh trips after realtime event:', error);
+                setErrorMessage(error instanceof Error ? error.message : 'Failed to sync trips.');
+              }
+            },
+          )
+          .subscribe();
+      } catch (error) {
+        console.error('Failed to subscribe to trips realtime:', error);
+        setErrorMessage(error instanceof Error ? error.message : 'Failed to subscribe to trips sync.');
+      }
+    }
+
+    subscribe();
+
+    return () => {
+      cancelled = true;
+
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, []);
+
   async function addItem(input: {
     title: string;
     destination: string;
@@ -64,7 +115,10 @@ export function useTrips() {
         end_date: input.end_date,
       });
 
-      setItems((current) => [newItem, ...current]);
+      setItems((current) => {
+        const withoutDuplicate = current.filter((item) => item.id !== newItem.id);
+        return [newItem, ...withoutDuplicate];
+      });
     } catch (error) {
       console.error('Failed to insert trip:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Failed to add trip.');
