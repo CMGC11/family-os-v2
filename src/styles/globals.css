@@ -5285,3 +5285,23 @@ button {
     font-size: 23px;
   }
 }
+
+/* Home bottom layout polish */
+.homeHubPreview {
+  padding-bottom: 28px;
+}
+
+.homeHubGrid .homeHubButton:last-child {
+  grid-column: 1 / -1;
+  min-height: 112px;
+}
+
+.homeHubGrid .homeHubButton:last-child .hubIcon {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 380px) {
+  .homeHubPreview {
+    padding-bottom: 34px;
+  }
+}
