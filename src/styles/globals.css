@@ -3788,3 +3788,229 @@ button {
     font-size: 25px;
   }
 }
+
+/* Trips packing + prep items */
+.tripDetailDivider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.tripDetailStatus,
+.tripDetailError {
+  margin: 0;
+  border-radius: 20px;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.tripDetailStatus {
+  background: rgba(0, 0, 0, 0.035);
+  color: rgba(0, 0, 0, 0.48);
+}
+
+.tripDetailError {
+  background: rgba(244, 63, 94, 0.1);
+  color: #be123c;
+}
+
+.tripChecklistGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.tripChecklistSection {
+  display: grid;
+  gap: 10px;
+  border-radius: 26px;
+  background: rgba(0, 0, 0, 0.025);
+  padding: 12px;
+}
+
+.tripChecklistHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tripChecklistHeader h3 {
+  margin: 0;
+  color: #111113;
+  font-size: 17px;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+}
+
+.tripChecklistHeader p {
+  margin: 3px 0 0;
+  color: rgba(0, 0, 0, 0.42);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.tripChecklistForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 70px;
+  gap: 8px;
+}
+
+.tripChecklistForm input {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  border: 0;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 12px;
+  color: #111113;
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.tripChecklistForm input:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.tripChecklistForm button {
+  min-height: 42px;
+  border-radius: 999px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.tripChecklistForm button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.tripChecklistList {
+  display: grid;
+  gap: 8px;
+}
+
+.tripChecklistRow,
+.tripChecklistEmptyRow {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: 34px minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.66);
+  padding: 10px;
+  transition:
+    background 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.tripChecklistEmptyRow {
+  grid-template-columns: 34px minmax(0, 1fr);
+}
+
+.tripChecklistRow:active {
+  transform: scale(0.99);
+}
+
+.tripChecklistRowDone {
+  opacity: 0.6;
+}
+
+.tripChecklistCheck,
+.tripChecklistEmptyIcon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  justify-self: center;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  color: transparent;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.tripChecklistEmptyIcon {
+  border-color: transparent;
+  background: #111113;
+  color: #ffffff;
+}
+
+.tripChecklistCheckDone {
+  border-color: transparent;
+  background: #34c759;
+  color: #ffffff;
+}
+
+.tripChecklistMain,
+.tripChecklistEmptyRow div:nth-child(2) {
+  min-width: 0;
+  text-align: left;
+}
+
+.tripChecklistMain strong,
+.tripChecklistEmptyRow strong {
+  display: block;
+  overflow: hidden;
+  color: #111113;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tripChecklistRowDone .tripChecklistMain strong {
+  color: rgba(0, 0, 0, 0.45);
+  text-decoration: line-through;
+}
+
+.tripChecklistMain span,
+.tripChecklistEmptyRow span {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tripChecklistDelete {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  justify-self: end;
+  border-radius: 999px;
+  color: rgba(244, 63, 94, 0.72);
+  font-size: 22px;
+  font-weight: 450;
+  line-height: 1;
+}
+
+.tripChecklistDelete:hover {
+  background: rgba(244, 63, 94, 0.09);
+  color: #e11d48;
+}
+
+.tripChecklistDelete:active {
+  transform: scale(0.92);
+}
+
+@media (max-width: 380px) {
+  .tripChecklistSection {
+    border-radius: 24px;
+    padding: 10px;
+  }
+
+  .tripChecklistForm {
+    grid-template-columns: 1fr;
+  }
+}
