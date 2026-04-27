@@ -81,3 +81,18 @@ export async function insertTrip(input: {
 
   return mapRowToTrip(data);
 }
+
+export async function deleteTrip(id: string): Promise<void> {
+  const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
+
+  const { error } = await supabase
+    .from('trips')
+    .delete()
+    .eq('id', id)
+    .eq('household_id', householdId);
+
+  if (error) {
+    throw error;
+  }
+}

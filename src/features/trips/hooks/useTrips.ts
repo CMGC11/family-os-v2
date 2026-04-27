@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  deleteTrip,
   fetchTrips,
   insertTrip,
 } from '../services/tripsSupabaseService';
@@ -70,10 +71,27 @@ export function useTrips() {
     }
   }
 
+  async function deleteItem(id: string) {
+    const previousItems = items;
+
+    setItems((current) => current.filter((item) => item.id !== id));
+
+    try {
+      setErrorMessage('');
+      await deleteTrip(id);
+    } catch (error) {
+      console.error('Failed to delete trip:', error);
+
+      setItems(previousItems);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to delete trip.');
+    }
+  }
+
   return {
     items,
     isLoading,
     errorMessage,
     addItem,
+    deleteItem,
   };
 }

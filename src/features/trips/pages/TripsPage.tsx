@@ -6,7 +6,7 @@ import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
 export default function TripsPage() {
-  const { items, isLoading, errorMessage, addItem } = useTrips();
+  const { items, isLoading, errorMessage, addItem, deleteItem } = useTrips();
   const [title, setTitle] = useState('');
   const [destination, setDestination] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -97,17 +97,28 @@ export default function TripsPage() {
                 </div>
               ) : (
                 items.map((item) => (
-                  <div key={item.id} className="hubRow">
-                    <div className="hubIcon tintBlue">✈</div>
+                  <div key={item.id} className="groceryRow">
+                    <div className="hubRow groceryMainButton">
+                      <div className="hubIcon tintBlue">✈</div>
 
-                    <div>
-                      <strong>{item.title}</strong>
-                      <span>
-                        {item.destination || 'No destination'} · {item.start_date} → {item.end_date}
-                      </span>
+                      <div>
+                        <strong>{item.title}</strong>
+                        <span>
+                          {item.destination || 'No destination'} · {item.start_date} → {item.end_date}
+                        </span>
+                      </div>
+
+                      <span className="chevron">›</span>
                     </div>
 
-                    <span className="chevron">›</span>
+                    <button
+                      type="button"
+                      className="groceryDeleteButton"
+                      onClick={() => deleteItem(item.id)}
+                      aria-label={`Delete ${item.title}`}
+                    >
+                      Delete
+                    </button>
                   </div>
                 ))
               )}
