@@ -324,6 +324,25 @@ Current Trips state:
 
 ---
 
+## Health allergies/medications wiring
+
+Completed:
+- Health now loads medical_notes, allergies, and medications.
+- Allergies support add, list, severity, notes, and delete.
+- Medications support add, list, dosage, frequency, notes, and delete.
+- Allergies and medications are scoped by household_id and person_id.
+- Existing medical notes and note detail view remain intact.
+- No schema changes were made.
+
+Current Health state:
+- Medical notes CRUD is complete.
+- Allergies CRUD is complete.
+- Medications CRUD is complete.
+- Health page now uses the combined health hook for notes, allergies, and medications.
+- medical_shares is not wired yet.
+
+---
+
 ## Design Rules
 
 Mobile-first  
