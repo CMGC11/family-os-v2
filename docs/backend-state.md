@@ -1,323 +1,313 @@
 # FamilyOS v2 Backend State
 
-## Current status
+## Overview
 
-FamilyOS v2 is connected to the existing Supabase project from the previous FamilyOS app.
+FamilyOS v2 is connected to an existing Supabase backend and now runs on real household data across all core modules.
 
-The app is currently using real Supabase-backed household data for:
-
-- Grocery
-- To-do
-- Calendar
-- Home dashboard counts
-
-Temporary dev authentication is still in place.
+Authentication, household resolution, and realtime sync are implemented and stable for most modules.
 
 ---
 
-## Supabase project
-
-The app uses:
+## Environment
 
 VITE_SUPABASE_URL  
 VITE_SUPABASE_ANON_KEY  
 
-Configured through:
+Loaded from:
 
-.env.local  
+.env.local
 
-The file is ignored by Git.
-
-Client files:
+Core files:
 
 src/core/config/env.ts  
 src/lib/supabase/client.ts  
-src/lib/supabase/devLogin.ts  
+src/lib/supabase/auth.ts  
 src/lib/supabase/household.ts  
+src/lib/supabase/person.ts  
 
 ---
 
 ## Authentication
 
-Current auth is temporary.
+Handled via Supabase email/password.
 
-src/lib/supabase/devLogin.ts  
+Files:
 
-This logs in a known Supabase user during development.
+src/app/AuthGate.tsx  
+src/lib/supabase/auth.ts  
 
-This must be replaced later with a real auth flow.
+Status:
 
-Do not ship production with hardcoded email/password.
+Session check ✅  
+Login ✅  
+Logout ✅  
+Auth state listener ✅  
+Cache clearing ✅  
 
 ---
 
-## Household resolution
+## Household Resolution
 
-Household ID is now resolved dynamically through Supabase.
+Database function:
 
-Used function:
+get_my_household_id()
 
-public.get_my_household_id()
-
-Function logic:
+Logic:
 
 select household_id  
 from people  
 where user_id = auth.uid()  
 limit 1;
 
-Client helper:
-
-src/lib/supabase/household.ts  
-
-The app no longer hardcodes a household ID.
+Used across all modules for data scoping.
 
 ---
 
-## Grocery
+## Person Resolution
 
-Table:
+Resolved from:
 
-public.grocery_items  
+public.people
 
-Used columns:
+Used for:
 
-id  
-household_id  
-name  
-category  
-is_checked  
-created_at  
-checked_at  
-
-Ignored existing columns for now:
-
-quantity  
-notes  
-added_by  
-checked_by  
-meal_source  
-list_name  
-
-Client files:
-
-src/features/grocery/types.ts  
-src/features/grocery/services/grocerySupabaseService.ts  
-src/features/grocery/hooks/useGroceryItems.ts  
-src/features/grocery/pages/GroceryPage.tsx  
-
-Status:
-
-Read      ✅  
-Create    ✅  
-Update    ✅  
-Delete    ✅  
-Realtime  ✅  
-
-Realtime works reliably across browser clients.
+Wishlist owner_id  
+Health person_id  
 
 ---
 
-## To-do
+## RLS Model
 
-Table:
+All modules follow:
 
-public.todo_items  
+household_id = get_my_household_id()
 
-Created for FamilyOS v2 because no general task table existed.
+Model:
 
-Used columns:
-
-id  
-household_id  
-title  
-area  
-due  
-is_done  
-created_by  
-created_at  
-
-Client files:
-
-src/features/todo/types.ts  
-src/features/todo/services/todoSupabaseService.ts  
-src/features/todo/hooks/useTodoItems.ts  
-src/features/todo/pages/TodoPage.tsx  
-
-Status:
-
-Read      ✅  
-Create    ✅  
-Update    ✅  
-Delete    ✅  
-Realtime  ✅  
-
-Realtime works reliably across browser clients.
+auth.users.id  
+→ people.user_id  
+→ people.household_id  
+→ module.household_id  
 
 ---
 
-## Calendar
-
-Table:
-
-public.events  
-
-Used columns:
-
-id  
-household_id  
-title  
-date  
-start_time  
-created_at  
-
-Ignored existing complexity for now:
-
-end_time  
-all_day  
-category  
-visibility  
-responsible_id  
-location  
-notes  
-reminder  
-is_busy  
-updated_at  
-recurrence  
-recurrence_end  
-recurrence_parent_id  
-end_date  
-is_multi_day  
-
-Client files:
-
-src/features/calendar/types.ts  
-src/features/calendar/services/calendarSupabaseService.ts  
-src/features/calendar/hooks/useCalendarItems.ts  
-src/features/calendar/pages/CalendarPage.tsx  
-
-Status:
-
-Read              ✅  
-Create            ✅  
-Delete            ✅  
-Realtime attempt  ⚠️  
-Polling fallback  ✅  
-
-Calendar realtime is unreliable across browsers (especially deletes).
-
-Current solution:
-
-- Realtime subscription still exists
-- Polling refresh runs every ~3 seconds
-
-This is acceptable for now: slower than Grocery/To-do, but stable.
-
----
-
-## Home
-
-Home reads real Supabase-backed counts from:
-
-grocery_items  
-todo_items  
-
-Calendar data is partially integrated (basic count / selected-day events).
-
-Client files:
-
-src/features/home/hooks/useHomeSnapshot.ts  
-src/features/home/pages/HomePage.tsx  
-
-Status:
-
-Real grocery count ✅  
-Real todo count    ✅  
-Calendar count     ⚠️ basic  
-
----
-
-## Realtime setup
+## Realtime
 
 Enabled tables:
 
 grocery_items  
 todo_items  
+wishlist_items  
+medical_notes  
+recipes  
+trips  
 events  
+
+Requirement:
+
+alter table <table> replica identity full;
+
+Working realtime:
+
+Grocery ✅  
+To-do ✅  
+Wishlist ✅  
+Health ✅  
+Recipes ✅  
+Trips ✅  
+
+Calendar uses polling fallback.
+
+---
+
+## Modules
+
+### Grocery
+
+Table: public.grocery_items
+
+Status:
+
+CRUD ✅  
+Realtime ✅  
+
+---
+
+### To-do
+
+Table: public.todo_items
+
+Status:
+
+CRUD ✅  
+Realtime ✅  
+
+---
+
+### Wishlist
+
+Table: public.wishlist_items
 
 Notes:
 
-- Grocery and To-do realtime work correctly across clients
-- Calendar realtime is inconsistent, polling fallback is used
-- Some tables use replica identity full to improve delete propagation
+owner_id = people.id
+
+Status:
+
+CRUD ✅  
+Realtime ✅  
 
 ---
 
-## Development workflow
+### Health
 
-Rule:
+Table: public.medical_notes
 
-One module at a time.
+Other tables (not wired):
 
-Standard sequence:
+allergies  
+medications  
+medical_shares  
 
-Read  
-Create  
-Update  
-Delete  
-Realtime or fallback sync  
-Commit  
+Status:
 
-Avoid large refactors while backend wiring is stabilizing.
+CRUD ✅  
+Realtime ✅  
 
 ---
 
-## Design direction
+### Recipes
 
-Keep Apple-style prototype consistency:
+Table: public.recipes
 
+Status:
+
+CRUD ✅  
+Realtime ✅  
+
+UI intentionally simplified.
+
+---
+
+### Trips
+
+Table: public.trips
+
+Other tables (not wired):
+
+packing_items  
+prep_items  
+
+Status:
+
+CRUD ✅  
+Realtime ✅  
+
+---
+
+### Calendar
+
+Table: public.events
+
+Status:
+
+Read ✅  
+Create ✅  
+Delete ✅  
+Realtime ⚠️ unreliable  
+Polling fallback ✅  
+
+Notes:
+
+~3s polling interval  
+No recurrence handling  
+Static month grid  
+
+---
+
+### Home
+
+Reads aggregated data from modules.
+
+Status:
+
+Real counts ✅  
+Basic calendar integration ⚠️  
+
+---
+
+## Current System State
+
+Auth → real sessions ✅  
+Household → dynamic resolution ✅  
+Person → dynamic resolution ✅  
+
+Grocery → CRUD + realtime ✅  
+To-do → CRUD + realtime ✅  
+Wishlist → CRUD + realtime ✅  
+Health → CRUD + realtime ✅  
+Recipes → CRUD + realtime ✅  
+Trips → CRUD + realtime ✅  
+Calendar → CRUD + polling fallback ✅  
+Home → real data ✅  
+
+---
+
+## Design Rules
+
+Mobile-first  
 Clean layout  
-Light background  
+Light gray shell  
 Glass cards  
 Large headers  
-Subtle shadows  
-Minimal clutter  
-Strong typography  
-Simple interactions  
-
-Do not introduce random styling patterns.
+Consistent spacing  
+No per-module styling chaos  
 
 ---
 
-## Known limitations
+## Engineering Rules
 
-- Dev login still active
-- Calendar recurrence ignored
-- Calendar multi-day logic ignored
-- Calendar selected date is static
-- Calendar sync uses polling fallback
-- No production auth flow yet
+One module at a time  
+Inspect schema first  
+Inspect RLS  
+Then: Read → Create → Delete → Realtime  
+No premature abstraction  
+Reuse working patterns  
 
 ---
 
-## Next recommended work
+## Known Limitations
 
-1. Replace dev login with real authentication flow  
-2. Make calendar selected date dynamic  
-3. Improve calendar sync only if needed  
-4. Start wiring next modules: Wishlist, Health, Trips, Recipes  
-5. Add basic user/session handling for multi-user environments  
+Calendar realtime unreliable  
+Calendar month not dynamic  
+No edit/update flows  
+Recipes form simplified  
+Trips packing/prep not implemented  
+Health extra tables not wired  
+Home still basic  
+Logout overlaps header UI  
+
+---
+
+## Next Steps
+
+1. UI consistency pass  
+2. Fix header/logout positioning  
+3. Add detail/edit screens  
+4. Proper calendar month navigation  
+5. Trips packing/prep items  
+6. Health allergies/medications  
+7. Improve Home dashboard  
 
 ---
 
 ## Summary
 
-FamilyOS v2 now has a working shared household backend:
+FamilyOS v2 now has:
 
-- Multi-user data model  
-- Supabase-backed storage  
-- RLS enforced per household  
-- Realtime where stable  
-- Polling fallback where needed  
+Real auth  
+Real household data  
+Realtime sync (most modules)  
+Stable backend foundation  
 
-This is a stable foundation to continue building on.
+Focus shifts from backend → UI + UX + structure.
