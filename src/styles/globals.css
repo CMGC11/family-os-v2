@@ -4014,3 +4014,327 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* Health allergies + medications */
+.healthSummaryCard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+}
+
+.healthSummaryCard h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 36px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.healthSummaryCard span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.healthSummaryIcon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 22px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 850;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.16);
+}
+
+.moduleRowSelected {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.healthDetailCard,
+.healthSubsectionCard {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.healthDetailHeader,
+.healthSubsectionHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.healthDetailHeader p,
+.healthSubsectionHeader p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.healthDetailHeader h2,
+.healthSubsectionHeader h2 {
+  margin: 3px 0 0;
+  color: #111113;
+  font-size: 24px;
+  font-weight: 850;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+}
+
+.healthDetailHeader span {
+  display: block;
+  margin-top: 5px;
+  color: rgba(0, 0, 0, 0.46);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.healthDetailIcon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 20px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 850;
+}
+
+.healthDetailMetaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.healthDetailMetaGrid div {
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+}
+
+.healthDetailMetaGrid span,
+.healthDetailSection p {
+  display: block;
+  margin: 0;
+  color: rgba(0, 0, 0, 0.38);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.healthDetailMetaGrid strong {
+  display: block;
+  margin-top: 3px;
+  color: #111113;
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+}
+
+.healthDetailSection {
+  display: grid;
+  gap: 8px;
+}
+
+.healthDetailText {
+  border-radius: 22px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 14px;
+  color: rgba(0, 0, 0, 0.68);
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.healthInlineForm {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.healthInlineForm input,
+.healthInlineForm select {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  border: 0;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 12px;
+  color: #111113;
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.healthInlineForm input:focus,
+.healthInlineForm select:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.healthInlineForm button {
+  min-height: 42px;
+  border-radius: 999px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.healthInlineForm button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.healthCompactList {
+  display: grid;
+  gap: 8px;
+}
+
+.healthCompactRow,
+.healthCompactEmptyRow {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: 38px minmax(0, 1fr) auto 32px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 10px;
+}
+
+.healthMedicationRow {
+  grid-template-columns: 38px minmax(0, 1fr) 32px;
+}
+
+.healthCompactEmptyRow {
+  grid-template-columns: 38px minmax(0, 1fr);
+}
+
+.healthCompactIcon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 16px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.healthCompactText,
+.healthCompactEmptyRow div:nth-child(2) {
+  min-width: 0;
+}
+
+.healthCompactText strong,
+.healthCompactEmptyRow strong {
+  display: block;
+  overflow: hidden;
+  color: #111113;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.healthCompactText span,
+.healthCompactEmptyRow span {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.healthSeverityPill {
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.055);
+  padding: 5px 9px;
+  color: rgba(0, 0, 0, 0.56);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: capitalize;
+}
+
+.healthSeveritysevere {
+  background: rgba(244, 63, 94, 0.12);
+  color: #be123c;
+}
+
+.healthSeveritymoderate {
+  background: rgba(251, 191, 36, 0.16);
+  color: #92400e;
+}
+
+.healthSeveritymild {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+}
+
+.healthDeleteButton {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  justify-self: end;
+  border-radius: 999px;
+  color: rgba(244, 63, 94, 0.72);
+  font-size: 22px;
+  font-weight: 450;
+  line-height: 1;
+}
+
+.healthDeleteButton:hover {
+  background: rgba(244, 63, 94, 0.09);
+  color: #e11d48;
+}
+
+@media (min-width: 390px) {
+  .healthInlineFormAllergy {
+    grid-template-columns: minmax(0, 1fr) 112px minmax(0, 1fr) 68px;
+  }
+
+  .healthInlineFormMedication {
+    grid-template-columns: minmax(0, 1fr) 90px 100px;
+  }
+
+  .healthInlineFormMedication input:nth-child(4),
+  .healthInlineFormMedication button {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 380px) {
+  .healthDetailMetaGrid,
+  .healthCompactRow,
+  .healthCompactEmptyRow,
+  .healthMedicationRow {
+    grid-template-columns: 1fr;
+  }
+
+  .healthCompactIcon,
+  .healthDeleteButton {
+    justify-self: start;
+  }
+}
