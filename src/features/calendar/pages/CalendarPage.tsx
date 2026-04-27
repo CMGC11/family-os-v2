@@ -55,6 +55,16 @@ function formatSelectedDayLabel(dateString: string) {
   });
 }
 
+function formatShortDateLabel(dateString: string) {
+  const date = createLocalDate(dateString);
+
+  return date.toLocaleDateString('en-GB', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  });
+}
+
 function getDaysInMonth(year: number, monthIndex: number) {
   return new Date(year, monthIndex + 1, 0).getDate();
 }
@@ -257,8 +267,8 @@ export default function CalendarPage() {
 
       <PageShell>
         {isCreating && (
-          <GlassCard className="quickCreateCard calendarQuickCreateCard">
-            <div className="calendarCreateHeader">
+          <GlassCard className="calendarCreateCard">
+            <div className="calendarCreateHeaderClean">
               <div>
                 <p>New event</p>
                 <h2>{formatSelectedDayLabel(selectedDate)}</h2>
@@ -269,14 +279,14 @@ export default function CalendarPage() {
               </button>
             </div>
 
-            <div className="calendarCreateForm">
+            <div className="calendarCreateFormClean">
               <input
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter') handleAddEvent();
                 }}
-                placeholder="Event title..."
+                placeholder="Event title"
                 autoFocus
                 aria-label="New event title"
               />
@@ -307,104 +317,93 @@ export default function CalendarPage() {
           </GlassCard>
         )}
 
-        <GlassCard className="calendarCard">
-          <div className="calendarTop">
-            <div className="calendarActions">
+        <GlassCard className="calendarMonthCard">
+          <div className="calendarMonthHeader">
+            <div>
+              <p>Month</p>
+              <h2>{currentMonthTitle}</h2>
+            </div>
+
+            <div className="calendarMonthControls">
               <button type="button" onClick={goToToday}>
                 Today
               </button>
-
-              <div>
-                <button type="button" onClick={() => moveMonth(-1)} aria-label="Previous month">
-                  ‹
-                </button>
-                <button type="button" onClick={() => moveMonth(1)} aria-label="Next month">
-                  ›
-                </button>
-              </div>
+              <button type="button" onClick={() => moveMonth(-1)} aria-label="Previous month">
+                ‹
+              </button>
+              <button type="button" onClick={() => moveMonth(1)} aria-label="Next month">
+                ›
+              </button>
             </div>
-
-            <h2>{currentMonthTitle}</h2>
           </div>
 
-          <div className="calendarBody">
-            <div className="weekLabels">
-              {WEEK_LABELS.map((label, index) => (
-                <div key={`${label}-${index}`}>{label}</div>
-              ))}
-            </div>
+          <div className="calendarWeekLabels">
+            {WEEK_LABELS.map((label, index) => (
+              <div key={`${label}-${index}`}>{label}</div>
+            ))}
+          </div>
 
-            <div className="monthGrid">
-              {monthDays.map((day) => {
-                const dayEvents = eventsByDate.get(day.dateString) ?? [];
-                const isSelected = selectedDate === day.dateString;
-                const isToday = todayDateString === day.dateString;
-                const visibleDots = dayEvents.slice(0, 3);
-                const hiddenEventCount = Math.max(dayEvents.length - visibleDots.length, 0);
+          <div className="calendarMonthGrid">
+            {monthDays.map((day) => {
+              const dayEvents = eventsByDate.get(day.dateString) ?? [];
+              const isSelected = selectedDate === day.dateString;
+              const isToday = todayDateString === day.dateString;
+              const visibleDots = dayEvents.slice(0, 3);
 
-                return (
-                  <button
-                    key={day.dateString}
-                    type="button"
+              return (
+                <button
+                  key={day.dateString}
+                  type="button"
+                  className={[
+                    'calendarDayCell',
+                    !day.isCurrentMonth ? 'calendarDayCellMuted' : '',
+                    isSelected ? 'calendarDayCellSelected' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  onClick={() => selectDate(day.dateString)}
+                  aria-label={`${formatSelectedDayLabel(day.dateString)}${
+                    dayEvents.length > 0
+                      ? `, ${dayEvents.length} event${dayEvents.length === 1 ? '' : 's'}`
+                      : ', no events'
+                  }`}
+                >
+                  <span
                     className={[
-                      'dayCell',
-                      !day.isCurrentMonth ? 'dayCellMuted' : '',
-                      isSelected ? 'dayCellSelected' : '',
+                      'calendarDayNumber',
+                      isSelected ? 'calendarDayNumberSelected' : '',
+                      isToday && !isSelected ? 'calendarDayNumberToday' : '',
                     ]
                       .filter(Boolean)
                       .join(' ')}
-                    onClick={() => selectDate(day.dateString)}
-                    aria-label={`${formatSelectedDayLabel(day.dateString)}${
-                      dayEvents.length > 0
-                        ? `, ${dayEvents.length} event${dayEvents.length === 1 ? '' : 's'}`
-                        : ', no events'
-                    }`}
                   >
-                    <span
-                      className={[
-                        'dayNumber',
-                        isSelected ? 'daySelected' : '',
-                        isToday ? 'dayToday' : '',
-                        !day.isCurrentMonth ? 'dayMuted' : '',
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                    >
-                      {day.dayNumber}
-                    </span>
+                    {day.dayNumber}
+                  </span>
 
-                    <span className="eventDots" aria-hidden="true">
-                      {visibleDots.map((event, eventIndex) => (
-                        <span
-                          key={event.id}
-                          className={[
-                            'eventDot',
-                            !day.isCurrentMonth ? 'dotMuted' : '',
-                            isSelected ? 'dotSelected' : '',
-                            eventIndex === 1 ? 'dotGreen' : '',
-                            eventIndex === 2 ? 'dotAmber' : '',
-                          ]
-                            .filter(Boolean)
-                            .join(' ')}
-                        />
-                      ))}
-
-                      {hiddenEventCount > 0 && (
-                        <span className={['eventMoreCount', isSelected ? 'eventMoreCountSelected' : ''].join(' ')}>
-                          +{hiddenEventCount}
-                        </span>
-                      )}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+                  <span className="calendarEventDots" aria-hidden="true">
+                    {visibleDots.map((event, eventIndex) => (
+                      <span
+                        key={event.id}
+                        className={[
+                          'calendarEventDot',
+                          eventIndex === 1 ? 'calendarEventDotGreen' : '',
+                          eventIndex === 2 ? 'calendarEventDotAmber' : '',
+                          !day.isCurrentMonth ? 'calendarEventDotMuted' : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                      />
+                    ))}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </GlassCard>
 
         {!isLoading && !errorMessage && (
-          <GlassCard className="agendaCard">
-            <div className="agendaHeader">
+          <GlassCard className="calendarAgendaCard">
+            <div className="calendarAgendaHeader">
               <div>
                 <p>Selected day</p>
                 <h2>{formatSelectedDayLabel(selectedDate)}</h2>
@@ -415,29 +414,28 @@ export default function CalendarPage() {
               </button>
             </div>
 
-            <div className="agendaList">
+            <div className="calendarAgendaList">
               {selectedDayEvents.length === 0 ? (
-                <div className="agendaRow">
-                  <div className="agendaAccent accent0" />
-
+                <div className="calendarAgendaEmptyRow">
+                  <span className="calendarAgendaEmptyIcon" aria-hidden="true" />
                   <div>
                     <strong>No events</strong>
-                    <span>Quiet day. Suspicious, but welcome.</span>
+                    <p>Quiet day. Suspicious, but welcome.</p>
                   </div>
                 </div>
               ) : (
-                selectedDayEvents.map((event, index) => (
-                  <div key={event.id} className="agendaRow">
-                    <div className={`agendaAccent accent${index % 3}`} />
+                selectedDayEvents.map((event) => (
+                  <div key={event.id} className="calendarAgendaRow">
+                    <span className="calendarAgendaTime">{event.time}</span>
 
-                    <div>
+                    <div className="calendarAgendaText">
                       <strong>{event.title}</strong>
-                      <span>{event.time}</span>
+                      <p>{formatShortDateLabel(event.date)}</p>
                     </div>
 
                     <button
                       type="button"
-                      className="agendaDeleteButton"
+                      className="calendarAgendaDeleteButton"
                       onClick={() => deleteEvent(event.id)}
                       aria-label={`Delete ${event.title}`}
                     >
