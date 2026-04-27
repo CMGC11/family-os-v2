@@ -360,6 +360,25 @@ Current Health UX:
 
 ---
 
+## Calendar single-event edit baseline
+
+Completed:
+- Calendar supports single-event editing.
+- Users can edit event title and time.
+- Event date stays unchanged during edit.
+- Calendar still uses the dynamic month grid and selected-day agenda.
+- Calendar still supports create and delete.
+- No schema changes were made.
+
+Current Calendar limits:
+- No recurrence editing.
+- No multi-day events.
+- No availability checks.
+- No drag/drop.
+- No calendar sharing or participants UI.
+
+---
+
 ## Design Rules
 
 Mobile-first  

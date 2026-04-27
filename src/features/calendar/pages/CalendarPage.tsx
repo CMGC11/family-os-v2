@@ -137,6 +137,7 @@ export default function CalendarPage() {
     isLoading,
     errorMessage,
     addEvent,
+    editEvent,
     deleteEvent,
   } = useCalendarItems();
 
@@ -149,6 +150,10 @@ export default function CalendarPage() {
   const [title, setTitle] = useState('');
   const [time, setTime] = useState('12:00');
   const [isSavingEvent, setIsSavingEvent] = useState(false);
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editTime, setEditTime] = useState('12:00');
+  const [isUpdatingEvent, setIsUpdatingEvent] = useState(false);
 
   const isCreating = searchParams.get('create') === 'event';
   const todayDateString = getTodayDateString();
@@ -172,6 +177,7 @@ export default function CalendarPage() {
 
   const currentMonthTitle = getMonthTitle(viewMonth);
   const headerMonthTitle = getMonthHeaderTitle(viewMonth);
+  const editingEvent = events.find((event) => event.id === editingEventId) ?? null;
 
   function setCreateFormOpen(open: boolean) {
     const nextSearchParams = new URLSearchParams(searchParams);
@@ -186,6 +192,7 @@ export default function CalendarPage() {
   }
 
   function openCreateForm() {
+    closeEditForm();
     setCreateFormOpen(true);
   }
 
@@ -193,6 +200,19 @@ export default function CalendarPage() {
     setCreateFormOpen(false);
     setTitle('');
     setTime('12:00');
+  }
+
+  function openEditForm(event: CalendarEvent) {
+    setCreateFormOpen(false);
+    setEditingEventId(event.id);
+    setEditTitle(event.title);
+    setEditTime(event.time || '12:00');
+  }
+
+  function closeEditForm() {
+    setEditingEventId(null);
+    setEditTitle('');
+    setEditTime('12:00');
   }
 
   function selectDate(dateString: string) {
@@ -257,6 +277,30 @@ export default function CalendarPage() {
     }
   }
 
+  async function handleUpdateEvent() {
+    const cleanTitle = editTitle.trim();
+
+    if (!editingEventId || !cleanTitle || isUpdatingEvent) return;
+
+    setIsUpdatingEvent(true);
+
+    const wasUpdated = await editEvent(editingEventId, cleanTitle, editTime);
+
+    setIsUpdatingEvent(false);
+
+    if (wasUpdated) {
+      closeEditForm();
+    }
+  }
+
+  function handleDeleteEvent(eventId: string) {
+    if (editingEventId === eventId) {
+      closeEditForm();
+    }
+
+    deleteEvent(eventId);
+  }
+
   return (
     <main>
       <PageHeader
@@ -300,6 +344,45 @@ export default function CalendarPage() {
 
               <button type="button" onClick={handleAddEvent} disabled={!title.trim() || isSavingEvent}>
                 {isSavingEvent ? 'Saving...' : 'Add'}
+              </button>
+            </div>
+          </GlassCard>
+        )}
+
+        {editingEvent && (
+          <GlassCard className="calendarCreateCard calendarEditCard">
+            <div className="calendarCreateHeaderClean">
+              <div>
+                <p>Edit event</p>
+                <h2>{formatSelectedDayLabel(editingEvent.date)}</h2>
+              </div>
+
+              <button type="button" onClick={closeEditForm}>
+                Cancel
+              </button>
+            </div>
+
+            <div className="calendarCreateFormClean">
+              <input
+                value={editTitle}
+                onChange={(event) => setEditTitle(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') handleUpdateEvent();
+                }}
+                placeholder="Event title"
+                autoFocus
+                aria-label="Edit event title"
+              />
+
+              <input
+                value={editTime}
+                onChange={(event) => setEditTime(event.target.value)}
+                type="time"
+                aria-label="Edit event time"
+              />
+
+              <button type="button" onClick={handleUpdateEvent} disabled={!editTitle.trim() || isUpdatingEvent}>
+                {isUpdatingEvent ? 'Saving...' : 'Save'}
               </button>
             </div>
           </GlassCard>
@@ -433,14 +516,25 @@ export default function CalendarPage() {
                       <p>{formatShortDateLabel(event.date)}</p>
                     </div>
 
-                    <button
-                      type="button"
-                      className="calendarAgendaDeleteButton"
-                      onClick={() => deleteEvent(event.id)}
-                      aria-label={`Delete ${event.title}`}
-                    >
-                      ×
-                    </button>
+                    <div className="calendarAgendaActionGroup">
+                      <button
+                        type="button"
+                        className="calendarAgendaEditButton"
+                        onClick={() => openEditForm(event)}
+                        aria-label={`Edit ${event.title}`}
+                      >
+                        ✎
+                      </button>
+
+                      <button
+                        type="button"
+                        className="calendarAgendaDeleteButton"
+                        onClick={() => handleDeleteEvent(event.id)}
+                        aria-label={`Delete ${event.title}`}
+                      >
+                        ×
+                      </button>
+                    </div>
                   </div>
                 ))
               )}

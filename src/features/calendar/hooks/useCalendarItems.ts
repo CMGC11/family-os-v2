@@ -3,6 +3,7 @@ import {
   deleteCalendarEvent,
   fetchCalendarEvents,
   insertCalendarEvent,
+  updateCalendarEvent,
 } from '../services/calendarSupabaseService';
 import { requireSupabaseClient } from '../../../lib/supabase/client';
 import { getCurrentHouseholdId } from '../../../lib/supabase/household';
@@ -159,6 +160,38 @@ export function useCalendarItems() {
     }
   }
 
+  async function editEvent(id: string, title: string, time = '12:00') {
+    const cleanTitle = title.trim();
+    const cleanTime = time.trim() || '12:00';
+
+    if (!cleanTitle) return false;
+
+    try {
+      setErrorMessage('');
+
+      const row = await updateCalendarEvent(id, cleanTitle, cleanTime);
+
+      const updatedEvent: CalendarEvent = {
+        id: row.id,
+        household_id: row.household_id,
+        title: row.title?.trim() || 'Untitled event',
+        date: row.date,
+        time: row.start_time?.trim() || '12:00',
+        created_at: row.created_at ?? new Date().toISOString(),
+      };
+
+      setEvents((current) =>
+        current.map((event) => (event.id === updatedEvent.id ? updatedEvent : event)),
+      );
+
+      return true;
+    } catch (error) {
+      console.error('Failed to update calendar event:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to update event.');
+      return false;
+    }
+  }
+
   async function deleteEvent(id: string) {
     const previousEvents = events;
 
@@ -183,6 +216,7 @@ export function useCalendarItems() {
     isLoading,
     errorMessage,
     addEvent,
+    editEvent,
     deleteEvent,
   };
 }

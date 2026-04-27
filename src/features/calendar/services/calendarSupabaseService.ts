@@ -65,6 +65,28 @@ export async function insertCalendarEvent(title: string, date: string, time: str
   return data;
 }
 
+export async function updateCalendarEvent(id: string, title: string, time: string) {
+  const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
+
+  const { data, error } = await supabase
+    .from('events')
+    .update({
+      title,
+      start_time: time,
+    })
+    .eq('id', id)
+    .eq('household_id', householdId)
+    .select('id, household_id, title, date, start_time, created_at')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
 export async function deleteCalendarEvent(id: string): Promise<void> {
   const supabase = requireSupabaseClient();
   const householdId = await getCurrentHouseholdId();
