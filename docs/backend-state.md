@@ -343,6 +343,23 @@ Current Health state:
 
 ---
 
+## Health visual/layout baseline
+
+Completed:
+- Health page now has segmented views for Notes, Allergies, and Meds.
+- Notes retain compact list + selected note detail card.
+- Allergies and medications use compact section layouts.
+- Severe allergies are surfaced with an alert-style card when present.
+- Add forms remain inline and compact.
+- Delete actions remain small trailing actions.
+- medical_shares remains intentionally unwired.
+
+Current Health UX:
+- Health is now usable as a basic household medical memory area.
+- More advanced sharing/permissions should not be implemented until product rules are defined.
+
+---
+
 ## Design Rules
 
 Mobile-first  
