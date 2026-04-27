@@ -6,7 +6,7 @@ import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
 export default function HealthPage() {
-  const { items, isLoading, errorMessage, addItem } = useMedicalNotes();
+  const { items, isLoading, errorMessage, addItem, deleteItem } = useMedicalNotes();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [date, setDate] = useState('');
@@ -88,18 +88,29 @@ export default function HealthPage() {
                 </div>
               ) : (
                 items.map((item) => (
-                  <div key={item.id} className="hubRow">
-                    <div className="hubIcon tintGreen">+</div>
+                  <div key={item.id} className="groceryRow">
+                    <div className="hubRow groceryMainButton">
+                      <div className="hubIcon tintGreen">+</div>
 
-                    <div>
-                      <strong>{item.title}</strong>
-                      <span>
-                        {item.date || 'No date'}
-                        {item.content ? ` · ${item.content}` : ''}
-                      </span>
+                      <div>
+                        <strong>{item.title}</strong>
+                        <span>
+                          {item.date || 'No date'}
+                          {item.content ? ` · ${item.content}` : ''}
+                        </span>
+                      </div>
+
+                      <span className="chevron">›</span>
                     </div>
 
-                    <span className="chevron">›</span>
+                    <button
+                      type="button"
+                      className="groceryDeleteButton"
+                      onClick={() => deleteItem(item.id)}
+                      aria-label={`Delete ${item.title}`}
+                    >
+                      Delete
+                    </button>
                   </div>
                 ))
               )}

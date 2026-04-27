@@ -65,3 +65,18 @@ export async function insertMedicalNote(title: string, content: string, date: st
 
   return mapRowToMedicalNote(data);
 }
+
+export async function deleteMedicalNote(id: string): Promise<void> {
+  const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
+
+  const { error } = await supabase
+    .from('medical_notes')
+    .delete()
+    .eq('id', id)
+    .eq('household_id', householdId);
+
+  if (error) {
+    throw error;
+  }
+}

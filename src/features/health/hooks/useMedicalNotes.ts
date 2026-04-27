@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  deleteMedicalNote,
   fetchMedicalNotes,
   insertMedicalNote,
 } from '../services/healthSupabaseService';
@@ -62,10 +63,27 @@ export function useMedicalNotes() {
     }
   }
 
+  async function deleteItem(id: string) {
+    const previousItems = items;
+
+    setItems((current) => current.filter((item) => item.id !== id));
+
+    try {
+      setErrorMessage('');
+      await deleteMedicalNote(id);
+    } catch (error) {
+      console.error('Failed to delete medical note:', error);
+
+      setItems(previousItems);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to delete health note.');
+    }
+  }
+
   return {
     items,
     isLoading,
     errorMessage,
     addItem,
+    deleteItem,
   };
 }
