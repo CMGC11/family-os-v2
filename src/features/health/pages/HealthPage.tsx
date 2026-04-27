@@ -1,9 +1,12 @@
+import { useMedicalNotes } from '../hooks/useMedicalNotes';
 import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
 export default function HealthPage() {
+  const { items, isLoading, errorMessage } = useMedicalNotes();
+
   return (
     <main>
       <PageHeader
@@ -14,20 +17,49 @@ export default function HealthPage() {
       />
 
       <PageShell>
-        <GlassCard className="tasksCard">
-          <div className="hubList">
-            {['Emergency card · Doctors, allergies, contacts', 'Medication · No missed items', 'Appointments · Pediatric check today'].map((item) => (
-              <div key={item} className="hubRow">
-                <div className="hubIcon tintGreen">+</div>
-                <div>
-                  <strong>{item.split(' · ')[0]}</strong>
-                  <span>{item.split(' · ')[1]}</span>
+        {isLoading && (
+          <GlassCard className="tasksCard">
+            <p className="mutedLabel">Loading health notes...</p>
+          </GlassCard>
+        )}
+
+        {errorMessage && (
+          <GlassCard className="tasksCard">
+            <p className="mutedLabel">{errorMessage}</p>
+          </GlassCard>
+        )}
+
+        {!isLoading && !errorMessage && (
+          <GlassCard className="tasksCard">
+            <div className="hubList">
+              {items.length === 0 ? (
+                <div className="hubRow">
+                  <div className="hubIcon tintGreen">+</div>
+                  <div>
+                    <strong>No health notes</strong>
+                    <span>Good. Or undocumented. Let’s hope good.</span>
+                  </div>
                 </div>
-                <span className="chevron">›</span>
-              </div>
-            ))}
-          </div>
-        </GlassCard>
+              ) : (
+                items.map((item) => (
+                  <div key={item.id} className="hubRow">
+                    <div className="hubIcon tintGreen">+</div>
+
+                    <div>
+                      <strong>{item.title}</strong>
+                      <span>
+                        {item.date || 'No date'}
+                        {item.content ? ` · ${item.content}` : ''}
+                      </span>
+                    </div>
+
+                    <span className="chevron">›</span>
+                  </div>
+                ))
+              )}
+            </div>
+          </GlassCard>
+        )}
       </PageShell>
     </main>
   );
