@@ -4338,3 +4338,233 @@ button {
     justify-self: start;
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/* Health visual cleanup                                                      */
+/* Final override layer for the combined notes / allergies / medications page. */
+/* -------------------------------------------------------------------------- */
+
+.healthCleanSummaryCard {
+  position: relative;
+  overflow: hidden;
+}
+
+.healthSectionTabsCard {
+  padding: 8px;
+}
+
+.healthSectionTabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 4px;
+}
+
+.healthSectionTabs button {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+  border-radius: 999px;
+  padding: 8px 6px;
+  color: rgba(0, 0, 0, 0.44);
+  text-align: center;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.healthSectionTabs button:active {
+  transform: scale(0.98);
+}
+
+.healthSectionTabs button span {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.healthSectionTabs button strong {
+  color: inherit;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.healthSectionTabs .healthSectionTabActive {
+  background: #ffffff;
+  color: #111113;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+}
+
+.healthNoticeCard {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-color: rgba(244, 63, 94, 0.12);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.healthNoticeIcon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 18px;
+  background: rgba(244, 63, 94, 0.12);
+  color: #be123c;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.healthNoticeCard strong {
+  display: block;
+  overflow: hidden;
+  color: #111113;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.healthNoticeCard span {
+  display: block;
+  overflow: hidden;
+  margin-top: 3px;
+  color: rgba(0, 0, 0, 0.48);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.healthPanelCard {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.healthCleanForm {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.healthCleanForm input,
+.healthCleanForm select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 0;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 12px;
+  color: #111113;
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.healthCleanForm input:focus,
+.healthCleanForm select:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.healthCleanForm button {
+  min-height: 44px;
+  border-radius: 999px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.healthCleanForm button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.healthCleanDetailCard {
+  gap: 14px;
+  padding: 16px;
+}
+
+.healthCleanDetailCard .healthDetailHeader h2 {
+  font-size: 24px;
+  line-height: 1.05;
+}
+
+.healthCleanDetailCard .healthDetailIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 20px;
+  background: #111113;
+  box-shadow: none;
+}
+
+.healthCleanList {
+  margin-top: 2px;
+}
+
+.healthCleanRow {
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.healthCleanRow:hover {
+  background: rgba(0, 0, 0, 0.055);
+}
+
+.healthCleanRow:active {
+  transform: scale(0.99);
+}
+
+@media (min-width: 390px) {
+  .healthCleanFormNote {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .healthCleanFormNote input:nth-child(3),
+  .healthCleanFormNote button {
+    grid-column: auto;
+  }
+
+  .healthCleanFormAllergy {
+    grid-template-columns: minmax(0, 1fr) 112px;
+  }
+
+  .healthCleanFormAllergy input:nth-child(3),
+  .healthCleanFormAllergy button {
+    grid-column: auto;
+  }
+
+  .healthCleanFormMedication {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  }
+
+  .healthCleanFormMedication button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 380px) {
+  .healthSectionTabs button span {
+    font-size: 11px;
+  }
+
+  .healthNoticeCard {
+    grid-template-columns: 1fr;
+  }
+
+  .healthNoticeIcon {
+    justify-self: start;
+  }
+}
