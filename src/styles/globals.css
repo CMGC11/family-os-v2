@@ -1315,16 +1315,29 @@ button {
 }
 
 .groceryDeleteButton {
-  border-radius: 24px;
-  background: rgba(244, 63, 94, 0.1);
-  padding: 0 14px;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  place-items: center;
+  align-self: center;
+  border-radius: 999px;
+  background: rgba(244, 63, 94, 0.08);
   color: #e11d48;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 24px;
+  font-weight: 650;
+  line-height: 1;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.groceryDeleteButton:hover {
+  background: rgba(244, 63, 94, 0.13);
 }
 
 .groceryDeleteButton:active {
-  transform: scale(0.98);
+  transform: scale(0.94);
 }
 
 @media (min-width: 390px) {
@@ -1968,10 +1981,11 @@ button {
 }
 
 .groceryDeleteButton {
-  flex: 0 0 auto;
-  min-width: 78px;
-  max-width: 86px;
-  padding: 0 10px;
+  flex: 0 0 42px;
+  width: 42px;
+  min-width: 42px;
+  max-width: 42px;
+  padding: 0;
 }
 
 .recipeCreateForm {

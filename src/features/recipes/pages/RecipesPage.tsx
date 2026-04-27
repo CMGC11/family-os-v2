@@ -108,7 +108,7 @@ export default function RecipesPage() {
                       onClick={() => deleteItem(item.id)}
                       aria-label={`Delete ${item.name}`}
                     >
-                      Delete
+                      x
                     </button>
                   </div>
                 ))

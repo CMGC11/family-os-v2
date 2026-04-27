@@ -109,7 +109,7 @@ export default function HealthPage() {
                       onClick={() => deleteItem(item.id)}
                       aria-label={`Delete ${item.title}`}
                     >
-                      Delete
+                      x
                     </button>
                   </div>
                 ))

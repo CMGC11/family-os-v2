@@ -100,7 +100,7 @@ export default function WishlistPage() {
                       onClick={() => deleteItem(item.id)}
                       aria-label={`Delete ${item.title}`}
                     >
-                      Delete
+                      x
                     </button>
                   </div>
                 ))
