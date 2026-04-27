@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import { requireSupabaseClient } from '../lib/supabase/client';
 import { clearCachedHouseholdId } from '../lib/supabase/household';
-import { getCurrentSession, signInWithEmailPassword, signOut } from '../lib/supabase/auth';
+import { getCurrentSession, signInWithEmailPassword } from '../lib/supabase/auth';
 import { clearCachedPersonId } from '../lib/supabase/person';
 
 type AuthGateProps = {
@@ -16,7 +16,6 @@ export default function AuthGate({ children }: AuthGateProps) {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -70,22 +69,6 @@ export default function AuthGate({ children }: AuthGateProps) {
       setErrorMessage(error instanceof Error ? error.message : 'Failed to sign in.');
     } finally {
       setIsSubmitting(false);
-    }
-  }
-
-  async function handleLogout() {
-    try {
-      setIsSigningOut(true);
-      setErrorMessage('');
-      clearCachedHouseholdId();
-      clearCachedPersonId();
-      await signOut();
-      setIsAuthenticated(false);
-    } catch (error) {
-      console.error('Failed to sign out:', error);
-      setErrorMessage(error instanceof Error ? error.message : 'Failed to sign out.');
-    } finally {
-      setIsSigningOut(false);
     }
   }
 
@@ -154,22 +137,5 @@ export default function AuthGate({ children }: AuthGateProps) {
     );
   }
 
-  return (
-    <>
-      {children}
-
-      <button
-        type="button"
-        className="logoutButton"
-        onClick={handleLogout}
-        disabled={isSigningOut}
-        aria-label="Sign out of FamilyOS"
-      >
-        <span className="logoutButtonIcon" aria-hidden="true">
-          ⌁
-        </span>
-        <span>{isSigningOut ? 'Signing out' : 'Sign out'}</span>
-      </button>
-    </>
-  );
+  return <>{children}</>;
 }

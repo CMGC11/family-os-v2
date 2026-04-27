@@ -253,6 +253,36 @@ Home → real data ✅
 
 ---
 
+## UI state after visual alignment
+
+Completed visual alignment:
+- Home dashboard uses real module snapshot data.
+- Calendar has real dynamic month grid, selected-day agenda, create/delete flow, and isolated calendar styles.
+- To-do uses compact filtered rows for Today / Week / Done.
+- Family Hub has polished module cards and account/sign-out section.
+- Grocery, Wishlist, Health, Recipes, and Trips use the shared compact module-row grammar.
+- Floating logout button was removed; sign out now lives inside Family/account area.
+- globals.css was cleaned after visual repair to remove old duplicate/zombie rules.
+
+Current visual direction:
+- Apple-style light gray shell.
+- Glass cards.
+- Large readable headers.
+- Compact mobile-first rows.
+- Small trailing delete actions.
+- Black active nav.
+- Blue primary actions.
+- Stability and speed over decorative complexity.
+
+Known remaining UI work:
+- Detail/add screens are still basic and mostly inline.
+- Calendar still has no edit/update, recurrence, multi-day events, or availability.
+- Health only wires medical_notes; allergies, medications, and medical_shares are not wired.
+- Trips does not yet wire packing_items or prep_items.
+- Forms could later move from inline cards to cleaner sheets/detail screens.
+
+---
+
 ## Design Rules
 
 Mobile-first  
