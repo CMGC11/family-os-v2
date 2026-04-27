@@ -54,6 +54,8 @@ export default function WishlistPage() {
     return items.find((item) => item.id === selectedWishId) ?? items[0];
   }, [items, selectedWishId]);
 
+  const wishesWithLinks = useMemo(() => items.filter((item) => item.link.trim()).length, [items]);
+
   function handleAddItem() {
     const cleanTitle = title.trim();
 
@@ -77,13 +79,27 @@ export default function WishlistPage() {
       <PageHeader
         eyebrow="Wishlist"
         title="Saved ideas"
-        subtitle="Gift ideas, shared wants, useful links, and all the things people pretend they will remember later. They will not."
+        subtitle="Gift ideas, shared wants, useful links, and things worth remembering before they vanish into household folklore."
         right={<BackButton fallbackTo="/family" label="Family" />}
       />
 
       <PageShell>
-        <GlassCard className="moduleCreateCard">
-          <div className="moduleCreateForm moduleCreateFormThree">
+        <GlassCard className="wishlistSummaryCard">
+          <div>
+            <p className="mutedLabel">Saved ideas</p>
+            <h2>{isLoading ? '—' : items.length}</h2>
+            <span>
+              {wishesWithLinks} with links · {items.length === 1 ? '1 idea' : `${items.length} ideas`}
+            </span>
+          </div>
+
+          <div className="wishlistSummaryIcon" aria-hidden="true">
+            ♡
+          </div>
+        </GlassCard>
+
+        <GlassCard className="wishlistCreateCard">
+          <div className="wishlistCreateFormClean">
             <input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
@@ -100,7 +116,7 @@ export default function WishlistPage() {
               onKeyDown={(event) => {
                 if (event.key === 'Enter') handleAddItem();
               }}
-              placeholder="Note"
+              placeholder="Note or link"
               aria-label="Wishlist item note"
             />
 
@@ -123,16 +139,16 @@ export default function WishlistPage() {
         )}
 
         {!isLoading && !errorMessage && (
-          <GlassCard className="moduleListCard">
+          <GlassCard className="wishlistListCard">
             <SectionHeader title="Ideas" />
 
-            <div className="moduleList">
+            <div className="wishlistCleanList">
               {items.length === 0 ? (
-                <div className="moduleEmptyRow">
-                  <div className="moduleIcon tintRose">♡</div>
+                <div className="wishlistEmptyRow">
+                  <div className="wishlistRowIcon">♡</div>
                   <div>
                     <strong>No saved ideas</strong>
-                    <span>Suspiciously restrained. Add one later.</span>
+                    <span>Add gift ideas, wishes, or useful links here.</span>
                   </div>
                 </div>
               ) : (
@@ -140,25 +156,22 @@ export default function WishlistPage() {
                   const isSelected = selectedWish?.id === item.id;
 
                   return (
-                    <div key={item.id} className={`moduleRow ${isSelected ? 'wishlistRowSelected' : ''}`}>
-                      <div className="moduleIcon tintRose">♡</div>
+                    <div key={item.id} className={`wishlistCleanRow ${isSelected ? 'wishlistCleanRowSelected' : ''}`}>
+                      <div className="wishlistRowIcon">♡</div>
 
                       <button
                         type="button"
-                        className="moduleMainButton"
+                        className="wishlistRowMain"
                         onClick={() => setSelectedWishId(item.id)}
                         aria-label={`Open ${item.title}`}
                       >
                         <strong>{item.title}</strong>
-                        <span>
-                          {getWishlistMeta(item)}
-                          {item.note ? ` · ${item.note}` : ''}
-                        </span>
+                        <span>{getWishlistSummary(item)}</span>
                       </button>
 
                       <button
                         type="button"
-                        className="moduleDeleteButton"
+                        className="wishlistDeleteButton"
                         onClick={() => handleDeleteItem(item)}
                         aria-label={`Delete ${item.title}`}
                       >
@@ -173,20 +186,20 @@ export default function WishlistPage() {
         )}
 
         {!isLoading && !errorMessage && selectedWish && (
-          <GlassCard className="wishlistDetailCard">
-            <div className="wishlistDetailHeader">
+          <GlassCard className="wishlistDetailCardClean">
+            <div className="wishlistDetailHeaderClean">
               <div>
                 <p>Selected idea</p>
                 <h2>{selectedWish.title}</h2>
                 <span>{getWishlistMeta(selectedWish)}</span>
               </div>
 
-              <div className="wishlistDetailIcon" aria-hidden="true">
+              <div className="wishlistDetailIconClean" aria-hidden="true">
                 ♡
               </div>
             </div>
 
-            <div className="wishlistDetailMetaGrid">
+            <div className="wishlistDetailMetaGridClean">
               <div>
                 <span>Priority</span>
                 <strong>{getPriorityLabel(selectedWish.priority)}</strong>
@@ -203,14 +216,14 @@ export default function WishlistPage() {
               </div>
             </div>
 
-            <div className="wishlistDetailSection">
+            <div className="wishlistDetailSectionClean">
               <p>Note</p>
-              <div className="wishlistDetailText">{getWishlistSummary(selectedWish)}</div>
+              <div className="wishlistDetailTextClean">{getWishlistSummary(selectedWish)}</div>
             </div>
 
             {selectedWish.link && (
               <a
-                className="wishlistDetailLink"
+                className="wishlistDetailLinkClean"
                 href={selectedWish.link}
                 target="_blank"
                 rel="noreferrer"

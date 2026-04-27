@@ -4938,3 +4938,350 @@ button {
     font-size: 23px;
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/* Wishlist cleanup                                                           */
+/* Scoped visual repair for Wishlist list, form, and detail surfaces.         */
+/* -------------------------------------------------------------------------- */
+
+.wishlistSummaryCard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+}
+
+.wishlistSummaryCard h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 36px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.wishlistSummaryCard span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.wishlistSummaryIcon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #ec4899, #fb7185);
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 850;
+  box-shadow: 0 16px 28px rgba(236, 72, 153, 0.18);
+}
+
+.wishlistCreateCard {
+  padding: 14px;
+}
+
+.wishlistCreateFormClean {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.wishlistCreateFormClean input {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 14px;
+  color: #111113;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.wishlistCreateFormClean input:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.wishlistCreateFormClean button {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 999px;
+  background: #111113;
+  padding: 0 16px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.wishlistCreateFormClean button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.wishlistListCard {
+  padding: 16px;
+}
+
+.wishlistCleanList {
+  display: grid;
+  gap: 10px;
+}
+
+.wishlistCleanRow,
+.wishlistEmptyRow {
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  grid-template-columns: 38px minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 12px;
+  border-radius: 26px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+  box-sizing: border-box;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.wishlistEmptyRow {
+  grid-template-columns: 38px minmax(0, 1fr);
+}
+
+.wishlistCleanRow:hover {
+  background: rgba(0, 0, 0, 0.055);
+}
+
+.wishlistCleanRow:active {
+  transform: scale(0.99);
+}
+
+.wishlistCleanRowSelected {
+  background: rgba(236, 72, 153, 0.1);
+}
+
+.wishlistCleanRowSelected:hover {
+  background: rgba(236, 72, 153, 0.14);
+}
+
+.wishlistRowIcon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  justify-self: center;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ec4899, #fb7185);
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 850;
+  line-height: 1;
+  box-shadow: 0 10px 20px rgba(236, 72, 153, 0.14);
+}
+
+.wishlistRowMain,
+.wishlistEmptyRow div:nth-child(2) {
+  min-width: 0;
+  text-align: left;
+}
+
+.wishlistRowMain strong,
+.wishlistEmptyRow strong {
+  display: block;
+  overflow: hidden;
+  color: #111113;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wishlistRowMain span,
+.wishlistEmptyRow span {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 13px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wishlistDeleteButton {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  justify-self: end;
+  border-radius: 999px;
+  color: rgba(244, 63, 94, 0.72);
+  font-size: 23px;
+  font-weight: 450;
+  line-height: 1;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.wishlistDeleteButton:hover {
+  background: rgba(244, 63, 94, 0.09);
+  color: #e11d48;
+}
+
+.wishlistDeleteButton:active {
+  transform: scale(0.92);
+}
+
+.wishlistDetailCardClean {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.wishlistDetailHeaderClean {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.wishlistDetailHeaderClean > div:first-child {
+  min-width: 0;
+}
+
+.wishlistDetailHeaderClean p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.wishlistDetailHeaderClean h2 {
+  overflow: hidden;
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 26px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  text-overflow: ellipsis;
+}
+
+.wishlistDetailHeaderClean span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wishlistDetailIconClean {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #ec4899, #fb7185);
+  color: #ffffff;
+  font-size: 25px;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.wishlistDetailMetaGridClean {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.wishlistDetailMetaGridClean div,
+.wishlistDetailSectionClean {
+  border-radius: 22px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+}
+
+.wishlistDetailMetaGridClean span,
+.wishlistDetailSectionClean p {
+  display: block;
+  margin: 0;
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.wishlistDetailMetaGridClean strong {
+  display: block;
+  overflow: hidden;
+  margin-top: 4px;
+  color: #111113;
+  font-size: 14px;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wishlistDetailTextClean {
+  margin-top: 8px;
+  color: rgba(0, 0, 0, 0.62);
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.wishlistDetailLinkClean {
+  display: block;
+  width: 100%;
+  border-radius: 999px;
+  background: #111113;
+  padding: 13px 16px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 850;
+  text-align: center;
+  text-decoration: none;
+}
+
+@media (min-width: 390px) {
+  .wishlistCreateFormClean {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 72px;
+  }
+}
+
+@media (max-width: 380px) {
+  .wishlistSummaryCard,
+  .wishlistCleanRow,
+  .wishlistEmptyRow,
+  .wishlistDetailMetaGridClean {
+    grid-template-columns: 1fr;
+  }
+
+  .wishlistSummaryIcon,
+  .wishlistDeleteButton {
+    justify-self: start;
+  }
+
+  .wishlistDetailHeaderClean h2 {
+    font-size: 23px;
+  }
+}
