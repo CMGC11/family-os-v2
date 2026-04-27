@@ -306,6 +306,24 @@ Still not wired:
 
 ---
 
+## Trips packing/prep wiring
+
+Completed:
+- Trips detail view now loads packing_items and prep_items for the selected trip.
+- Packing items support add, packed/unpacked toggle, and delete.
+- Prep items support add, done/open toggle, and delete.
+- Packing items are scoped through trip_id → trips.household_id.
+- Prep items are scoped directly by household_id.
+- No schema changes were made.
+
+Current Trips state:
+- Trips CRUD is complete.
+- Trips detail view is complete enough for V2 baseline.
+- Packing/prep items are wired and styled.
+- No documents, itinerary, bookings, or sharing logic yet.
+
+---
+
 ## Design Rules
 
 Mobile-first  

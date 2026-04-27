@@ -10,3 +10,22 @@ export type Trip = {
   notes: string;
   created_at: string;
 };
+
+export type PackingItem = {
+  id: string;
+  trip_id: string;
+  name: string;
+  assigned_to: string;
+  is_packed: boolean;
+  created_at: string;
+};
+
+export type PrepItem = {
+  id: string;
+  trip_id: string;
+  household_id: string;
+  name: string;
+  is_done: boolean;
+  created_by: string;
+  created_at: string;
+};

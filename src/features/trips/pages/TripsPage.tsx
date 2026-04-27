@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTripDetailItems } from '../hooks/useTripDetailItems';
 import { useTrips } from '../hooks/useTrips';
 import type { Trip } from '../types';
 import BackButton from '../../../ui/navigation/BackButton';
@@ -53,6 +54,108 @@ function getTripSubtitle(trip: Trip) {
   return `${destination} · ${dates}`;
 }
 
+type TripChecklistItem = {
+  id: string;
+  name: string;
+  isDone: boolean;
+};
+
+type TripChecklistSectionProps = {
+  title: string;
+  emptyTitle: string;
+  emptyDetail: string;
+  inputLabel: string;
+  inputValue: string;
+  progressLabel: string;
+  items: TripChecklistItem[];
+  onInputChange: (value: string) => void;
+  onAdd: () => void;
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
+};
+
+function TripChecklistSection({
+  title,
+  emptyTitle,
+  emptyDetail,
+  inputLabel,
+  inputValue,
+  progressLabel,
+  items,
+  onInputChange,
+  onAdd,
+  onToggle,
+  onDelete,
+}: TripChecklistSectionProps) {
+  return (
+    <section className="tripChecklistSection">
+      <div className="tripChecklistHeader">
+        <div>
+          <h3>{title}</h3>
+          <p>{progressLabel}</p>
+        </div>
+      </div>
+
+      <div className="tripChecklistForm">
+        <input
+          value={inputValue}
+          onChange={(event) => onInputChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') onAdd();
+          }}
+          placeholder={inputLabel}
+          aria-label={inputLabel}
+        />
+
+        <button type="button" onClick={onAdd} disabled={!inputValue.trim()}>
+          Add
+        </button>
+      </div>
+
+      <div className="tripChecklistList">
+        {items.length === 0 ? (
+          <div className="tripChecklistEmptyRow">
+            <div className="tripChecklistEmptyIcon">+</div>
+            <div>
+              <strong>{emptyTitle}</strong>
+              <span>{emptyDetail}</span>
+            </div>
+          </div>
+        ) : (
+          items.map((item) => {
+            return (
+              <div key={item.id} className={["tripChecklistRow", item.isDone ? "tripChecklistRowDone" : ""].filter(Boolean).join(' ')}>
+                <button
+                  type="button"
+                  className={["tripChecklistCheck", item.isDone ? "tripChecklistCheckDone" : ""].filter(Boolean).join(' ')}
+                  onClick={() => onToggle(item.id)}
+                  aria-label={`Toggle ${item.name}`}
+                >
+                  ✓
+                </button>
+
+                <button type="button" className="tripChecklistMain" onClick={() => onToggle(item.id)}>
+                  <strong>{item.name}</strong>
+                  <span>{item.isDone ? 'Done' : 'Open'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="tripChecklistDelete"
+                  onClick={() => onDelete(item.id)}
+                  aria-label={`Delete ${item.name}`}
+                >
+                  ×
+                </button>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </section>
+  );
+}
+
 export default function TripsPage() {
   const { items, isLoading, errorMessage, addItem, deleteItem } = useTrips();
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
@@ -60,8 +163,24 @@ export default function TripsPage() {
   const [destination, setDestination] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [newPackingName, setNewPackingName] = useState('');
+  const [newPrepName, setNewPrepName] = useState('');
 
   const selectedTrip = items.find((item) => item.id === selectedTripId) ?? null;
+  const {
+    packingItems,
+    prepItems,
+    packingProgress,
+    prepProgress,
+    isLoading: isLoadingTripItems,
+    errorMessage: tripItemsErrorMessage,
+    addPackingItem,
+    addPrepItem,
+    togglePackingItem,
+    togglePrepItem,
+    removePackingItem,
+    removePrepItem,
+  } = useTripDetailItems(selectedTrip?.id ?? null);
 
   function handleAddItem() {
     const cleanTitle = title.trim();
@@ -79,6 +198,22 @@ export default function TripsPage() {
     setDestination('');
     setStartDate('');
     setEndDate('');
+  }
+
+  async function handleAddPackingItem() {
+    const wasAdded = await addPackingItem(newPackingName);
+
+    if (wasAdded) {
+      setNewPackingName('');
+    }
+  }
+
+  async function handleAddPrepItem() {
+    const wasAdded = await addPrepItem(newPrepName);
+
+    if (wasAdded) {
+      setNewPrepName('');
+    }
   }
 
   function handleDeleteTrip(id: string) {
@@ -192,6 +327,49 @@ export default function TripsPage() {
                   <p>No accommodation link saved.</p>
                 )}
               </section>
+            </div>
+
+            <div className="tripDetailDivider" />
+
+            {isLoadingTripItems && <p className="tripDetailStatus">Loading packing and prep items...</p>}
+            {tripItemsErrorMessage && <p className="tripDetailError">{tripItemsErrorMessage}</p>}
+
+            <div className="tripChecklistGrid">
+              <TripChecklistSection
+                title="Packing"
+                emptyTitle="No packing items"
+                emptyDetail="Add passports, chargers, tiny socks, and other things humans lose."
+                inputLabel="Add packing item"
+                inputValue={newPackingName}
+                progressLabel={`${packingProgress.packedCount}/${packingProgress.totalCount} packed`}
+                items={packingItems.map((item) => ({
+                  id: item.id,
+                  name: item.name,
+                  isDone: item.is_packed,
+                }))}
+                onInputChange={setNewPackingName}
+                onAdd={handleAddPackingItem}
+                onToggle={togglePackingItem}
+                onDelete={removePackingItem}
+              />
+
+              <TripChecklistSection
+                title="Prep"
+                emptyTitle="No prep tasks"
+                emptyDetail="Add bookings, documents, check-ins, and other logistical nonsense."
+                inputLabel="Add prep task"
+                inputValue={newPrepName}
+                progressLabel={`${prepProgress.doneCount}/${prepProgress.totalCount} done`}
+                items={prepItems.map((item) => ({
+                  id: item.id,
+                  name: item.name,
+                  isDone: item.is_done,
+                }))}
+                onInputChange={setNewPrepName}
+                onAdd={handleAddPrepItem}
+                onToggle={togglePrepItem}
+                onDelete={removePrepItem}
+              />
             </div>
           </GlassCard>
         )}
