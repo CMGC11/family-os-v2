@@ -1927,7 +1927,8 @@ button {
   font-size: 13px !important;
   font-weight: 700;
 }
-/* -------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------- */
 /* FamilyOS v2 module page cleanup                                           */
 /* Shared list-page grammar for Grocery, Wishlist, Health, Recipes, Trips.   */
 /* -------------------------------------------------------------------------- */
@@ -4235,5 +4236,215 @@ button {
   .todoDeleteButton,
   .moduleDeleteButton {
     justify-self: start;
+  }
+}
+
+/* Recipes form cleanup - current safe patch */
+.recipeComposerCard {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.recipeComposerHeader h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 28px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.recipeComposerForm {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.recipeComposerForm input,
+.recipeComposerForm textarea {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 14px;
+  color: #111113;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.recipeComposerForm input {
+  min-height: 48px;
+}
+
+.recipeComposerForm textarea {
+  min-height: 92px;
+  padding-top: 13px;
+  line-height: 1.4;
+  resize: vertical;
+}
+
+.recipeComposerForm input:focus,
+.recipeComposerForm textarea:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.recipeComposerForm button {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 999px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.recipeComposerForm button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.recipeCleanDetailCard {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.recipeCleanDetailTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.recipeCleanDetailTop div {
+  min-width: 0;
+}
+
+.recipeCleanDetailTop p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.recipeCleanDetailTop h2 {
+  margin: 5px 0 0;
+  color: #111113;
+  font-size: 30px;
+  font-weight: 850;
+  line-height: 1.05;
+  letter-spacing: -0.055em;
+}
+
+.recipeCleanDetailTop button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.055);
+  color: rgba(17, 17, 19, 0.62);
+  font-size: 26px;
+  font-weight: 450;
+  line-height: 1;
+}
+
+.recipeCleanDetailContent {
+  display: grid;
+  gap: 12px;
+}
+
+.recipeCleanDetailContent section {
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 14px;
+}
+
+.recipeCleanDetailContent h3 {
+  margin: 0 0 8px;
+  color: rgba(0, 0, 0, 0.42);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.recipeCleanDetailContent ul,
+.recipeCleanDetailContent ol {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding-left: 20px;
+  color: #111113;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.recipeCleanDetailContent p,
+.recipeCleanDetailContent a {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.56);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.recipeCleanDetailContent a {
+  display: inline-block;
+  margin-top: 8px;
+  color: #2563eb;
+  font-weight: 850;
+}
+
+.recipeCleanTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.recipeCleanTags span {
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.055);
+  padding: 6px 9px;
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.recipeRowSelected {
+  background: rgba(251, 191, 36, 0.13);
+}
+
+.recipeRowSelected:hover {
+  background: rgba(251, 191, 36, 0.17);
+}
+
+@media (min-width: 390px) {
+  .recipeComposerForm {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr);
+  }
+
+  .recipeComposerForm input:nth-child(3),
+  .recipeComposerForm textarea,
+  .recipeComposerForm button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 380px) {
+  .recipeComposerCard,
+  .recipeCleanDetailCard {
+    padding: 16px;
+  }
+
+  .recipeCleanDetailTop h2 {
+    font-size: 27px;
   }
 }

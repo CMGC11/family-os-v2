@@ -93,15 +93,15 @@ export default function RecipesPage() {
       />
 
       <PageShell>
-        <GlassCard className="recipeCreateCard">
-          <div className="recipeCreateHeader">
+        <GlassCard className="recipeComposerCard">
+          <div className="recipeComposerHeader">
             <div>
               <p className="mutedLabel">New recipe</p>
               <h2>Add a keeper</h2>
             </div>
           </div>
 
-          <div className="recipeCreateGrid">
+          <div className="recipeComposerForm">
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
@@ -157,8 +157,8 @@ export default function RecipesPage() {
         )}
 
         {!isLoading && !errorMessage && selectedRecipe && (
-          <GlassCard className="recipeDetailCard">
-            <div className="recipeDetailTop">
+          <GlassCard className="recipeCleanDetailCard">
+            <div className="recipeCleanDetailTop">
               <div>
                 <p>{formatRecipeMeta(selectedRecipe)}</p>
                 <h2>{selectedRecipe.name}</h2>
@@ -169,7 +169,7 @@ export default function RecipesPage() {
               </button>
             </div>
 
-            <div className="recipeDetailContent">
+            <div className="recipeCleanDetailContent">
               <section>
                 <h3>Ingredients</h3>
 
@@ -205,7 +205,7 @@ export default function RecipesPage() {
                   {selectedRecipe.notes && <p>{selectedRecipe.notes}</p>}
 
                   {selectedRecipe.tags.length > 0 && (
-                    <div className="recipeTags">
+                    <div className="recipeCleanTags">
                       {selectedRecipe.tags.map((tag) => (
                         <span key={tag}>{tag}</span>
                       ))}
