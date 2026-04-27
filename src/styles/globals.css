@@ -1271,19 +1271,54 @@ button {
 .logoutButton {
   position: fixed;
   z-index: 70;
-  top: 16px;
   right: max(16px, calc((100vw - 430px) / 2 + 16px));
+  bottom: 104px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.74);
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.045);
-  padding: 8px 13px;
-  color: rgba(17, 17, 19, 0.62);
+  background: rgba(255, 255, 255, 0.78);
+  padding: 7px 13px 7px 9px;
+  color: rgba(17, 17, 19, 0.68);
   font-size: 13px;
   font-weight: 800;
-  backdrop-filter: blur(20px);
+  letter-spacing: -0.01em;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(22px);
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.logoutButton:hover {
+  background: rgba(255, 255, 255, 0.92);
+  color: #111113;
 }
 
 .logoutButton:active {
   transform: scale(0.98);
+}
+
+.logoutButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.logoutButtonIcon {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.055);
+  color: rgba(17, 17, 19, 0.62);
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .wishlistCreateForm {

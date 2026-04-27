@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import type { FormEvent, ReactNode } from 'react';
 import { requireSupabaseClient } from '../lib/supabase/client';
 import { clearCachedHouseholdId } from '../lib/supabase/household';
 import { getCurrentSession, signInWithEmailPassword, signOut } from '../lib/supabase/auth';
 import { clearCachedPersonId } from '../lib/supabase/person';
 
 type AuthGateProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export default function AuthGate({ children }: AuthGateProps) {
@@ -15,6 +16,7 @@ export default function AuthGate({ children }: AuthGateProps) {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,7 +56,7 @@ export default function AuthGate({ children }: AuthGateProps) {
     };
   }, []);
 
-  async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+  async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     try {
@@ -73,6 +75,7 @@ export default function AuthGate({ children }: AuthGateProps) {
 
   async function handleLogout() {
     try {
+      setIsSigningOut(true);
       setErrorMessage('');
       clearCachedHouseholdId();
       clearCachedPersonId();
@@ -81,6 +84,8 @@ export default function AuthGate({ children }: AuthGateProps) {
     } catch (error) {
       console.error('Failed to sign out:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Failed to sign out.');
+    } finally {
+      setIsSigningOut(false);
     }
   }
 
@@ -94,7 +99,7 @@ export default function AuthGate({ children }: AuthGateProps) {
               <section className="glassCard authCard">
                 <p className="eyebrow">FamilyOS</p>
                 <h1>Loading</h1>
-                <p>Checking your session. The tiny security goblin is working.</p>
+                <p>Checking your session.</p>
               </section>
             </main>
           </div>
@@ -153,8 +158,17 @@ export default function AuthGate({ children }: AuthGateProps) {
     <>
       {children}
 
-      <button type="button" className="logoutButton" onClick={handleLogout}>
-        Sign out
+      <button
+        type="button"
+        className="logoutButton"
+        onClick={handleLogout}
+        disabled={isSigningOut}
+        aria-label="Sign out of FamilyOS"
+      >
+        <span className="logoutButtonIcon" aria-hidden="true">
+          ⌁
+        </span>
+        <span>{isSigningOut ? 'Signing out' : 'Sign out'}</span>
       </button>
     </>
   );
