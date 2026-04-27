@@ -4,6 +4,7 @@ import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
+import SectionHeader from '../../../ui/layout/SectionHeader';
 
 export default function TripsPage() {
   const { items, isLoading, errorMessage, addItem, deleteItem } = useTrips();
@@ -13,9 +14,13 @@ export default function TripsPage() {
   const [endDate, setEndDate] = useState('');
 
   function handleAddItem() {
+    const cleanTitle = title.trim();
+
+    if (!cleanTitle) return;
+
     addItem({
-      title,
-      destination,
+      title: cleanTitle,
+      destination: destination.trim(),
       start_date: startDate,
       end_date: endDate,
     });
@@ -36,11 +41,14 @@ export default function TripsPage() {
       />
 
       <PageShell>
-        <GlassCard className="quickCreateCard">
-          <div className="tripCreateForm">
+        <GlassCard className="moduleCreateCard">
+          <div className="moduleCreateForm moduleCreateFormTrip">
             <input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') handleAddItem();
+              }}
               placeholder="Trip title"
               aria-label="Trip title"
             />
@@ -48,6 +56,9 @@ export default function TripsPage() {
             <input
               value={destination}
               onChange={(event) => setDestination(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') handleAddItem();
+              }}
               placeholder="Destination"
               aria-label="Trip destination"
             />
@@ -66,7 +77,7 @@ export default function TripsPage() {
               aria-label="Trip end date"
             />
 
-            <button type="button" onClick={handleAddItem}>
+            <button type="button" onClick={handleAddItem} disabled={!title.trim()}>
               Add
             </button>
           </div>
@@ -85,11 +96,13 @@ export default function TripsPage() {
         )}
 
         {!isLoading && !errorMessage && (
-          <GlassCard className="tasksCard">
-            <div className="hubList">
+          <GlassCard className="moduleListCard">
+            <SectionHeader title="Trips" />
+
+            <div className="moduleList">
               {items.length === 0 ? (
-                <div className="hubRow">
-                  <div className="hubIcon tintBlue">✈</div>
+                <div className="moduleEmptyRow">
+                  <div className="moduleIcon tintBlue">✈</div>
                   <div>
                     <strong>No trips yet</strong>
                     <span>Home wins by default. Suspiciously economical.</span>
@@ -97,27 +110,24 @@ export default function TripsPage() {
                 </div>
               ) : (
                 items.map((item) => (
-                  <div key={item.id} className="groceryRow">
-                    <div className="hubRow groceryMainButton">
-                      <div className="hubIcon tintBlue">✈</div>
+                  <div key={item.id} className="moduleRow">
+                    <div className="moduleIcon tintBlue">✈</div>
 
-                      <div>
-                        <strong>{item.title}</strong>
-                        <span>
-                          {item.destination || 'No destination'} · {item.start_date} → {item.end_date}
-                        </span>
-                      </div>
-
-                      <span className="chevron">›</span>
+                    <div className="moduleMainText">
+                      <strong>{item.title}</strong>
+                      <span>
+                        {item.destination || 'No destination'}
+                        {item.start_date || item.end_date ? ` · ${item.start_date || 'No start'} → ${item.end_date || 'No end'}` : ''}
+                      </span>
                     </div>
 
                     <button
                       type="button"
-                      className="groceryDeleteButton"
+                      className="moduleDeleteButton"
                       onClick={() => deleteItem(item.id)}
                       aria-label={`Delete ${item.title}`}
                     >
-                      Delete
+                      ×
                     </button>
                   </div>
                 ))

@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useGroceryItems } from '../hooks/useGroceryItems';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
+import SectionHeader from '../../../ui/layout/SectionHeader';
 import BackButton from '../../../ui/navigation/BackButton';
+
+const CATEGORIES = ['Produce', 'Dairy', 'Baby', 'Pantry', 'Household', 'Other'];
 
 export default function GroceryPage() {
   const { items, isLoading, errorMessage, toggleItem, addItem, deleteItem } = useGroceryItems();
@@ -13,9 +16,15 @@ export default function GroceryPage() {
   const [category, setCategory] = useState('Produce');
 
   const shouldFocus = searchParams.get('create') === 'grocery';
+  const openItems = useMemo(() => items.filter((item) => !item.checked), [items]);
+  const checkedItems = useMemo(() => items.filter((item) => item.checked), [items]);
 
   function handleAddItem() {
-    addItem(name, category);
+    const cleanName = name.trim();
+
+    if (!cleanName) return;
+
+    addItem(cleanName, category);
     setName('');
     setCategory('Produce');
   }
@@ -25,13 +34,13 @@ export default function GroceryPage() {
       <PageHeader
         eyebrow="Grocery"
         title="Shopping list"
-        subtitle="Grouped shopping execution without turning groceries into a project management ritual."
+        subtitle="A shared list for getting in, buying the thing, and escaping the supermarket with dignity."
         right={<BackButton fallbackTo="/family" label="Family" />}
       />
 
       <PageShell>
-        <GlassCard className="tasksCard groceryFormCard">
-          <div className="groceryForm">
+        <GlassCard className="moduleCreateCard">
+          <div className="moduleCreateForm moduleCreateFormThree">
             <input
               autoFocus={shouldFocus}
               value={name}
@@ -48,15 +57,12 @@ export default function GroceryPage() {
               onChange={(event) => setCategory(event.target.value)}
               aria-label="Grocery category"
             >
-              <option>Produce</option>
-              <option>Dairy</option>
-              <option>Baby</option>
-              <option>Pantry</option>
-              <option>Household</option>
-              <option>Other</option>
+              {CATEGORIES.map((categoryOption) => (
+                <option key={categoryOption}>{categoryOption}</option>
+              ))}
             </select>
 
-            <button type="button" onClick={handleAddItem}>
+            <button type="button" onClick={handleAddItem} disabled={!name.trim()}>
               Add
             </button>
           </div>
@@ -75,32 +81,76 @@ export default function GroceryPage() {
         )}
 
         {!isLoading && !errorMessage && (
-          <GlassCard className="tasksCard">
-            <div className="hubList">
-              {items.map((item) => (
-                <div key={item.id} className="groceryRow">
+          <GlassCard className="moduleListCard">
+            <SectionHeader title="To buy" />
+
+            <div className="moduleList">
+              {openItems.length === 0 ? (
+                <div className="moduleEmptyRow">
+                  <div className="moduleIcon tintBlue">✓</div>
+                  <div>
+                    <strong>Nothing to buy</strong>
+                    <span>The list is clean. Suspicious, but beautiful.</span>
+                  </div>
+                </div>
+              ) : (
+                openItems.map((item) => (
+                  <div key={item.id} className="moduleRow">
+                    <button
+                      type="button"
+                      className="moduleCheck"
+                      onClick={() => toggleItem(item.id)}
+                      aria-label={`Mark ${item.name} as bought`}
+                    />
+
+                    <button type="button" className="moduleMainButton" onClick={() => toggleItem(item.id)}>
+                      <strong>{item.name}</strong>
+                      <span>{item.category}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="moduleDeleteButton"
+                      onClick={() => deleteItem(item.id)}
+                      aria-label={`Delete ${item.name}`}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </GlassCard>
+        )}
+
+        {!isLoading && !errorMessage && checkedItems.length > 0 && (
+          <GlassCard className="moduleListCard moduleDoneCard">
+            <SectionHeader title="Bought" />
+
+            <div className="moduleList">
+              {checkedItems.map((item) => (
+                <div key={item.id} className="moduleRow moduleRowDone">
                   <button
                     type="button"
-                    className="hubRow groceryMainButton"
+                    className="moduleCheck moduleCheckDone"
                     onClick={() => toggleItem(item.id)}
+                    aria-label={`Mark ${item.name} as not bought`}
                   >
-                    <div className="hubIcon tintLime">{item.checked ? '✓' : '◌'}</div>
+                    ✓
+                  </button>
 
-                    <div>
-                      <strong className={item.checked ? 'taskTextDone' : ''}>{item.name}</strong>
-                      <span>{item.category}</span>
-                    </div>
-
-                    <span className="chevron">›</span>
+                  <button type="button" className="moduleMainButton" onClick={() => toggleItem(item.id)}>
+                    <strong>{item.name}</strong>
+                    <span>{item.category}</span>
                   </button>
 
                   <button
                     type="button"
-                    className="groceryDeleteButton"
+                    className="moduleDeleteButton"
                     onClick={() => deleteItem(item.id)}
                     aria-label={`Delete ${item.name}`}
                   >
-                    Delete
+                    ×
                   </button>
                 </div>
               ))}

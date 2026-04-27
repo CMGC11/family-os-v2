@@ -4,6 +4,7 @@ import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
+import SectionHeader from '../../../ui/layout/SectionHeader';
 
 export default function RecipesPage() {
   const { items, isLoading, errorMessage, addItem, deleteItem } = useRecipes();
@@ -11,11 +12,15 @@ export default function RecipesPage() {
   const [category, setCategory] = useState('Family');
 
   function handleAddItem() {
+    const cleanName = name.trim();
+
+    if (!cleanName) return;
+
     addItem({
-      name,
+      name: cleanName,
       ingredients: '',
       steps: '',
-      category,
+      category: category.trim() || 'Family',
       serves: '',
     });
 
@@ -33,8 +38,8 @@ export default function RecipesPage() {
       />
 
       <PageShell>
-        <GlassCard className="quickCreateCard">
-          <div className="recipeCreateForm">
+        <GlassCard className="moduleCreateCard">
+          <div className="moduleCreateForm moduleCreateFormThree">
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
@@ -55,7 +60,7 @@ export default function RecipesPage() {
               aria-label="Recipe category"
             />
 
-            <button type="button" onClick={handleAddItem}>
+            <button type="button" onClick={handleAddItem} disabled={!name.trim()}>
               Add
             </button>
           </div>
@@ -74,11 +79,13 @@ export default function RecipesPage() {
         )}
 
         {!isLoading && !errorMessage && (
-          <GlassCard className="tasksCard">
-            <div className="hubList">
+          <GlassCard className="moduleListCard">
+            <SectionHeader title="Recipes" />
+
+            <div className="moduleList">
               {items.length === 0 ? (
-                <div className="hubRow">
-                  <div className="hubIcon tintOrange">🍳</div>
+                <div className="moduleEmptyRow">
+                  <div className="moduleIcon tintOrange">🍳</div>
                   <div>
                     <strong>No recipes yet</strong>
                     <span>Tragic. Add food wisdom later.</span>
@@ -86,29 +93,25 @@ export default function RecipesPage() {
                 </div>
               ) : (
                 items.map((item) => (
-                  <div key={item.id} className="groceryRow">
-                    <div className="hubRow groceryMainButton">
-                      <div className="hubIcon tintOrange">🍳</div>
+                  <div key={item.id} className="moduleRow">
+                    <div className="moduleIcon tintOrange">🍳</div>
 
-                      <div>
-                        <strong>{item.name}</strong>
-                        <span>
-                          {item.category}
-                          {item.serves ? ` · Serves ${item.serves}` : ''}
-                          {item.is_pinned ? ' · Pinned' : ''}
-                        </span>
-                      </div>
-
-                      <span className="chevron">›</span>
+                    <div className="moduleMainText">
+                      <strong>{item.name}</strong>
+                      <span>
+                        {item.category || 'Recipe'}
+                        {item.serves ? ` · Serves ${item.serves}` : ''}
+                        {item.is_pinned ? ' · Pinned' : ''}
+                      </span>
                     </div>
 
                     <button
                       type="button"
-                      className="groceryDeleteButton"
+                      className="moduleDeleteButton"
                       onClick={() => deleteItem(item.id)}
                       aria-label={`Delete ${item.name}`}
                     >
-                      x
+                      ×
                     </button>
                   </div>
                 ))

@@ -1266,6 +1266,44 @@ button {
   font-weight: 850;
 }
 
+.grocerySummaryCard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+}
+
+.grocerySummaryCard h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 36px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.grocerySummaryCard span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.grocerySummaryIcon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 22px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 28px;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.16);
+}
+
 .groceryFormCard {
   padding: 14px;
 }
@@ -1279,10 +1317,11 @@ button {
 .groceryForm input,
 .groceryForm select {
   width: 100%;
+  min-height: 48px;
   border: 0;
   border-radius: 20px;
   background: rgba(0, 0, 0, 0.045);
-  padding: 13px 14px;
+  padding: 0 14px;
   color: #111113;
   font: inherit;
   font-size: 15px;
@@ -1295,54 +1334,176 @@ button {
 }
 
 .groceryForm button {
+  min-height: 48px;
   border-radius: 999px;
   background: #111113;
-  padding: 13px 16px;
+  padding: 0 18px;
   color: #ffffff;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 850;
 }
 
-.groceryRow {
+.groceryForm button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.groceryListCard {
+  padding: 16px;
+}
+
+.groceryGroupedList {
   display: grid;
-  grid-template-columns: 1fr auto;
+  gap: 18px;
+}
+
+.groceryGroup {
+  display: grid;
   gap: 8px;
-  align-items: stretch;
 }
 
-.groceryMainButton {
-  width: 100%;
+.groceryGroup > p {
+  margin: 0 0 0 4px;
+  color: rgba(0, 0, 0, 0.38);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.groceryDeleteButton {
+.groceryItemsList {
   display: grid;
-  width: 42px;
-  height: 42px;
-  min-width: 42px;
-  place-items: center;
-  align-self: center;
-  border-radius: 999px;
-  background: rgba(244, 63, 94, 0.08);
-  color: #e11d48;
-  font-size: 24px;
-  font-weight: 650;
-  line-height: 1;
+  gap: 8px;
+}
+
+.groceryCleanRow {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 22px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 10px;
   transition:
     background 160ms ease,
+    opacity 160ms ease,
     transform 160ms ease;
 }
 
-.groceryDeleteButton:hover {
-  background: rgba(244, 63, 94, 0.13);
+.groceryCleanRow:hover {
+  background: rgba(0, 0, 0, 0.055);
 }
 
-.groceryDeleteButton:active {
-  transform: scale(0.94);
+.groceryCleanRow:active {
+  transform: scale(0.99);
+}
+
+.groceryCleanRowDone {
+  opacity: 0.58;
+}
+
+.groceryCheckButton {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.groceryCheckButtonDone {
+  border-color: transparent;
+  background: #34c759;
+}
+
+.groceryRowMain {
+  min-width: 0;
+  text-align: left;
+}
+
+.groceryRowMain strong {
+  display: block;
+  overflow: hidden;
+  color: #111113;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.groceryCleanRowDone .groceryRowMain strong {
+  text-decoration: line-through;
+}
+
+.groceryRowMain span {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.grocerySmallDeleteButton {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 999px;
+  color: rgba(225, 29, 72, 0.72);
+  font-size: 24px;
+  font-weight: 450;
+  line-height: 1;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.grocerySmallDeleteButton:hover {
+  background: rgba(244, 63, 94, 0.08);
+  color: #e11d48;
+}
+
+.grocerySmallDeleteButton:active {
+  transform: scale(0.92);
+}
+
+.groceryEmptyState {
+  border-radius: 22px;
+  background: rgba(0, 0, 0, 0.03);
+  padding: 18px;
+}
+
+.groceryEmptyState strong {
+  display: block;
+  color: #111113;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+}
+
+.groceryEmptyState span {
+  display: block;
+  margin-top: 4px;
+  color: rgba(0, 0, 0, 0.48);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.groceryDoneCard {
+  padding-bottom: 18px;
 }
 
 @media (min-width: 390px) {
   .groceryForm {
-    grid-template-columns: 1fr 120px auto;
+    grid-template-columns: minmax(0, 1fr) 120px auto;
     align-items: center;
   }
 }
@@ -1942,17 +2103,17 @@ button {
 .quickCreateCard,
 .tasksCard,
 .hubList,
+.grocerySummaryCard,
+.groceryFormCard,
+.groceryForm,
+.groceryListCard,
+.groceryGroupedList,
+.groceryGroup,
+.groceryItemsList,
+.groceryCleanRow,
+.groceryRowMain,
 .groceryRow,
 .hubRow,
-.familyHeroCard,
-.familyPrimaryGrid,
-.familyPrimaryCard,
-.familyModulesCard,
-.familyModuleList,
-.familyModuleRow,
-.familyQuickCard,
-.familyQuickGrid,
-.familyQuickButton,
 .groceryMainButton,
 .recipeCreateForm {
   max-width: 100%;
@@ -1969,22 +2130,20 @@ button {
 
 .groceryRow {
   width: 100%;
-  grid-template-columns: minmax(0, 1fr) auto;
 }
 
 .groceryMainButton,
 .hubRow,
-.familyModuleRow,
-.familyQuickButton {
+.groceryRowMain {
   min-width: 0;
   overflow: hidden;
 }
 
 .groceryDeleteButton {
-  flex: 0 0 42px;
-  width: 42px;
-  min-width: 42px;
-  max-width: 42px;
+  flex: 0 0 34px;
+  width: 34px;
+  min-width: 34px;
+  max-width: 34px;
   padding: 0;
 }
 
@@ -2032,4 +2191,235 @@ button {
   color: #ffffff;
   font-size: 15px;
   font-weight: 850;
+}
+/* -------------------------------------------------------------------------- */
+/* FamilyOS v2 module page cleanup                                           */
+/* Shared list-page grammar for Grocery, Wishlist, Health, Recipes, Trips.   */
+/* -------------------------------------------------------------------------- */
+
+.moduleCreateCard {
+  padding: 14px;
+}
+
+.moduleCreateForm {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.moduleCreateForm input,
+.moduleCreateForm select {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 14px;
+  color: #111113;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.moduleCreateForm input:focus,
+.moduleCreateForm select:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.moduleCreateForm button {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 999px;
+  background: #111113;
+  padding: 0 16px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.moduleCreateForm button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.moduleListCard {
+  padding: 16px;
+}
+
+.moduleList {
+  display: grid;
+  gap: 10px;
+}
+
+.moduleRow,
+.moduleEmptyRow {
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  grid-template-columns: 38px minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 12px;
+  border-radius: 26px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+  box-sizing: border-box;
+  transition:
+    background 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.moduleEmptyRow {
+  grid-template-columns: 38px minmax(0, 1fr);
+}
+
+.moduleRow:hover {
+  background: rgba(0, 0, 0, 0.055);
+}
+
+.moduleRow:active {
+  transform: scale(0.99);
+}
+
+.moduleRowDone {
+  opacity: 0.58;
+}
+
+.moduleIcon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 16px;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 850;
+  line-height: 1;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.moduleCheck {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  justify-self: center;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  color: transparent;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.moduleCheckDone {
+  border-color: transparent;
+  background: #34c759;
+  color: #ffffff;
+}
+
+.moduleMainButton,
+.moduleMainText,
+.moduleEmptyRow div:nth-child(2) {
+  min-width: 0;
+  text-align: left;
+}
+
+.moduleMainButton strong,
+.moduleMainText strong,
+.moduleEmptyRow strong {
+  display: block;
+  overflow: hidden;
+  color: #111113;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moduleRowDone .moduleMainButton strong,
+.moduleRowDone .moduleMainText strong {
+  color: rgba(0, 0, 0, 0.45);
+  text-decoration: line-through;
+}
+
+.moduleMainButton span,
+.moduleMainText span,
+.moduleEmptyRow span {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 13px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moduleDeleteButton {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  justify-self: end;
+  border-radius: 999px;
+  color: rgba(244, 63, 94, 0.72);
+  font-size: 23px;
+  font-weight: 450;
+  line-height: 1;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.moduleDeleteButton:hover {
+  background: rgba(244, 63, 94, 0.09);
+  color: #e11d48;
+}
+
+.moduleDeleteButton:active {
+  transform: scale(0.92);
+}
+
+.moduleDoneCard {
+  padding-bottom: 18px;
+}
+
+@media (min-width: 390px) {
+  .moduleCreateFormThree {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 120px) 72px;
+  }
+
+  .moduleCreateFormFour {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 132px 72px;
+  }
+
+  .moduleCreateFormTrip {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+
+  .moduleCreateFormTrip button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 380px) {
+  .moduleRow,
+  .moduleEmptyRow {
+    border-radius: 24px;
+    padding: 11px;
+    gap: 10px;
+  }
+
+  .moduleMainButton strong,
+  .moduleMainText strong,
+  .moduleEmptyRow strong {
+    font-size: 15px;
+  }
 }

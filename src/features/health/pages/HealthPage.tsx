@@ -4,6 +4,7 @@ import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
+import SectionHeader from '../../../ui/layout/SectionHeader';
 
 export default function HealthPage() {
   const { items, isLoading, errorMessage, addItem, deleteItem } = useMedicalNotes();
@@ -12,7 +13,11 @@ export default function HealthPage() {
   const [date, setDate] = useState('');
 
   function handleAddItem() {
-    addItem(title, content, date);
+    const cleanTitle = title.trim();
+
+    if (!cleanTitle) return;
+
+    addItem(cleanTitle, content.trim(), date);
     setTitle('');
     setContent('');
     setDate('');
@@ -28,8 +33,8 @@ export default function HealthPage() {
       />
 
       <PageShell>
-        <GlassCard className="quickCreateCard">
-          <div className="healthCreateForm">
+        <GlassCard className="moduleCreateCard">
+          <div className="moduleCreateForm moduleCreateFormFour">
             <input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
@@ -57,7 +62,7 @@ export default function HealthPage() {
               aria-label="Health note date"
             />
 
-            <button type="button" onClick={handleAddItem}>
+            <button type="button" onClick={handleAddItem} disabled={!title.trim()}>
               Add
             </button>
           </div>
@@ -76,11 +81,13 @@ export default function HealthPage() {
         )}
 
         {!isLoading && !errorMessage && (
-          <GlassCard className="tasksCard">
-            <div className="hubList">
+          <GlassCard className="moduleListCard">
+            <SectionHeader title="Notes" />
+
+            <div className="moduleList">
               {items.length === 0 ? (
-                <div className="hubRow">
-                  <div className="hubIcon tintGreen">+</div>
+                <div className="moduleEmptyRow">
+                  <div className="moduleIcon tintGreen">+</div>
                   <div>
                     <strong>No health notes</strong>
                     <span>Good. Or undocumented. Let’s hope good.</span>
@@ -88,28 +95,24 @@ export default function HealthPage() {
                 </div>
               ) : (
                 items.map((item) => (
-                  <div key={item.id} className="groceryRow">
-                    <div className="hubRow groceryMainButton">
-                      <div className="hubIcon tintGreen">+</div>
+                  <div key={item.id} className="moduleRow">
+                    <div className="moduleIcon tintGreen">+</div>
 
-                      <div>
-                        <strong>{item.title}</strong>
-                        <span>
-                          {item.date || 'No date'}
-                          {item.content ? ` · ${item.content}` : ''}
-                        </span>
-                      </div>
-
-                      <span className="chevron">›</span>
+                    <div className="moduleMainText">
+                      <strong>{item.title}</strong>
+                      <span>
+                        {item.date || 'No date'}
+                        {item.content ? ` · ${item.content}` : ''}
+                      </span>
                     </div>
 
                     <button
                       type="button"
-                      className="groceryDeleteButton"
+                      className="moduleDeleteButton"
                       onClick={() => deleteItem(item.id)}
                       aria-label={`Delete ${item.title}`}
                     >
-                      x
+                      ×
                     </button>
                   </div>
                 ))

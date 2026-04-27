@@ -4,6 +4,7 @@ import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
+import SectionHeader from '../../../ui/layout/SectionHeader';
 
 export default function WishlistPage() {
   const { items, isLoading, errorMessage, addItem, deleteItem } = useWishlistItems();
@@ -11,7 +12,11 @@ export default function WishlistPage() {
   const [note, setNote] = useState('');
 
   function handleAddItem() {
-    addItem(title, note);
+    const cleanTitle = title.trim();
+
+    if (!cleanTitle) return;
+
+    addItem(cleanTitle, note.trim());
     setTitle('');
     setNote('');
   }
@@ -26,8 +31,8 @@ export default function WishlistPage() {
       />
 
       <PageShell>
-        <GlassCard className="quickCreateCard">
-          <div className="wishlistCreateForm">
+        <GlassCard className="moduleCreateCard">
+          <div className="moduleCreateForm moduleCreateFormThree">
             <input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
@@ -48,7 +53,7 @@ export default function WishlistPage() {
               aria-label="Wishlist item note"
             />
 
-            <button type="button" onClick={handleAddItem}>
+            <button type="button" onClick={handleAddItem} disabled={!title.trim()}>
               Add
             </button>
           </div>
@@ -67,11 +72,13 @@ export default function WishlistPage() {
         )}
 
         {!isLoading && !errorMessage && (
-          <GlassCard className="tasksCard">
-            <div className="hubList">
+          <GlassCard className="moduleListCard">
+            <SectionHeader title="Ideas" />
+
+            <div className="moduleList">
               {items.length === 0 ? (
-                <div className="hubRow">
-                  <div className="hubIcon tintRose">♡</div>
+                <div className="moduleEmptyRow">
+                  <div className="moduleIcon tintRose">♡</div>
                   <div>
                     <strong>No saved ideas</strong>
                     <span>Suspiciously restrained. Add one later.</span>
@@ -79,28 +86,24 @@ export default function WishlistPage() {
                 </div>
               ) : (
                 items.map((item) => (
-                  <div key={item.id} className="groceryRow">
-                    <div className="hubRow groceryMainButton">
-                      <div className="hubIcon tintRose">♡</div>
+                  <div key={item.id} className="moduleRow">
+                    <div className="moduleIcon tintRose">♡</div>
 
-                      <div>
-                        <strong>{item.title}</strong>
-                        <span>
-                          {item.occasion || item.priority}
-                          {item.note ? ` · ${item.note}` : ''}
-                        </span>
-                      </div>
-
-                      <span className="chevron">›</span>
+                    <div className="moduleMainText">
+                      <strong>{item.title}</strong>
+                      <span>
+                        {item.occasion || item.priority || 'Idea'}
+                        {item.note ? ` · ${item.note}` : ''}
+                      </span>
                     </div>
 
                     <button
                       type="button"
-                      className="groceryDeleteButton"
+                      className="moduleDeleteButton"
                       onClick={() => deleteItem(item.id)}
                       aria-label={`Delete ${item.title}`}
                     >
-                      x
+                      ×
                     </button>
                   </div>
                 ))
