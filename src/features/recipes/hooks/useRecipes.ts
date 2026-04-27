@@ -4,6 +4,8 @@ import {
   fetchRecipes,
   insertRecipe,
 } from '../services/recipesSupabaseService';
+import { requireSupabaseClient } from '../../../lib/supabase/client';
+import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import type { Recipe } from '../types';
 
 export function useRecipes() {
@@ -44,6 +46,55 @@ export function useRecipes() {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    const supabase = requireSupabaseClient();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    async function subscribe() {
+      try {
+        const householdId = await getCurrentHouseholdId();
+
+        if (cancelled) return;
+
+        channel = supabase
+          .channel(`recipes-realtime-${householdId}`)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'recipes',
+              filter: `household_id=eq.${householdId}`,
+            },
+            async () => {
+              try {
+                const nextItems = await fetchRecipes();
+                setItems(nextItems);
+              } catch (error) {
+                console.error('Failed to refresh recipes after realtime event:', error);
+                setErrorMessage(error instanceof Error ? error.message : 'Failed to sync recipes.');
+              }
+            },
+          )
+          .subscribe();
+      } catch (error) {
+        console.error('Failed to subscribe to recipes realtime:', error);
+        setErrorMessage(error instanceof Error ? error.message : 'Failed to subscribe to recipe sync.');
+      }
+    }
+
+    subscribe();
+
+    return () => {
+      cancelled = true;
+
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, []);
+
   async function addItem(input: {
     name: string;
     ingredients: string;
@@ -68,7 +119,10 @@ export function useRecipes() {
         serves: Number.isFinite(parsedServes) && parsedServes > 0 ? parsedServes : null,
       });
 
-      setItems((current) => [newItem, ...current]);
+      setItems((current) => {
+        const withoutDuplicate = current.filter((item) => item.id !== newItem.id);
+        return [newItem, ...withoutDuplicate];
+      });
     } catch (error) {
       console.error('Failed to insert recipe:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Failed to add recipe.');
