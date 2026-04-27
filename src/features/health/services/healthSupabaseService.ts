@@ -1,5 +1,6 @@
 import { requireSupabaseClient } from '../../../lib/supabase/client';
 import { getCurrentHouseholdId } from '../../../lib/supabase/household';
+import { getCurrentPersonId } from '../../../lib/supabase/person';
 import type { MedicalNote } from '../types';
 
 type MedicalNoteRow = {
@@ -39,4 +40,28 @@ export async function fetchMedicalNotes(): Promise<MedicalNote[]> {
   }
 
   return (data ?? []).map(mapRowToMedicalNote);
+}
+
+export async function insertMedicalNote(title: string, content: string, date: string) {
+  const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
+  const personId = await getCurrentPersonId();
+
+  const { data, error } = await supabase
+    .from('medical_notes')
+    .insert({
+      household_id: householdId,
+      person_id: personId,
+      title,
+      content,
+      date,
+    })
+    .select('id, household_id, person_id, title, content, date, created_at')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return mapRowToMedicalNote(data);
 }

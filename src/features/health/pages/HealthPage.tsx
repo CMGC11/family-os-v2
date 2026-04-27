@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useMedicalNotes } from '../hooks/useMedicalNotes';
 import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
@@ -5,7 +6,17 @@ import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
 export default function HealthPage() {
-  const { items, isLoading, errorMessage } = useMedicalNotes();
+  const { items, isLoading, errorMessage, addItem } = useMedicalNotes();
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [date, setDate] = useState('');
+
+  function handleAddItem() {
+    addItem(title, content, date);
+    setTitle('');
+    setContent('');
+    setDate('');
+  }
 
   return (
     <main>
@@ -17,6 +28,41 @@ export default function HealthPage() {
       />
 
       <PageShell>
+        <GlassCard className="quickCreateCard">
+          <div className="healthCreateForm">
+            <input
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') handleAddItem();
+              }}
+              placeholder="Note title"
+              aria-label="Health note title"
+            />
+
+            <input
+              value={content}
+              onChange={(event) => setContent(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') handleAddItem();
+              }}
+              placeholder="Details"
+              aria-label="Health note details"
+            />
+
+            <input
+              value={date}
+              onChange={(event) => setDate(event.target.value)}
+              type="date"
+              aria-label="Health note date"
+            />
+
+            <button type="button" onClick={handleAddItem}>
+              Add
+            </button>
+          </div>
+        </GlassCard>
+
         {isLoading && (
           <GlassCard className="tasksCard">
             <p className="mutedLabel">Loading health notes...</p>

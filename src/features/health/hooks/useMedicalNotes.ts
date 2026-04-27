@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { fetchMedicalNotes } from '../services/healthSupabaseService';
+import {
+  fetchMedicalNotes,
+  insertMedicalNote,
+} from '../services/healthSupabaseService';
 import type { MedicalNote } from '../types';
 
 export function useMedicalNotes() {
@@ -40,9 +43,29 @@ export function useMedicalNotes() {
     };
   }, []);
 
+  async function addItem(title: string, content = '', date = '') {
+    const cleanTitle = title.trim();
+    const cleanContent = content.trim();
+    const cleanDate = date.trim();
+
+    if (!cleanTitle) return;
+
+    try {
+      setErrorMessage('');
+
+      const newItem = await insertMedicalNote(cleanTitle, cleanContent, cleanDate);
+
+      setItems((current) => [newItem, ...current]);
+    } catch (error) {
+      console.error('Failed to insert medical note:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to add health note.');
+    }
+  }
+
   return {
     items,
     isLoading,
     errorMessage,
+    addItem,
   };
 }
