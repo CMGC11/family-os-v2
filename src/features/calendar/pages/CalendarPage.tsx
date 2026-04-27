@@ -118,7 +118,7 @@ function sortEventsByTime(events: CalendarEvent[]) {
 }
 
 export default function CalendarPage() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     events,
     selectedDayEvents,
@@ -138,6 +138,7 @@ export default function CalendarPage() {
 
   const [title, setTitle] = useState('');
   const [time, setTime] = useState('12:00');
+  const [isSavingEvent, setIsSavingEvent] = useState(false);
 
   const isCreating = searchParams.get('create') === 'event';
   const todayDateString = getTodayDateString();
@@ -161,6 +162,28 @@ export default function CalendarPage() {
 
   const currentMonthTitle = getMonthTitle(viewMonth);
   const headerMonthTitle = getMonthHeaderTitle(viewMonth);
+
+  function setCreateFormOpen(open: boolean) {
+    const nextSearchParams = new URLSearchParams(searchParams);
+
+    if (open) {
+      nextSearchParams.set('create', 'event');
+    } else {
+      nextSearchParams.delete('create');
+    }
+
+    setSearchParams(nextSearchParams, { replace: true });
+  }
+
+  function openCreateForm() {
+    setCreateFormOpen(true);
+  }
+
+  function closeCreateForm() {
+    setCreateFormOpen(false);
+    setTitle('');
+    setTime('12:00');
+  }
 
   function selectDate(dateString: string) {
     const nextDate = createLocalDate(dateString);
@@ -208,14 +231,20 @@ export default function CalendarPage() {
     setViewMonth(new Date(today.getFullYear(), today.getMonth(), 1, 12, 0, 0, 0));
   }
 
-  function handleAddEvent() {
+  async function handleAddEvent() {
     const cleanTitle = title.trim();
 
-    if (!cleanTitle) return;
+    if (!cleanTitle || isSavingEvent) return;
 
-    addEvent(cleanTitle, time);
-    setTitle('');
-    setTime('12:00');
+    setIsSavingEvent(true);
+
+    const wasAdded = await addEvent(cleanTitle, time);
+
+    setIsSavingEvent(false);
+
+    if (wasAdded) {
+      closeCreateForm();
+    }
   }
 
   return (
@@ -228,7 +257,18 @@ export default function CalendarPage() {
 
       <PageShell>
         {isCreating && (
-          <GlassCard className="quickCreateCard">
+          <GlassCard className="quickCreateCard calendarQuickCreateCard">
+            <div className="calendarCreateHeader">
+              <div>
+                <p>New event</p>
+                <h2>{formatSelectedDayLabel(selectedDate)}</h2>
+              </div>
+
+              <button type="button" onClick={closeCreateForm}>
+                Cancel
+              </button>
+            </div>
+
             <div className="calendarCreateForm">
               <input
                 value={title}
@@ -236,7 +276,7 @@ export default function CalendarPage() {
                 onKeyDown={(event) => {
                   if (event.key === 'Enter') handleAddEvent();
                 }}
-                placeholder="New event title..."
+                placeholder="Event title..."
                 autoFocus
                 aria-label="New event title"
               />
@@ -248,8 +288,8 @@ export default function CalendarPage() {
                 aria-label="New event time"
               />
 
-              <button type="button" onClick={handleAddEvent}>
-                Add
+              <button type="button" onClick={handleAddEvent} disabled={!title.trim() || isSavingEvent}>
+                {isSavingEvent ? 'Saving...' : 'Add'}
               </button>
             </div>
           </GlassCard>
@@ -370,7 +410,9 @@ export default function CalendarPage() {
                 <h2>{formatSelectedDayLabel(selectedDate)}</h2>
               </div>
 
-              <button type="button">New</button>
+              <button type="button" onClick={openCreateForm}>
+                New
+              </button>
             </div>
 
             <div className="agendaList">

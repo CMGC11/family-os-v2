@@ -130,7 +130,7 @@ export function useCalendarItems() {
     const cleanTitle = title.trim();
     const cleanTime = time.trim() || '12:00';
 
-    if (!cleanTitle) return;
+    if (!cleanTitle) return false;
 
     try {
       setErrorMessage('');
@@ -150,9 +150,12 @@ export function useCalendarItems() {
         const withoutDuplicate = current.filter((event) => event.id !== newEvent.id);
         return [...withoutDuplicate, newEvent];
       });
+
+      return true;
     } catch (error) {
       console.error('Failed to insert calendar event:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Failed to add event.');
+      return false;
     }
   }
 
