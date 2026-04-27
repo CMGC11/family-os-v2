@@ -3423,3 +3423,368 @@ button {
 .moduleRowSelected {
   background: rgba(16, 185, 129, 0.09);
 }
+
+/* -------------------------------------------------------------------------- */
+/* Detail view repairs                                                        */
+/* Restores detail styles for Recipes, Trips, and Wishlist after CSS cleanup. */
+/* -------------------------------------------------------------------------- */
+
+.recipeDetailCard {
+  padding: 18px;
+}
+
+.recipeDetailTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.recipeDetailTop p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.38);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.recipeDetailTop h2 {
+  margin: 5px 0 0;
+  color: #111113;
+  font-size: 28px;
+  font-weight: 850;
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+}
+
+.recipeDetailTop button,
+.tripDetailTop button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.045);
+  color: rgba(17, 17, 19, 0.62);
+  font-size: 24px;
+  font-weight: 450;
+  line-height: 1;
+}
+
+.recipeDetailTop button:hover,
+.tripDetailTop button:hover {
+  background: rgba(0, 0, 0, 0.07);
+  color: #111113;
+}
+
+.recipeDetailContent,
+.tripDetailContent {
+  display: grid;
+  gap: 14px;
+}
+
+.recipeDetailContent section,
+.tripDetailContent section {
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 14px;
+}
+
+.recipeDetailContent h3,
+.tripDetailContent h3 {
+  margin: 0 0 10px;
+  color: #111113;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+}
+
+.recipeDetailContent ul,
+.recipeDetailContent ol {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding-left: 20px;
+  color: rgba(0, 0, 0, 0.68);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.recipeDetailContent p,
+.tripDetailContent p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.recipeDetailContent a,
+.tripDetailContent a {
+  display: inline-flex;
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.recipeDetailContent a {
+  margin-top: 10px;
+}
+
+.recipeTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.recipeTags span {
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.055);
+  padding: 6px 10px;
+  color: rgba(0, 0, 0, 0.58);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.recipeRowSelected,
+.tripRowSelected,
+.wishlistRowSelected {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.recipeRowSelected:hover,
+.tripRowSelected:hover,
+.wishlistRowSelected:hover {
+  background: rgba(37, 99, 235, 0.1);
+}
+
+@media (min-width: 390px) {
+  .recipeCreateGrid {
+    grid-template-columns: minmax(0, 1fr) 116px 82px;
+  }
+
+  .recipeCreateGrid textarea,
+  .recipeCreateGrid button {
+    grid-column: 1 / -1;
+  }
+}
+
+.tripDetailCard {
+  padding: 18px;
+}
+
+.tripDetailTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.tripDetailTop div {
+  min-width: 0;
+}
+
+.tripDetailTop p {
+  margin: 0;
+  overflow: hidden;
+  color: rgba(0, 0, 0, 0.38);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tripDetailTop h2 {
+  margin: 5px 0 0;
+  overflow: hidden;
+  color: #111113;
+  font-size: 28px;
+  font-weight: 850;
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+  text-overflow: ellipsis;
+}
+
+.tripDetailStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.tripDetailStats div {
+  min-width: 0;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+}
+
+.tripDetailStats strong {
+  display: block;
+  overflow: hidden;
+  color: #111113;
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tripDetailStats span {
+  display: block;
+  margin-top: 3px;
+  color: rgba(0, 0, 0, 0.42);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.wishlistDetailCard {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.wishlistDetailHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.wishlistDetailHeader > div:first-child {
+  min-width: 0;
+}
+
+.wishlistDetailHeader p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.wishlistDetailHeader h2 {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+  color: #111113;
+  font-size: 28px;
+  font-weight: 850;
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+}
+
+.wishlistDetailHeader span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.48);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.wishlistDetailIcon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #ec4899, #fb7185);
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 850;
+  box-shadow: 0 16px 28px rgba(236, 72, 153, 0.18);
+}
+
+.wishlistDetailMetaGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.wishlistDetailMetaGrid div {
+  min-width: 0;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+}
+
+.wishlistDetailMetaGrid span {
+  display: block;
+  overflow: hidden;
+  color: rgba(0, 0, 0, 0.38);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.wishlistDetailMetaGrid strong {
+  display: block;
+  overflow: hidden;
+  margin-top: 4px;
+  color: #111113;
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wishlistDetailSection {
+  display: grid;
+  gap: 8px;
+}
+
+.wishlistDetailSection p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.wishlistDetailText {
+  overflow-wrap: anywhere;
+  border-radius: 22px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 14px;
+  color: rgba(0, 0, 0, 0.68);
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.wishlistDetailLink {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+@media (max-width: 380px) {
+  .tripDetailStats,
+  .wishlistDetailMetaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .wishlistDetailHeader h2 {
+    font-size: 25px;
+  }
+}
