@@ -182,6 +182,10 @@ button {
   padding: 20px;
 }
 
+.homeHeroCard {
+  position: relative;
+}
+
 .heroLayout {
   display: flex;
   align-items: flex-start;
@@ -198,14 +202,14 @@ button {
 
 .heroLayout h2 {
   margin: 4px 0 0;
-  font-size: 30px;
-  font-weight: 800;
+  font-size: 32px;
+  font-weight: 850;
   line-height: 1;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.055em;
 }
 
 .heroLayout p:last-child {
-  margin: 8px 0 0;
+  margin: 9px 0 0;
   color: rgba(0, 0, 0, 0.52);
   font-size: 14px;
   line-height: 1.6;
@@ -224,6 +228,23 @@ button {
   box-shadow: 0 14px 28px rgba(59, 130, 246, 0.25);
 }
 
+.homeHeroAction {
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.homeHeroAction:active {
+  transform: scale(0.97);
+}
+
+.homeMetricGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 20px;
+}
+
 .quickGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -235,21 +256,37 @@ button {
   border-radius: 16px;
   background: rgba(0, 0, 0, 0.035);
   padding: 12px;
+  text-align: left;
+}
+
+.homeMetricCard {
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.homeMetricCard:hover {
+  background: rgba(0, 0, 0, 0.055);
+}
+
+.homeMetricCard:active {
+  transform: scale(0.98);
 }
 
 .quickCard p {
   margin: 0;
   color: rgba(0, 0, 0, 0.4);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .quickCard strong {
   display: block;
   margin-top: 4px;
+  color: #111113;
   font-size: 17px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  font-weight: 850;
+  letter-spacing: -0.035em;
 }
 
 .splitCards {
@@ -264,6 +301,15 @@ button {
   border-radius: 28px;
   padding: 16px;
   text-align: left;
+  transition:
+    box-shadow 160ms ease,
+    transform 160ms ease,
+    background 160ms ease;
+}
+
+.darkActionCard:active,
+.lightActionCard:active {
+  transform: scale(0.985);
 }
 
 .darkActionCard {
@@ -298,7 +344,7 @@ button {
   display: block;
   margin-top: 8px;
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 850;
   letter-spacing: -0.04em;
 }
 
@@ -316,6 +362,109 @@ button {
 
 .lightActionCard span {
   color: rgba(0, 0, 0, 0.5);
+}
+
+.homeAgendaCard {
+  padding: 16px;
+}
+
+.homeAgendaList {
+  display: grid;
+  gap: 10px;
+}
+
+.homeAgendaRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 12px;
+  border-radius: 22px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+  text-align: left;
+}
+
+.homeAgendaButton {
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.homeAgendaButton:hover {
+  background: rgba(0, 0, 0, 0.055);
+}
+
+.homeAgendaButton:active {
+  transform: scale(0.985);
+}
+
+.homeAgendaTime {
+  display: grid;
+  width: 54px;
+  min-height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 16px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+}
+
+.homeAgendaRow div {
+  min-width: 0;
+}
+
+.homeAgendaRow strong {
+  display: block;
+  overflow: hidden;
+  color: #111113;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.homeAgendaRow p {
+  margin: 3px 0 0;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.homeHubPreview {
+  padding: 16px;
+}
+
+.homeHubGrid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.homeHubButton {
+  width: 100%;
+  text-align: left;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.homeHubButton:hover {
+  background: rgba(0, 0, 0, 0.055);
+}
+
+.homeHubButton:active {
+  transform: scale(0.985);
+}
+
+.homeHubButton strong {
+  display: block;
+  margin-top: 10px;
+  color: #111113;
+  font-size: 20px;
+  font-weight: 850;
+  letter-spacing: -0.04em;
 }
 
 .hubPreview,
