@@ -4448,3 +4448,493 @@ button {
     font-size: 27px;
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/* Health visual retry - final scoped override                                */
+/* Appended to the current globals.css. Do not keep this as a separate file.   */
+/* -------------------------------------------------------------------------- */
+
+.healthSummaryCard.healthCleanSummaryCard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  overflow: hidden;
+  padding: 20px;
+}
+
+.healthSummaryCard.healthCleanSummaryCard h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 36px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.healthSummaryCard.healthCleanSummaryCard span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.healthSummaryCard .healthSummaryIcon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 22px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 850;
+  line-height: 1;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.16);
+}
+
+.healthSectionTabsCard {
+  padding: 8px;
+}
+
+.healthSectionTabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 4px;
+}
+
+.healthSectionTabs button {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+  border-radius: 999px;
+  padding: 8px 6px;
+  color: rgba(0, 0, 0, 0.44);
+  text-align: center;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.healthSectionTabs button:active {
+  transform: scale(0.98);
+}
+
+.healthSectionTabs button span {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.healthSectionTabs button strong {
+  color: inherit;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.healthSectionTabs .healthSectionTabActive {
+  background: #ffffff;
+  color: #111113;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+}
+
+.healthNoticeCard {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-color: rgba(244, 63, 94, 0.12);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.healthNoticeIcon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 18px;
+  background: rgba(244, 63, 94, 0.12);
+  color: #be123c;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.healthNoticeCard strong,
+.healthNoticeCard span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.healthNoticeCard strong {
+  color: #111113;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+}
+
+.healthNoticeCard span {
+  margin-top: 3px;
+  color: rgba(0, 0, 0, 0.48);
+  font-size: 13px;
+}
+
+.healthPanelCard {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.healthPanelCard .sectionHeader {
+  margin-bottom: 0;
+}
+
+.healthCleanForm {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.healthCleanForm input,
+.healthCleanForm select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 0;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 12px;
+  color: #111113;
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.healthCleanForm input:focus,
+.healthCleanForm select:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.healthCleanForm button {
+  min-height: 44px;
+  border-radius: 999px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.healthCleanForm button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.healthDetailCard.healthCleanDetailCard {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.healthDetailHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.healthDetailHeader > div:first-child {
+  min-width: 0;
+}
+
+.healthDetailHeader p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.healthDetailHeader h2 {
+  overflow: hidden;
+  margin: 5px 0 0;
+  color: #111113;
+  font-size: 25px;
+  font-weight: 850;
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+  text-overflow: ellipsis;
+}
+
+.healthDetailHeader span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.healthDetailIcon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 20px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 25px;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.healthDetailMetaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.healthDetailMetaGrid div,
+.healthDetailSection {
+  border-radius: 22px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+}
+
+.healthDetailMetaGrid span,
+.healthDetailSection p {
+  display: block;
+  margin: 0;
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.healthDetailMetaGrid strong {
+  display: block;
+  margin-top: 4px;
+  color: #111113;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.healthDetailText {
+  margin-top: 8px;
+  color: rgba(0, 0, 0, 0.62);
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.healthCompactList.healthCleanList {
+  display: grid;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.healthCompactRow,
+.healthCompactEmptyRow {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+  box-sizing: border-box;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.healthCompactRow.healthCleanRow {
+  grid-template-columns: 38px minmax(0, 1fr) auto 32px;
+}
+
+.healthCompactRow.healthMedicationRow {
+  grid-template-columns: 38px minmax(0, 1fr) 32px;
+}
+
+.healthCompactEmptyRow {
+  grid-template-columns: 38px minmax(0, 1fr);
+}
+
+.healthCompactRow:hover {
+  background: rgba(0, 0, 0, 0.055);
+}
+
+.healthCompactRow:active {
+  transform: scale(0.99);
+}
+
+.healthCompactIcon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 16px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.healthCompactText,
+.healthCompactEmptyRow div:nth-child(2) {
+  min-width: 0;
+}
+
+.healthCompactText strong,
+.healthCompactEmptyRow strong {
+  display: block;
+  overflow: hidden;
+  color: #111113;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.healthCompactText span,
+.healthCompactEmptyRow span {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 13px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.healthSeverityPill {
+  justify-self: end;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.055);
+  padding: 6px 9px;
+  color: rgba(0, 0, 0, 0.58);
+  font-size: 11px;
+  font-weight: 850;
+  line-height: 1;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.healthSeveritysevere {
+  background: rgba(244, 63, 94, 0.12);
+  color: #be123c;
+}
+
+.healthSeveritymoderate {
+  background: rgba(251, 191, 36, 0.18);
+  color: #92400e;
+}
+
+.healthSeveritymild {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+}
+
+.healthDeleteButton {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  justify-self: end;
+  border-radius: 999px;
+  color: rgba(244, 63, 94, 0.72);
+  font-size: 23px;
+  font-weight: 450;
+  line-height: 1;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.healthDeleteButton:hover {
+  background: rgba(244, 63, 94, 0.09);
+  color: #e11d48;
+}
+
+.healthDeleteButton:active {
+  transform: scale(0.92);
+}
+
+.moduleRowSelected {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.moduleRowSelected:hover {
+  background: rgba(16, 185, 129, 0.14);
+}
+
+@media (min-width: 390px) {
+  .healthCleanFormNote {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .healthCleanFormNote input:nth-child(3),
+  .healthCleanFormNote button {
+    grid-column: auto;
+  }
+
+  .healthCleanFormAllergy {
+    grid-template-columns: minmax(0, 1fr) 112px;
+  }
+
+  .healthCleanFormAllergy input:nth-child(3),
+  .healthCleanFormAllergy button {
+    grid-column: auto;
+  }
+
+  .healthCleanFormMedication {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  }
+
+  .healthCleanFormMedication button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 380px) {
+  .healthSummaryCard.healthCleanSummaryCard,
+  .healthNoticeCard,
+  .healthCompactRow.healthCleanRow,
+  .healthCompactRow.healthMedicationRow,
+  .healthCompactEmptyRow,
+  .healthDetailMetaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .healthSummaryCard .healthSummaryIcon,
+  .healthNoticeIcon,
+  .healthSeverityPill,
+  .healthDeleteButton {
+    justify-self: start;
+  }
+
+  .healthDetailHeader h2 {
+    font-size: 23px;
+  }
+}
