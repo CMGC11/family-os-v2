@@ -1365,3 +1365,54 @@ button {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 132px 72px;
   }
 }
+
+.recipeCreateForm {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.recipeCreateForm input,
+.recipeCreateForm textarea {
+  width: 100%;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 13px 14px;
+  color: #111113;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.recipeCreateForm textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.recipeCreateForm input:focus,
+.recipeCreateForm textarea:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.recipeCreateForm button {
+  min-height: 46px;
+  border-radius: 999px;
+  background: #111113;
+  padding: 0 16px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+@media (min-width: 390px) {
+  .recipeCreateForm {
+    grid-template-columns: minmax(0, 1fr) 110px 82px;
+  }
+
+  .recipeCreateForm textarea,
+  .recipeCreateForm button {
+    grid-column: 1 / -1;
+  }
+}

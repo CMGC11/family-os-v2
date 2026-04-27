@@ -55,3 +55,35 @@ export async function fetchRecipes(): Promise<Recipe[]> {
 
   return (data ?? []).map(mapRowToRecipe);
 }
+
+export async function insertRecipe(input: {
+  name: string;
+  ingredients: string;
+  steps: string;
+  category: string;
+  serves: number | null;
+}) {
+  const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
+
+  const { data, error } = await supabase
+    .from('recipes')
+    .insert({
+      household_id: householdId,
+      name: input.name,
+      ingredients: input.ingredients,
+      steps: input.steps,
+      category: input.category,
+      serves: input.serves,
+    })
+    .select(
+      'id, household_id, name, ingredients, steps, serves, notes, tags, source_url, category, is_pinned, use_count, created_at',
+    )
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return mapRowToRecipe(data);
+}

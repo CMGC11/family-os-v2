@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { fetchRecipes } from '../services/recipesSupabaseService';
+import {
+  fetchRecipes,
+  insertRecipe,
+} from '../services/recipesSupabaseService';
 import type { Recipe } from '../types';
 
 export function useRecipes() {
@@ -40,9 +43,41 @@ export function useRecipes() {
     };
   }, []);
 
+  async function addItem(input: {
+    name: string;
+    ingredients: string;
+    steps: string;
+    category: string;
+    serves: string;
+  }) {
+    const cleanName = input.name.trim();
+
+    if (!cleanName) return;
+
+    const parsedServes = Number(input.serves);
+
+    try {
+      setErrorMessage('');
+
+      const newItem = await insertRecipe({
+        name: cleanName,
+        ingredients: input.ingredients.trim(),
+        steps: input.steps.trim(),
+        category: input.category.trim() || 'Family',
+        serves: Number.isFinite(parsedServes) && parsedServes > 0 ? parsedServes : null,
+      });
+
+      setItems((current) => [newItem, ...current]);
+    } catch (error) {
+      console.error('Failed to insert recipe:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to add recipe.');
+    }
+  }
+
   return {
     items,
     isLoading,
     errorMessage,
+    addItem,
   };
 }
