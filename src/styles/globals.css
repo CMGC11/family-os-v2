@@ -1009,65 +1009,261 @@ button {
   overflow: hidden;
 }
 
-.featuredCard {
-  display: block;
-  width: 100%;
-  border-radius: 28px;
+.familyHeroCard {
   padding: 20px;
+}
+
+.familyHeroTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.familyHeroTop h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 32px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.familyHeroTop span {
+  display: block;
+  max-width: 260px;
+  margin-top: 9px;
+  color: rgba(0, 0, 0, 0.52);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.familyHeroIcon {
+  display: grid;
+  width: 62px;
+  height: 62px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 24px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 30px;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.18);
+}
+
+.familyHeroStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.familyHeroStats div {
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 12px;
+}
+
+.familyHeroStats strong {
+  display: block;
+  color: #111113;
+  font-size: 22px;
+  font-weight: 850;
+  letter-spacing: -0.04em;
+}
+
+.familyHeroStats span {
+  display: block;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.42);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.familyPrimaryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.familyPrimaryCard {
+  min-height: 156px;
+  border-radius: 30px;
+  padding: 18px;
   color: #ffffff;
   text-align: left;
-  box-shadow: 0 18px 35px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 18px 36px rgba(59, 130, 246, 0.18);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
 }
 
-.featuredCard p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 14px;
-  font-weight: 800;
+.familyPrimaryCard:active {
+  transform: scale(0.985);
 }
 
-.featuredCard h2 {
-  margin: 4px 0 0;
-  font-size: 30px;
-  font-weight: 800;
+.familyPrimaryCard span {
+  display: block;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.familyPrimaryCard strong {
+  display: block;
+  margin-top: 8px;
+  color: #ffffff;
+  font-size: 25px;
+  font-weight: 850;
   line-height: 1;
   letter-spacing: -0.05em;
 }
 
-.featuredCard span {
-  display: block;
-  margin-top: 8px;
-  color: rgba(255, 255, 255, 0.76);
-  font-size: 14px;
-  line-height: 1.6;
+.familyPrimaryCard p {
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  line-height: 1.45;
 }
 
-.hubList {
+.familyModulesCard,
+.familyQuickCard {
+  padding: 16px;
+}
+
+.familyModuleList {
   display: grid;
-  gap: 12px;
-  margin-top: 16px;
+  gap: 10px;
 }
 
-.hubRow {
+.familyModuleRow {
   display: flex;
+  width: 100%;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   border-radius: 26px;
   background: rgba(0, 0, 0, 0.035);
   padding: 12px;
   text-align: left;
-  transition: background 160ms ease;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
 }
 
-.hubRow:hover {
-  background: rgba(0, 0, 0, 0.06);
+.familyModuleRow:hover {
+  background: rgba(0, 0, 0, 0.055);
 }
 
-.hubRow .hubIcon {
+.familyModuleRow:active {
+  transform: scale(0.985);
+}
+
+.familyModuleRow .hubIcon {
   width: 48px;
   height: 48px;
   margin-bottom: 0;
   flex: 0 0 auto;
+}
+
+.familyModuleRow div:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+}
+
+.familyModuleRow p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.familyModuleRow strong {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: #111113;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.familyModuleRow span {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 13px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.familyModuleChevron {
+  flex: 0 0 auto;
+  color: rgba(0, 0, 0, 0.28) !important;
+  font-size: 30px !important;
+  font-weight: 300 !important;
+}
+
+.familyQuickGrid {
+  display: grid;
+  gap: 8px;
+}
+
+.familyQuickButton {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border-radius: 22px;
+  background: rgba(0, 0, 0, 0.03);
+  padding: 10px;
+  text-align: left;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.familyQuickButton:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.familyQuickButton:active {
+  transform: scale(0.985);
+}
+
+.familyQuickIcon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 14px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.familyQuickButton strong {
+  overflow: hidden;
+  color: #111113;
+  font-size: 14px;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.familyQuickButton em {
+  color: rgba(37, 99, 235, 0.85);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 850;
 }
 
 .groceryFormCard {
@@ -1735,6 +1931,15 @@ button {
 .hubList,
 .groceryRow,
 .hubRow,
+.familyHeroCard,
+.familyPrimaryGrid,
+.familyPrimaryCard,
+.familyModulesCard,
+.familyModuleList,
+.familyModuleRow,
+.familyQuickCard,
+.familyQuickGrid,
+.familyQuickButton,
 .groceryMainButton,
 .recipeCreateForm {
   max-width: 100%;
@@ -1755,7 +1960,9 @@ button {
 }
 
 .groceryMainButton,
-.hubRow {
+.hubRow,
+.familyModuleRow,
+.familyQuickButton {
   min-width: 0;
   overflow: hidden;
 }
