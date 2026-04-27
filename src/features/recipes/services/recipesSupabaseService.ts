@@ -87,3 +87,18 @@ export async function insertRecipe(input: {
 
   return mapRowToRecipe(data);
 }
+
+export async function deleteRecipe(id: string): Promise<void> {
+  const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
+
+  const { error } = await supabase
+    .from('recipes')
+    .delete()
+    .eq('id', id)
+    .eq('household_id', householdId);
+
+  if (error) {
+    throw error;
+  }
+}

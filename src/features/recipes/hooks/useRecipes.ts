@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  deleteRecipe,
   fetchRecipes,
   insertRecipe,
 } from '../services/recipesSupabaseService';
@@ -74,10 +75,27 @@ export function useRecipes() {
     }
   }
 
+  async function deleteItem(id: string) {
+    const previousItems = items;
+
+    setItems((current) => current.filter((item) => item.id !== id));
+
+    try {
+      setErrorMessage('');
+      await deleteRecipe(id);
+    } catch (error) {
+      console.error('Failed to delete recipe:', error);
+
+      setItems(previousItems);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to delete recipe.');
+    }
+  }
+
   return {
     items,
     isLoading,
     errorMessage,
     addItem,
+    deleteItem,
   };
 }

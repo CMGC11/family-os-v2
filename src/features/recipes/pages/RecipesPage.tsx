@@ -6,27 +6,21 @@ import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 
 export default function RecipesPage() {
-  const { items, isLoading, errorMessage, addItem } = useRecipes();
+  const { items, isLoading, errorMessage, addItem, deleteItem } = useRecipes();
   const [name, setName] = useState('');
-  const [ingredients, setIngredients] = useState('');
-  const [steps, setSteps] = useState('');
   const [category, setCategory] = useState('Family');
-  const [serves, setServes] = useState('');
 
   function handleAddItem() {
     addItem({
       name,
-      ingredients,
-      steps,
+      ingredients: '',
+      steps: '',
       category,
-      serves,
+      serves: '',
     });
 
     setName('');
-    setIngredients('');
-    setSteps('');
     setCategory('Family');
-    setServes('');
   }
 
   return (
@@ -44,6 +38,9 @@ export default function RecipesPage() {
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') handleAddItem();
+              }}
               placeholder="Recipe name"
               aria-label="Recipe name"
             />
@@ -51,30 +48,11 @@ export default function RecipesPage() {
             <input
               value={category}
               onChange={(event) => setCategory(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') handleAddItem();
+              }}
               placeholder="Category"
               aria-label="Recipe category"
-            />
-
-            <input
-              value={serves}
-              onChange={(event) => setServes(event.target.value)}
-              inputMode="numeric"
-              placeholder="Serves"
-              aria-label="Recipe serves"
-            />
-
-            <textarea
-              value={ingredients}
-              onChange={(event) => setIngredients(event.target.value)}
-              placeholder="Ingredients"
-              aria-label="Recipe ingredients"
-            />
-
-            <textarea
-              value={steps}
-              onChange={(event) => setSteps(event.target.value)}
-              placeholder="Steps"
-              aria-label="Recipe steps"
             />
 
             <button type="button" onClick={handleAddItem}>
@@ -108,19 +86,30 @@ export default function RecipesPage() {
                 </div>
               ) : (
                 items.map((item) => (
-                  <div key={item.id} className="hubRow">
-                    <div className="hubIcon tintOrange">🍳</div>
+                  <div key={item.id} className="groceryRow">
+                    <div className="hubRow groceryMainButton">
+                      <div className="hubIcon tintOrange">🍳</div>
 
-                    <div>
-                      <strong>{item.name}</strong>
-                      <span>
-                        {item.category}
-                        {item.serves ? ` · Serves ${item.serves}` : ''}
-                        {item.is_pinned ? ' · Pinned' : ''}
-                      </span>
+                      <div>
+                        <strong>{item.name}</strong>
+                        <span>
+                          {item.category}
+                          {item.serves ? ` · Serves ${item.serves}` : ''}
+                          {item.is_pinned ? ' · Pinned' : ''}
+                        </span>
+                      </div>
+
+                      <span className="chevron">›</span>
                     </div>
 
-                    <span className="chevron">›</span>
+                    <button
+                      type="button"
+                      className="groceryDeleteButton"
+                      onClick={() => deleteItem(item.id)}
+                      aria-label={`Delete ${item.name}`}
+                    >
+                      Delete
+                    </button>
                   </div>
                 ))
               )}
