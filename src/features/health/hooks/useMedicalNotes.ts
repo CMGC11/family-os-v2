@@ -4,6 +4,8 @@ import {
   fetchMedicalNotes,
   insertMedicalNote,
 } from '../services/healthSupabaseService';
+import { requireSupabaseClient } from '../../../lib/supabase/client';
+import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import type { MedicalNote } from '../types';
 
 export function useMedicalNotes() {
@@ -44,6 +46,55 @@ export function useMedicalNotes() {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    const supabase = requireSupabaseClient();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    async function subscribe() {
+      try {
+        const householdId = await getCurrentHouseholdId();
+
+        if (cancelled) return;
+
+        channel = supabase
+          .channel(`medical-notes-realtime-${householdId}`)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'medical_notes',
+              filter: `household_id=eq.${householdId}`,
+            },
+            async () => {
+              try {
+                const nextItems = await fetchMedicalNotes();
+                setItems(nextItems);
+              } catch (error) {
+                console.error('Failed to refresh medical notes after realtime event:', error);
+                setErrorMessage(error instanceof Error ? error.message : 'Failed to sync medical notes.');
+              }
+            },
+          )
+          .subscribe();
+      } catch (error) {
+        console.error('Failed to subscribe to medical notes realtime:', error);
+        setErrorMessage(error instanceof Error ? error.message : 'Failed to subscribe to health sync.');
+      }
+    }
+
+    subscribe();
+
+    return () => {
+      cancelled = true;
+
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, []);
+
   async function addItem(title: string, content = '', date = '') {
     const cleanTitle = title.trim();
     const cleanContent = content.trim();
@@ -56,7 +107,10 @@ export function useMedicalNotes() {
 
       const newItem = await insertMedicalNote(cleanTitle, cleanContent, cleanDate);
 
-      setItems((current) => [newItem, ...current]);
+      setItems((current) => {
+        const withoutDuplicate = current.filter((item) => item.id !== newItem.id);
+        return [newItem, ...withoutDuplicate];
+      });
     } catch (error) {
       console.error('Failed to insert medical note:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Failed to add health note.');
