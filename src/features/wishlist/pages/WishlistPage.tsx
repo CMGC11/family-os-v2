@@ -1,11 +1,15 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useWishlistItems } from '../hooks/useWishlistItems';
 import type { WishlistItem } from '../types';
+import { fetchHouseholdPeople, getCurrentPersonId, type HouseholdPerson } from '../../../lib/supabase/person';
 import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 import SectionHeader from '../../../ui/layout/SectionHeader';
+
+const ALL_PEOPLE_FILTER = 'all';
 
 function formatCreatedDate(dateString: string) {
   if (!dateString) return 'Unknown';
@@ -21,8 +25,8 @@ function formatCreatedDate(dateString: string) {
   });
 }
 
-function getWishlistMeta(item: WishlistItem) {
-  const parts = [item.occasion, item.priority].filter(Boolean);
+function getWishlistMeta(item: WishlistItem, ownerLabel: string) {
+  const parts = [ownerLabel, item.occasion, item.priority].filter(Boolean);
 
   if (parts.length === 0) return 'Idea';
 
@@ -42,28 +46,133 @@ function getPriorityLabel(priority: string) {
   return priority.charAt(0).toUpperCase() + priority.slice(1);
 }
 
+function getPersonLabel(people: HouseholdPerson[], personId: string) {
+  return people.find((person) => person.id === personId)?.label ?? 'Unknown person';
+}
+
 export default function WishlistPage() {
   const { items, isLoading, errorMessage, addItem, deleteItem } = useWishlistItems();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [people, setPeople] = useState<HouseholdPerson[]>([]);
+  const [currentPersonId, setCurrentPersonId] = useState<string | null>(null);
+  const [selectedOwnerId, setSelectedOwnerId] = useState<string>(ALL_PEOPLE_FILTER);
+  const [peopleError, setPeopleError] = useState('');
+  const [isLoadingPeople, setIsLoadingPeople] = useState(true);
+
   const [title, setTitle] = useState('');
   const [note, setNote] = useState('');
   const [selectedWishId, setSelectedWishId] = useState<string | null>(null);
 
+  const isAddSheetOpen = searchParams.get('create') === 'wishlist';
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadPeople() {
+      try {
+        setIsLoadingPeople(true);
+        setPeopleError('');
+
+        const [nextPeople, nextCurrentPersonId] = await Promise.all([fetchHouseholdPeople(), getCurrentPersonId()]);
+
+        if (!cancelled) {
+          setPeople(nextPeople);
+          setCurrentPersonId(nextCurrentPersonId);
+          setSelectedOwnerId(nextCurrentPersonId);
+        }
+      } catch (error) {
+        console.error('Failed to load household people for wishlist:', error);
+
+        if (!cancelled) {
+          setPeopleError(error instanceof Error ? error.message : 'Failed to load household people.');
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoadingPeople(false);
+        }
+      }
+    }
+
+    loadPeople();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const effectiveAddOwnerId = useMemo(() => {
+    if (selectedOwnerId !== ALL_PEOPLE_FILTER) return selectedOwnerId;
+    return currentPersonId ?? people[0]?.id ?? '';
+  }, [currentPersonId, people, selectedOwnerId]);
+
+  const filteredItems = useMemo(() => {
+    if (selectedOwnerId === ALL_PEOPLE_FILTER) return items;
+    return items.filter((item) => item.owner_id === selectedOwnerId);
+  }, [items, selectedOwnerId]);
+
+  const selectedOwnerLabel =
+    selectedOwnerId === ALL_PEOPLE_FILTER ? 'Everyone' : getPersonLabel(people, selectedOwnerId);
+
+  const addOwnerLabel = effectiveAddOwnerId ? getPersonLabel(people, effectiveAddOwnerId) : 'current person';
+
   const selectedWish = useMemo(() => {
-    if (items.length === 0) return null;
+    if (filteredItems.length === 0) return null;
 
-    return items.find((item) => item.id === selectedWishId) ?? items[0];
-  }, [items, selectedWishId]);
+    return filteredItems.find((item) => item.id === selectedWishId) ?? filteredItems[0];
+  }, [filteredItems, selectedWishId]);
 
-  const wishesWithLinks = useMemo(() => items.filter((item) => item.link.trim()).length, [items]);
+  const wishesWithLinks = useMemo(
+    () => filteredItems.filter((item) => item.link.trim()).length,
+    [filteredItems],
+  );
 
-  function handleAddItem() {
-    const cleanTitle = title.trim();
+  const isPageLoading = isLoading || isLoadingPeople;
+  const pageError = errorMessage || peopleError;
 
-    if (!cleanTitle) return;
+  function setAddSheetOpen(open: boolean) {
+    const nextSearchParams = new URLSearchParams(searchParams);
 
-    addItem(cleanTitle, note.trim());
+    if (open) {
+      nextSearchParams.set('create', 'wishlist');
+    } else {
+      nextSearchParams.delete('create');
+    }
+
+    setSearchParams(nextSearchParams, { replace: true });
+  }
+
+  function openAddSheet() {
+    setAddSheetOpen(true);
+  }
+
+  function closeAddSheet() {
+    setAddSheetOpen(false);
     setTitle('');
     setNote('');
+  }
+
+  function handleOwnerChange(ownerId: string) {
+    setSelectedOwnerId(ownerId);
+    setSelectedWishId(null);
+  }
+
+  async function handleAddItem() {
+    const cleanTitle = title.trim();
+
+    if (!cleanTitle || !effectiveAddOwnerId) return;
+
+    const newItem = await addItem(cleanTitle, note.trim(), effectiveAddOwnerId);
+
+    if (!newItem) return;
+
+    setTitle('');
+    setNote('');
+    setSelectedWishId(newItem.id);
+    closeAddSheet();
+
+    if (selectedOwnerId === ALL_PEOPLE_FILTER) {
+      setSelectedOwnerId(effectiveAddOwnerId);
+    }
   }
 
   function handleDeleteItem(item: WishlistItem) {
@@ -79,7 +188,7 @@ export default function WishlistPage() {
       <PageHeader
         eyebrow="Wishlist"
         title="Saved ideas"
-        subtitle="Gift ideas, shared wants, useful links, and things worth remembering before they vanish into household folklore."
+        subtitle="Gift ideas, useful links, and shared wants separated by person instead of tossed into one household junk drawer. Progress, allegedly."
         right={<BackButton fallbackTo="/family" label="Family" />}
       />
 
@@ -87,72 +196,86 @@ export default function WishlistPage() {
         <GlassCard className="wishlistSummaryCard">
           <div>
             <p className="mutedLabel">Saved ideas</p>
-            <h2>{isLoading ? '—' : items.length}</h2>
+            <h2>{isPageLoading ? '—' : filteredItems.length}</h2>
             <span>
-              {wishesWithLinks} with links · {items.length === 1 ? '1 idea' : `${items.length} ideas`}
+              {selectedOwnerLabel} · {wishesWithLinks} with links · {items.length} household total
             </span>
           </div>
 
-          <div className="wishlistSummaryIcon" aria-hidden="true">
-            ♡
-          </div>
+          <button
+            type="button"
+            className="wishlistSummaryIcon wishlistSummaryAddButton"
+            onClick={openAddSheet}
+            aria-label="Add wishlist idea"
+          >
+            +
+          </button>
         </GlassCard>
 
-        <GlassCard className="wishlistCreateCard">
-          <div className="wishlistCreateFormClean">
-            <input
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') handleAddItem();
-              }}
-              placeholder="Add idea"
-              aria-label="Wishlist item title"
-            />
+        <GlassCard className="wishlistPeopleCard">
+          <div className="wishlistPeopleHeader">
+            <div>
+              <p>View by person</p>
+              <span>Everyone can see everything. This only separates wishes by who they belong to.</span>
+            </div>
+          </div>
 
-            <input
-              value={note}
-              onChange={(event) => setNote(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') handleAddItem();
-              }}
-              placeholder="Note or link"
-              aria-label="Wishlist item note"
-            />
-
-            <button type="button" onClick={handleAddItem} disabled={!title.trim()}>
-              Add
+          <div className="wishlistPeopleTabs" role="tablist" aria-label="Wishlist owner filter">
+            <button
+              type="button"
+              className={selectedOwnerId === ALL_PEOPLE_FILTER ? 'wishlistPeopleTabActive' : ''}
+              onClick={() => handleOwnerChange(ALL_PEOPLE_FILTER)}
+            >
+              All
             </button>
+
+            {people.map((person) => (
+              <button
+                key={person.id}
+                type="button"
+                className={selectedOwnerId === person.id ? 'wishlistPeopleTabActive' : ''}
+                onClick={() => handleOwnerChange(person.id)}
+              >
+                {person.label}
+              </button>
+            ))}
           </div>
         </GlassCard>
 
-        {isLoading && (
+        {isPageLoading && (
           <GlassCard className="tasksCard">
             <p className="mutedLabel">Loading wishlist...</p>
           </GlassCard>
         )}
 
-        {errorMessage && (
+        {pageError && (
           <GlassCard className="tasksCard">
-            <p className="mutedLabel">{errorMessage}</p>
+            <p className="mutedLabel">{pageError}</p>
           </GlassCard>
         )}
 
-        {!isLoading && !errorMessage && (
+        {!isPageLoading && !pageError && (
           <GlassCard className="wishlistListCard">
-            <SectionHeader title="Ideas" />
+            <SectionHeader
+              title={`Ideas · ${selectedOwnerLabel}`}
+              action={
+                <button type="button" onClick={openAddSheet}>
+                  Add
+                </button>
+              }
+            />
 
             <div className="wishlistCleanList">
-              {items.length === 0 ? (
+              {filteredItems.length === 0 ? (
                 <div className="wishlistEmptyRow">
                   <div className="wishlistRowIcon">♡</div>
                   <div>
                     <strong>No saved ideas</strong>
-                    <span>Add gift ideas, wishes, or useful links here.</span>
+                    <span>Add gift ideas, wishes, or useful links for {selectedOwnerLabel.toLowerCase()}.</span>
                   </div>
                 </div>
               ) : (
-                items.map((item) => {
+                filteredItems.map((item) => {
                   const isSelected = selectedWish?.id === item.id;
 
                   return (
@@ -166,7 +289,10 @@ export default function WishlistPage() {
                         aria-label={`Open ${item.title}`}
                       >
                         <strong>{item.title}</strong>
-                        <span>{getWishlistSummary(item)}</span>
+                        <span>
+                          {selectedOwnerId === ALL_PEOPLE_FILTER ? `${getPersonLabel(people, item.owner_id)} · ` : ''}
+                          {getWishlistSummary(item)}
+                        </span>
                       </button>
 
                       <button
@@ -185,13 +311,13 @@ export default function WishlistPage() {
           </GlassCard>
         )}
 
-        {!isLoading && !errorMessage && selectedWish && (
+        {!isPageLoading && !pageError && selectedWish && (
           <GlassCard className="wishlistDetailCardClean">
             <div className="wishlistDetailHeaderClean">
               <div>
                 <p>Selected idea</p>
                 <h2>{selectedWish.title}</h2>
-                <span>{getWishlistMeta(selectedWish)}</span>
+                <span>{getWishlistMeta(selectedWish, getPersonLabel(people, selectedWish.owner_id))}</span>
               </div>
 
               <div className="wishlistDetailIconClean" aria-hidden="true">
@@ -201,13 +327,13 @@ export default function WishlistPage() {
 
             <div className="wishlistDetailMetaGridClean">
               <div>
-                <span>Priority</span>
-                <strong>{getPriorityLabel(selectedWish.priority)}</strong>
+                <span>Person</span>
+                <strong>{getPersonLabel(people, selectedWish.owner_id)}</strong>
               </div>
 
               <div>
-                <span>Occasion</span>
-                <strong>{selectedWish.occasion || 'Anytime'}</strong>
+                <span>Priority</span>
+                <strong>{getPriorityLabel(selectedWish.priority)}</strong>
               </div>
 
               <div>
@@ -234,6 +360,51 @@ export default function WishlistPage() {
           </GlassCard>
         )}
       </PageShell>
+
+      {isAddSheetOpen && (
+        <div className="wishlistAddSheetOverlay" onClick={closeAddSheet}>
+          <section className="wishlistAddSheet" onClick={(event) => event.stopPropagation()}>
+            <div className="wishlistAddSheetHandle" />
+
+            <div className="wishlistAddSheetHeader">
+              <div>
+                <p>New idea</p>
+                <h2>For {selectedOwnerId === ALL_PEOPLE_FILTER ? addOwnerLabel : selectedOwnerLabel}</h2>
+                <span>Save a gift idea, useful link, or future want.</span>
+              </div>
+
+              <button type="button" onClick={closeAddSheet} aria-label="Close wishlist add sheet">
+                ×
+              </button>
+            </div>
+
+            <div className="wishlistAddSheetForm">
+              <input
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') handleAddItem();
+                }}
+                placeholder="Idea title"
+                autoFocus
+                aria-label="Wishlist item title"
+              />
+
+              <textarea
+                value={note}
+                onChange={(event) => setNote(event.target.value)}
+                placeholder="Note or link"
+                aria-label="Wishlist item note or link"
+                rows={4}
+              />
+
+              <button type="button" onClick={handleAddItem} disabled={!title.trim() || !effectiveAddOwnerId}>
+                Add idea
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 }
