@@ -7,12 +7,34 @@ import {
 } from '../services/calendarSupabaseService';
 import { requireSupabaseClient } from '../../../lib/supabase/client';
 import { getCurrentHouseholdId } from '../../../lib/supabase/household';
-import type { CalendarEvent } from '../types';
+import type { CalendarEvent, CalendarEventInput } from '../types';
 
 const POLL_INTERVAL_MS = 3000;
 
 function getTodayDateString() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function getEffectiveEndDate(event: CalendarEvent) {
+  return event.end_date || event.date;
+}
+
+function isEventOnDate(event: CalendarEvent, dateString: string) {
+  return event.date <= dateString && getEffectiveEndDate(event) >= dateString;
+}
+
+function sortEvents(events: CalendarEvent[]) {
+  return [...events].sort((a, b) => {
+    if (a.all_day !== b.all_day) return a.all_day ? -1 : 1;
+    return a.time.localeCompare(b.time);
+  });
+}
+
+function isValidCalendarInput(input: CalendarEventInput) {
+  const cleanTitle = input.title.trim();
+  const effectiveEndDate = input.end_date || input.date;
+
+  return Boolean(cleanTitle) && effectiveEndDate >= input.date;
 }
 
 export function useCalendarItems() {
@@ -120,37 +142,26 @@ export function useCalendarItems() {
   }, [refreshEvents]);
 
   const selectedDayEvents = useMemo(
-    () =>
-      events
-        .filter((event) => event.date === selectedDate)
-        .sort((a, b) => a.time.localeCompare(b.time)),
+    () => sortEvents(events.filter((event) => isEventOnDate(event, selectedDate))),
     [events, selectedDate],
   );
 
-  async function addEvent(title: string, time = '12:00') {
-    const cleanTitle = title.trim();
-    const cleanTime = time.trim() || '12:00';
+  async function addEvent(input: CalendarEventInput) {
+    const cleanTitle = input.title.trim();
 
-    if (!cleanTitle) return false;
+    if (!isValidCalendarInput(input)) return false;
 
     try {
       setErrorMessage('');
 
-      const row = await insertCalendarEvent(cleanTitle, selectedDate, cleanTime);
-
-      const newEvent: CalendarEvent = {
-        id: row.id,
-        household_id: row.household_id,
-        title: row.title?.trim() || 'Untitled event',
-        date: row.date,
-        time: row.start_time?.trim() || '12:00',
-        created_at: row.created_at ?? new Date().toISOString(),
-      };
+      const newEvent = await insertCalendarEvent({ ...input, title: cleanTitle });
 
       setEvents((current) => {
         const withoutDuplicate = current.filter((event) => event.id !== newEvent.id);
-        return [...withoutDuplicate, newEvent];
+        return sortEvents([...withoutDuplicate, newEvent]);
       });
+
+      setSelectedDate(newEvent.date);
 
       return true;
     } catch (error) {
@@ -160,29 +171,18 @@ export function useCalendarItems() {
     }
   }
 
-  async function editEvent(id: string, title: string, time = '12:00') {
-    const cleanTitle = title.trim();
-    const cleanTime = time.trim() || '12:00';
+  async function editEvent(id: string, input: CalendarEventInput) {
+    const cleanTitle = input.title.trim();
 
-    if (!cleanTitle) return false;
+    if (!isValidCalendarInput(input)) return false;
 
     try {
       setErrorMessage('');
 
-      const row = await updateCalendarEvent(id, cleanTitle, cleanTime);
+      const updatedEvent = await updateCalendarEvent(id, { ...input, title: cleanTitle });
 
-      const updatedEvent: CalendarEvent = {
-        id: row.id,
-        household_id: row.household_id,
-        title: row.title?.trim() || 'Untitled event',
-        date: row.date,
-        time: row.start_time?.trim() || '12:00',
-        created_at: row.created_at ?? new Date().toISOString(),
-      };
-
-      setEvents((current) =>
-        current.map((event) => (event.id === updatedEvent.id ? updatedEvent : event)),
-      );
+      setEvents((current) => sortEvents(current.map((event) => (event.id === updatedEvent.id ? updatedEvent : event))));
+      setSelectedDate(updatedEvent.date);
 
       return true;
     } catch (error) {
