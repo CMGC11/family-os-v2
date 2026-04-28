@@ -5832,3 +5832,208 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* Trips AddSheet pattern */
+.tripSummaryCard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+}
+
+.tripSummaryCard h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 36px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.tripSummaryCard span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tripSummaryAction {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 22px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 550;
+  line-height: 1;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.16);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.tripSummaryAction:active {
+  transform: scale(0.97);
+}
+
+.tripAddSheetOverlay {
+  position: fixed;
+  z-index: 85;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.24);
+  padding: 0 16px 16px;
+  backdrop-filter: blur(10px);
+}
+
+.tripAddSheet {
+  width: min(398px, 100%);
+  max-height: min(760px, calc(100vh - 28px));
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 34px;
+  background: rgba(245, 245, 247, 0.94);
+  padding: 10px 14px 14px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(28px);
+}
+
+.tripAddSheetHandle {
+  width: 44px;
+  height: 5px;
+  margin: 0 auto 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.tripAddSheetHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 0 2px 14px;
+}
+
+.tripAddSheetHeader > div {
+  min-width: 0;
+}
+
+.tripAddSheetHeader p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.tripAddSheetHeader h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 28px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.tripAddSheetHeader span {
+  display: block;
+  margin-top: 7px;
+  color: rgba(0, 0, 0, 0.48);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.tripAddSheetHeader button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.055);
+  color: rgba(17, 17, 19, 0.62);
+  font-size: 26px;
+  font-weight: 450;
+}
+
+.tripAddSheetForm {
+  display: grid;
+  gap: 10px;
+}
+
+.tripAddSheetGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.tripAddSheetGrid label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.tripAddSheetGrid label span {
+  margin-left: 4px;
+  color: rgba(0, 0, 0, 0.42);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.tripAddSheetForm input {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 14px;
+  color: #111113;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.tripAddSheetForm input:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.tripAddSheetForm button {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 999px;
+  background: #111113;
+  padding: 0 16px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.tripAddSheetForm button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+@media (max-width: 380px) {
+  .tripAddSheetOverlay {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .tripAddSheetHeader h2 {
+    font-size: 26px;
+  }
+
+  .tripAddSheetGrid {
+    grid-template-columns: 1fr;
+  }
+}
+

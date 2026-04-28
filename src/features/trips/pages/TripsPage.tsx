@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTripDetailItems } from '../hooks/useTripDetailItems';
 import { useTrips } from '../hooks/useTrips';
 import type { Trip } from '../types';
@@ -122,34 +123,39 @@ function TripChecklistSection({
             </div>
           </div>
         ) : (
-          items.map((item) => {
-            return (
-              <div key={item.id} className={["tripChecklistRow", item.isDone ? "tripChecklistRowDone" : ""].filter(Boolean).join(' ')}>
-                <button
-                  type="button"
-                  className={["tripChecklistCheck", item.isDone ? "tripChecklistCheckDone" : ""].filter(Boolean).join(' ')}
-                  onClick={() => onToggle(item.id)}
-                  aria-label={`Toggle ${item.name}`}
-                >
-                  ✓
-                </button>
+          items.map((item) => (
+            <div
+              key={item.id}
+              className={['tripChecklistRow', item.isDone ? 'tripChecklistRowDone' : '']
+                .filter(Boolean)
+                .join(' ')}
+            >
+              <button
+                type="button"
+                className={['tripChecklistCheck', item.isDone ? 'tripChecklistCheckDone' : '']
+                  .filter(Boolean)
+                  .join(' ')}
+                onClick={() => onToggle(item.id)}
+                aria-label={`Toggle ${item.name}`}
+              >
+                ✓
+              </button>
 
-                <button type="button" className="tripChecklistMain" onClick={() => onToggle(item.id)}>
-                  <strong>{item.name}</strong>
-                  <span>{item.isDone ? 'Done' : 'Open'}</span>
-                </button>
+              <button type="button" className="tripChecklistMain" onClick={() => onToggle(item.id)}>
+                <strong>{item.name}</strong>
+                <span>{item.isDone ? 'Done' : 'Open'}</span>
+              </button>
 
-                <button
-                  type="button"
-                  className="tripChecklistDelete"
-                  onClick={() => onDelete(item.id)}
-                  aria-label={`Delete ${item.name}`}
-                >
-                  ×
-                </button>
-              </div>
-            );
-          })
+              <button
+                type="button"
+                className="tripChecklistDelete"
+                onClick={() => onDelete(item.id)}
+                aria-label={`Delete ${item.name}`}
+              >
+                ×
+              </button>
+            </div>
+          ))
         )}
       </div>
     </section>
@@ -158,6 +164,7 @@ function TripChecklistSection({
 
 export default function TripsPage() {
   const { items, isLoading, errorMessage, addItem, deleteItem } = useTrips();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [destination, setDestination] = useState('');
@@ -166,7 +173,13 @@ export default function TripsPage() {
   const [newPackingName, setNewPackingName] = useState('');
   const [newPrepName, setNewPrepName] = useState('');
 
+  const isAddSheetOpen = searchParams.get('create') === 'trip';
   const selectedTrip = items.find((item) => item.id === selectedTripId) ?? null;
+  const upcomingTripsCount = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return items.filter((item) => item.start_date >= today).length;
+  }, [items]);
+
   const {
     packingItems,
     prepItems,
@@ -182,6 +195,36 @@ export default function TripsPage() {
     removePrepItem,
   } = useTripDetailItems(selectedTrip?.id ?? null);
 
+  useEffect(() => {
+    if (!selectedTripId) return;
+
+    const stillExists = items.some((item) => item.id === selectedTripId);
+
+    if (!stillExists) {
+      setSelectedTripId(null);
+    }
+  }, [items, selectedTripId]);
+
+  function resetForm() {
+    setTitle('');
+    setDestination('');
+    setStartDate('');
+    setEndDate('');
+  }
+
+  function openAddSheet() {
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.set('create', 'trip');
+    setSearchParams(nextSearchParams, { replace: true });
+  }
+
+  function closeAddSheet() {
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.delete('create');
+    setSearchParams(nextSearchParams, { replace: true });
+    resetForm();
+  }
+
   function handleAddItem() {
     const cleanTitle = title.trim();
 
@@ -194,10 +237,7 @@ export default function TripsPage() {
       end_date: endDate,
     });
 
-    setTitle('');
-    setDestination('');
-    setStartDate('');
-    setEndDate('');
+    closeAddSheet();
   }
 
   async function handleAddPackingItem() {
@@ -229,51 +269,23 @@ export default function TripsPage() {
       <PageHeader
         eyebrow="Trips"
         title="Trips"
-        subtitle="Packing, itinerary, documents, and all the tiny logistics that reproduce in the dark."
+        subtitle="Packing, prep, dates, and all the tiny logistics that reproduce in the dark. Very normal hobby, planning."
         right={<BackButton fallbackTo="/family" label="Family" />}
       />
 
       <PageShell>
-        <GlassCard className="moduleCreateCard">
-          <div className="moduleCreateForm moduleCreateFormTrip">
-            <input
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') handleAddItem();
-              }}
-              placeholder="Trip title"
-              aria-label="Trip title"
-            />
-
-            <input
-              value={destination}
-              onChange={(event) => setDestination(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') handleAddItem();
-              }}
-              placeholder="Destination"
-              aria-label="Trip destination"
-            />
-
-            <input
-              value={startDate}
-              onChange={(event) => setStartDate(event.target.value)}
-              type="date"
-              aria-label="Trip start date"
-            />
-
-            <input
-              value={endDate}
-              onChange={(event) => setEndDate(event.target.value)}
-              type="date"
-              aria-label="Trip end date"
-            />
-
-            <button type="button" onClick={handleAddItem} disabled={!title.trim()}>
-              Add
-            </button>
+        <GlassCard className="tripSummaryCard">
+          <div>
+            <p className="mutedLabel">Travel plans</p>
+            <h2>{isLoading ? '—' : items.length}</h2>
+            <span>
+              {upcomingTripsCount} upcoming · {items.length === 1 ? '1 trip' : `${items.length} trips`}
+            </span>
           </div>
+
+          <button type="button" className="tripSummaryAction" onClick={openAddSheet} aria-label="Add trip">
+            +
+          </button>
         </GlassCard>
 
         {selectedTrip && (
@@ -388,7 +400,14 @@ export default function TripsPage() {
 
         {!isLoading && !errorMessage && (
           <GlassCard className="moduleListCard">
-            <SectionHeader title="Trips" />
+            <SectionHeader
+              title="Trips"
+              action={
+                <button type="button" onClick={openAddSheet}>
+                  Add
+                </button>
+              }
+            />
 
             <div className="moduleList">
               {items.length === 0 ? (
@@ -404,7 +423,10 @@ export default function TripsPage() {
                   const isSelected = selectedTripId === item.id;
 
                   return (
-                    <div key={item.id} className={["moduleRow", isSelected ? "tripRowSelected" : ""].filter(Boolean).join(' ')}>
+                    <div
+                      key={item.id}
+                      className={['moduleRow', isSelected ? 'tripRowSelected' : ''].filter(Boolean).join(' ')}
+                    >
                       <div className="moduleIcon tintBlue">✈</div>
 
                       <button type="button" className="moduleMainButton" onClick={() => setSelectedTripId(item.id)}>
@@ -428,6 +450,69 @@ export default function TripsPage() {
           </GlassCard>
         )}
       </PageShell>
+
+      {isAddSheetOpen && (
+        <div className="tripAddSheetOverlay" onClick={closeAddSheet}>
+          <section className="tripAddSheet" onClick={(event) => event.stopPropagation()}>
+            <div className="tripAddSheetHandle" />
+
+            <div className="tripAddSheetHeader">
+              <div>
+                <p>New trip</p>
+                <h2>Add travel plan</h2>
+                <span>Save the basics first. The packing chaos can happen after.</span>
+              </div>
+
+              <button type="button" onClick={closeAddSheet} aria-label="Close trip add sheet">
+                ×
+              </button>
+            </div>
+
+            <div className="tripAddSheetForm">
+              <input
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                placeholder="Trip title"
+                aria-label="Trip title"
+                autoFocus
+              />
+
+              <input
+                value={destination}
+                onChange={(event) => setDestination(event.target.value)}
+                placeholder="Destination"
+                aria-label="Trip destination"
+              />
+
+              <div className="tripAddSheetGrid">
+                <label>
+                  <span>Start</span>
+                  <input
+                    value={startDate}
+                    onChange={(event) => setStartDate(event.target.value)}
+                    type="date"
+                    aria-label="Trip start date"
+                  />
+                </label>
+
+                <label>
+                  <span>End</span>
+                  <input
+                    value={endDate}
+                    onChange={(event) => setEndDate(event.target.value)}
+                    type="date"
+                    aria-label="Trip end date"
+                  />
+                </label>
+              </div>
+
+              <button type="button" onClick={handleAddItem} disabled={!title.trim()}>
+                Add trip
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 }
