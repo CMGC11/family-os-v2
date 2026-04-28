@@ -109,13 +109,13 @@ export function useHealthItems() {
     };
   }, [refreshItems]);
 
-  async function addAllergy(name: string, severity: string, notes: string) {
+  async function addAllergy(name: string, severity: string, notes: string, personId?: string) {
     const cleanName = name.trim();
     if (!cleanName) return;
 
     try {
       setErrorMessage('');
-      const newAllergy = await insertAllergy(cleanName, severity.trim() || 'moderate', notes.trim());
+      const newAllergy = await insertAllergy(cleanName, severity.trim() || 'moderate', notes.trim(), personId);
       setAllergies((current) => [newAllergy, ...current.filter((item) => item.id !== newAllergy.id)]);
     } catch (error) {
       console.error('Failed to insert allergy:', error);
@@ -137,13 +137,13 @@ export function useHealthItems() {
     }
   }
 
-  async function addMedication(name: string, dosage: string, frequency: string, notes: string) {
+  async function addMedication(name: string, dosage: string, frequency: string, notes: string, personId?: string) {
     const cleanName = name.trim();
     if (!cleanName) return;
 
     try {
       setErrorMessage('');
-      const newMedication = await insertMedication(cleanName, dosage.trim(), frequency.trim(), notes.trim());
+      const newMedication = await insertMedication(cleanName, dosage.trim(), frequency.trim(), notes.trim(), personId);
       setMedications((current) => [newMedication, ...current.filter((item) => item.id !== newMedication.id)]);
     } catch (error) {
       console.error('Failed to insert medication:', error);

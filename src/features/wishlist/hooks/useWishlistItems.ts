@@ -95,24 +95,27 @@ export function useWishlistItems() {
     };
   }, []);
 
-  async function addItem(title: string, note = '') {
+  async function addItem(title: string, note = '', ownerId?: string) {
     const cleanTitle = title.trim();
     const cleanNote = note.trim();
 
-    if (!cleanTitle) return;
+    if (!cleanTitle) return null;
 
     try {
       setErrorMessage('');
 
-      const newItem = await insertWishlistItem(cleanTitle, cleanNote);
+      const newItem = await insertWishlistItem(cleanTitle, cleanNote, ownerId);
 
       setItems((current) => {
         const withoutDuplicate = current.filter((item) => item.id !== newItem.id);
         return [newItem, ...withoutDuplicate];
       });
+
+      return newItem;
     } catch (error) {
       console.error('Failed to insert wishlist item:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Failed to add wishlist item.');
+      return null;
     }
   }
 

@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useRecipes } from '../hooks/useRecipes';
 import type { Recipe } from '../types';
 import BackButton from '../../../ui/navigation/BackButton';
@@ -30,12 +31,15 @@ function formatRecipeMeta(recipe: Recipe) {
 
 export default function RecipesPage() {
   const { items, isLoading, errorMessage, addItem, deleteItem } = useRecipes();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Family');
   const [serves, setServes] = useState('');
   const [ingredients, setIngredients] = useState('');
   const [steps, setSteps] = useState('');
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
+
+  const isAddSheetOpen = searchParams.get('create') === 'recipe';
 
   const selectedRecipe = useMemo(
     () => items.find((item) => item.id === selectedRecipeId) ?? null,
@@ -51,12 +55,37 @@ export default function RecipesPage() {
     [items],
   );
 
+  const pinnedCount = useMemo(() => items.filter((item) => item.is_pinned).length, [items]);
+
+  useEffect(() => {
+    if (!selectedRecipeId) return;
+
+    const stillExists = items.some((item) => item.id === selectedRecipeId);
+
+    if (!stillExists) {
+      setSelectedRecipeId(null);
+    }
+  }, [items, selectedRecipeId]);
+
   function resetForm() {
     setName('');
     setCategory('Family');
     setServes('');
     setIngredients('');
     setSteps('');
+  }
+
+  function openAddSheet() {
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.set('create', 'recipe');
+    setSearchParams(nextSearchParams, { replace: true });
+  }
+
+  function closeAddSheet() {
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.delete('create');
+    setSearchParams(nextSearchParams, { replace: true });
+    resetForm();
   }
 
   function handleAddItem() {
@@ -72,7 +101,7 @@ export default function RecipesPage() {
       serves,
     });
 
-    resetForm();
+    closeAddSheet();
   }
 
   async function handleDeleteRecipe(recipe: Recipe) {
@@ -93,55 +122,18 @@ export default function RecipesPage() {
       />
 
       <PageShell>
-        <GlassCard className="recipeComposerCard">
-          <div className="recipeComposerHeader">
-            <div>
-              <p className="mutedLabel">New recipe</p>
-              <h2>Add a keeper</h2>
-            </div>
+        <GlassCard className="recipeSummaryCard">
+          <div>
+            <p className="mutedLabel">Recipe book</p>
+            <h2>{isLoading ? '—' : items.length}</h2>
+            <span>
+              {pinnedCount} pinned · {items.length === 1 ? '1 recipe' : `${items.length} recipes`}
+            </span>
           </div>
 
-          <div className="recipeComposerForm">
-            <input
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="Recipe name"
-              aria-label="Recipe name"
-            />
-
-            <input
-              value={category}
-              onChange={(event) => setCategory(event.target.value)}
-              placeholder="Category"
-              aria-label="Recipe category"
-            />
-
-            <input
-              value={serves}
-              onChange={(event) => setServes(event.target.value)}
-              inputMode="numeric"
-              placeholder="Serves"
-              aria-label="Recipe serves"
-            />
-
-            <textarea
-              value={ingredients}
-              onChange={(event) => setIngredients(event.target.value)}
-              placeholder="Ingredients, one per line"
-              aria-label="Recipe ingredients"
-            />
-
-            <textarea
-              value={steps}
-              onChange={(event) => setSteps(event.target.value)}
-              placeholder="Steps, one per line"
-              aria-label="Recipe steps"
-            />
-
-            <button type="button" onClick={handleAddItem} disabled={!name.trim()}>
-              Add recipe
-            </button>
-          </div>
+          <button type="button" className="recipeSummaryAction" onClick={openAddSheet} aria-label="Add recipe">
+            +
+          </button>
         </GlassCard>
 
         {isLoading && (
@@ -225,7 +217,14 @@ export default function RecipesPage() {
 
         {!isLoading && !errorMessage && (
           <GlassCard className="moduleListCard">
-            <SectionHeader title="Recipes" />
+            <SectionHeader
+              title="Recipes"
+              action={
+                <button type="button" onClick={openAddSheet}>
+                  Add
+                </button>
+              }
+            />
 
             <div className="moduleList">
               {sortedItems.length === 0 ? (
@@ -241,7 +240,10 @@ export default function RecipesPage() {
                   const isSelected = selectedRecipeId === item.id;
 
                   return (
-                    <div key={item.id} className={['moduleRow', isSelected ? 'recipeRowSelected' : ''].filter(Boolean).join(' ')}>
+                    <div
+                      key={item.id}
+                      className={['moduleRow', isSelected ? 'recipeRowSelected' : ''].filter(Boolean).join(' ')}
+                    >
                       <div className="moduleIcon tintOrange">🍳</div>
 
                       <button type="button" className="moduleMainButton" onClick={() => setSelectedRecipeId(item.id)}>
@@ -265,6 +267,71 @@ export default function RecipesPage() {
           </GlassCard>
         )}
       </PageShell>
+
+      {isAddSheetOpen && (
+        <div className="recipeAddSheetOverlay" onClick={closeAddSheet}>
+          <section className="recipeAddSheet" onClick={(event) => event.stopPropagation()}>
+            <div className="recipeAddSheetHandle" />
+
+            <div className="recipeAddSheetHeader">
+              <div>
+                <p>New recipe</p>
+                <h2>Add a keeper</h2>
+                <span>Save the basic recipe now. The app can become a cookbook diva later.</span>
+              </div>
+
+              <button type="button" onClick={closeAddSheet} aria-label="Close recipe add sheet">
+                ×
+              </button>
+            </div>
+
+            <div className="recipeAddSheetForm">
+              <input
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                placeholder="Recipe name"
+                aria-label="Recipe name"
+                autoFocus
+              />
+
+              <div className="recipeAddSheetGrid">
+                <input
+                  value={category}
+                  onChange={(event) => setCategory(event.target.value)}
+                  placeholder="Category"
+                  aria-label="Recipe category"
+                />
+
+                <input
+                  value={serves}
+                  onChange={(event) => setServes(event.target.value)}
+                  inputMode="numeric"
+                  placeholder="Serves"
+                  aria-label="Recipe serves"
+                />
+              </div>
+
+              <textarea
+                value={ingredients}
+                onChange={(event) => setIngredients(event.target.value)}
+                placeholder="Ingredients, one per line"
+                aria-label="Recipe ingredients"
+              />
+
+              <textarea
+                value={steps}
+                onChange={(event) => setSteps(event.target.value)}
+                placeholder="Steps, one per line"
+                aria-label="Recipe steps"
+              />
+
+              <button type="button" onClick={handleAddItem} disabled={!name.trim()}>
+                Add recipe
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 }

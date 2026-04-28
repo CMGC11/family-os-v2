@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useHealthItems } from '../hooks/useHealthItems';
 import { useMedicalNotes } from '../hooks/useMedicalNotes';
 import type { Allergy, MedicalNote, Medication } from '../types';
+import { fetchHouseholdPeople, getCurrentPersonId, type HouseholdPerson } from '../../../lib/supabase/person';
 import BackButton from '../../../ui/navigation/BackButton';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
@@ -9,6 +10,7 @@ import PageShell from '../../../ui/layout/PageShell';
 import SectionHeader from '../../../ui/layout/SectionHeader';
 
 const ALLERGY_SEVERITIES = ['mild', 'moderate', 'severe'];
+const ALL_PEOPLE_FILTER = 'all';
 
 type HealthSection = 'notes' | 'allergies' | 'medications';
 
@@ -63,6 +65,10 @@ function sectionLabel(section: HealthSection) {
   return 'Meds';
 }
 
+function getPersonLabel(people: HouseholdPerson[], personId: string) {
+  return people.find((person) => person.id === personId)?.label ?? 'Unknown person';
+}
+
 export default function HealthPage() {
   const { items, isLoading, errorMessage, addItem, deleteItem } = useMedicalNotes();
   const {
@@ -75,6 +81,12 @@ export default function HealthPage() {
     addMedication,
     removeMedication,
   } = useHealthItems();
+
+  const [people, setPeople] = useState<HouseholdPerson[]>([]);
+  const [currentPersonId, setCurrentPersonId] = useState<string | null>(null);
+  const [selectedPersonId, setSelectedPersonId] = useState<string>(ALL_PEOPLE_FILTER);
+  const [peopleError, setPeopleError] = useState('');
+  const [isLoadingPeople, setIsLoadingPeople] = useState(true);
 
   const [activeSection, setActiveSection] = useState<HealthSection>('notes');
   const [title, setTitle] = useState('');
@@ -91,31 +103,98 @@ export default function HealthPage() {
   const [medicationFrequency, setMedicationFrequency] = useState('');
   const [medicationNotes, setMedicationNotes] = useState('');
 
-  const selectedNote = useMemo(() => {
-    if (items.length === 0) return null;
+  useEffect(() => {
+    let cancelled = false;
 
-    return items.find((item) => item.id === selectedNoteId) ?? items[0];
-  }, [items, selectedNoteId]);
+    async function loadPeople() {
+      try {
+        setIsLoadingPeople(true);
+        setPeopleError('');
+
+        const [nextPeople, nextCurrentPersonId] = await Promise.all([fetchHouseholdPeople(), getCurrentPersonId()]);
+
+        if (!cancelled) {
+          setPeople(nextPeople);
+          setCurrentPersonId(nextCurrentPersonId);
+          setSelectedPersonId(nextCurrentPersonId);
+        }
+      } catch (error) {
+        console.error('Failed to load household people for health:', error);
+
+        if (!cancelled) {
+          setPeopleError(error instanceof Error ? error.message : 'Failed to load household people.');
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoadingPeople(false);
+        }
+      }
+    }
+
+    loadPeople();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const effectiveAddPersonId = useMemo(() => {
+    if (selectedPersonId !== ALL_PEOPLE_FILTER) return selectedPersonId;
+    return currentPersonId ?? people[0]?.id ?? '';
+  }, [currentPersonId, people, selectedPersonId]);
+
+  const filteredItems = useMemo(() => {
+    if (selectedPersonId === ALL_PEOPLE_FILTER) return items;
+    return items.filter((item) => item.person_id === selectedPersonId);
+  }, [items, selectedPersonId]);
+
+  const filteredAllergies = useMemo(() => {
+    if (selectedPersonId === ALL_PEOPLE_FILTER) return allergies;
+    return allergies.filter((allergy) => allergy.person_id === selectedPersonId);
+  }, [allergies, selectedPersonId]);
+
+  const filteredMedications = useMemo(() => {
+    if (selectedPersonId === ALL_PEOPLE_FILTER) return medications;
+    return medications.filter((medication) => medication.person_id === selectedPersonId);
+  }, [medications, selectedPersonId]);
+
+  const selectedPersonLabel =
+    selectedPersonId === ALL_PEOPLE_FILTER ? 'Everyone' : getPersonLabel(people, selectedPersonId);
+
+  const selectedNote = useMemo(() => {
+    if (filteredItems.length === 0) return null;
+
+    return filteredItems.find((item) => item.id === selectedNoteId) ?? filteredItems[0];
+  }, [filteredItems, selectedNoteId]);
 
   const severeAllergies = useMemo(
-    () => allergies.filter((allergy) => allergy.severity.toLowerCase() === 'severe'),
-    [allergies],
+    () => filteredAllergies.filter((allergy) => allergy.severity.toLowerCase() === 'severe'),
+    [filteredAllergies],
   );
 
-  const isPageLoading = isLoading || isLoadingHealthItems;
-  const pageError = errorMessage || healthItemsError;
-  const totalItems = items.length + allergies.length + medications.length;
+  const isPageLoading = isLoading || isLoadingHealthItems || isLoadingPeople;
+  const pageError = errorMessage || healthItemsError || peopleError;
+  const totalItems = filteredItems.length + filteredAllergies.length + filteredMedications.length;
+
+  function handlePersonChange(personId: string) {
+    setSelectedPersonId(personId);
+    setSelectedNoteId(null);
+  }
 
   function handleAddItem() {
     const cleanTitle = title.trim();
 
-    if (!cleanTitle) return;
+    if (!cleanTitle || !effectiveAddPersonId) return;
 
-    addItem(cleanTitle, content.trim(), date);
+    addItem(cleanTitle, content.trim(), date, effectiveAddPersonId);
     setTitle('');
     setContent('');
     setDate('');
     setActiveSection('notes');
+
+    if (selectedPersonId === ALL_PEOPLE_FILTER) {
+      setSelectedPersonId(effectiveAddPersonId);
+    }
   }
 
   function handleDeleteItem(item: MedicalNote) {
@@ -129,26 +208,34 @@ export default function HealthPage() {
   function handleAddAllergy() {
     const cleanName = allergyName.trim();
 
-    if (!cleanName) return;
+    if (!cleanName || !effectiveAddPersonId) return;
 
-    addAllergy(cleanName, allergySeverity, allergyNotes);
+    addAllergy(cleanName, allergySeverity, allergyNotes, effectiveAddPersonId);
     setAllergyName('');
     setAllergySeverity('moderate');
     setAllergyNotes('');
     setActiveSection('allergies');
+
+    if (selectedPersonId === ALL_PEOPLE_FILTER) {
+      setSelectedPersonId(effectiveAddPersonId);
+    }
   }
 
   function handleAddMedication() {
     const cleanName = medicationName.trim();
 
-    if (!cleanName) return;
+    if (!cleanName || !effectiveAddPersonId) return;
 
-    addMedication(cleanName, medicationDosage, medicationFrequency, medicationNotes);
+    addMedication(cleanName, medicationDosage, medicationFrequency, medicationNotes, effectiveAddPersonId);
     setMedicationName('');
     setMedicationDosage('');
     setMedicationFrequency('');
     setMedicationNotes('');
     setActiveSection('medications');
+
+    if (selectedPersonId === ALL_PEOPLE_FILTER) {
+      setSelectedPersonId(effectiveAddPersonId);
+    }
   }
 
   return (
@@ -156,7 +243,7 @@ export default function HealthPage() {
       <PageHeader
         eyebrow="Health"
         title="Care notes"
-        subtitle="Notes, allergies, and medications in one calm place. Much better than relying on human memory, that famously reliable database."
+        subtitle="Household-visible health information, separated by person so it stops becoming one big medical soup."
         right={<BackButton fallbackTo="/family" label="Family" />}
       />
 
@@ -166,12 +253,43 @@ export default function HealthPage() {
             <p className="mutedLabel">Health profile</p>
             <h2>{isPageLoading ? '—' : totalItems}</h2>
             <span>
-              {items.length} notes · {allergies.length} allergies · {medications.length} medications
+              {selectedPersonLabel} · {filteredItems.length} notes · {filteredAllergies.length} allergies ·{' '}
+              {filteredMedications.length} meds
             </span>
           </div>
 
           <div className="healthSummaryIcon" aria-hidden="true">
             +
+          </div>
+        </GlassCard>
+
+        <GlassCard className="healthPeopleCard">
+          <div className="healthPeopleHeader">
+            <div>
+              <p>View by person</p>
+              <span>Everyone can see everything. This only separates records by who they belong to.</span>
+            </div>
+          </div>
+
+          <div className="healthPeopleTabs" role="tablist" aria-label="Health people filter">
+            <button
+              type="button"
+              className={selectedPersonId === ALL_PEOPLE_FILTER ? 'healthPeopleTabActive' : ''}
+              onClick={() => handlePersonChange(ALL_PEOPLE_FILTER)}
+            >
+              All
+            </button>
+
+            {people.map((person) => (
+              <button
+                key={person.id}
+                type="button"
+                className={selectedPersonId === person.id ? 'healthPeopleTabActive' : ''}
+                onClick={() => handlePersonChange(person.id)}
+              >
+                {person.label}
+              </button>
+            ))}
           </div>
         </GlassCard>
 
@@ -186,7 +304,11 @@ export default function HealthPage() {
               >
                 <span>{sectionLabel(section)}</span>
                 <strong>
-                  {section === 'notes' ? items.length : section === 'allergies' ? allergies.length : medications.length}
+                  {section === 'notes'
+                    ? filteredItems.length
+                    : section === 'allergies'
+                      ? filteredAllergies.length
+                      : filteredMedications.length}
                 </strong>
               </button>
             ))}
@@ -220,7 +342,7 @@ export default function HealthPage() {
         {!isPageLoading && !pageError && activeSection === 'notes' && (
           <>
             <GlassCard className="healthPanelCard">
-              <SectionHeader title="Add note" />
+              <SectionHeader title={`Add note for ${selectedPersonId === ALL_PEOPLE_FILTER ? getPersonLabel(people, effectiveAddPersonId) : selectedPersonLabel}`} />
 
               <div className="healthCleanForm healthCleanFormNote">
                 <input
@@ -250,7 +372,7 @@ export default function HealthPage() {
                   aria-label="Health note date"
                 />
 
-                <button type="button" onClick={handleAddItem} disabled={!title.trim()}>
+                <button type="button" onClick={handleAddItem} disabled={!title.trim() || !effectiveAddPersonId}>
                   Add
                 </button>
               </div>
@@ -260,16 +382,16 @@ export default function HealthPage() {
               <SectionHeader title="Notes" />
 
               <div className="moduleList">
-                {items.length === 0 ? (
+                {filteredItems.length === 0 ? (
                   <div className="moduleEmptyRow">
                     <div className="moduleIcon tintGreen">+</div>
                     <div>
                       <strong>No health notes</strong>
-                      <span>Good. Or undocumented. Let’s hope good.</span>
+                      <span>Nothing saved for {selectedPersonLabel.toLowerCase()} yet.</span>
                     </div>
                   </div>
                 ) : (
-                  items.map((item) => {
+                  filteredItems.map((item) => {
                     const isSelected = selectedNote?.id === item.id;
 
                     return (
@@ -284,6 +406,7 @@ export default function HealthPage() {
                         >
                           <strong>{item.title}</strong>
                           <span>
+                            {selectedPersonId === ALL_PEOPLE_FILTER ? `${getPersonLabel(people, item.person_id)} · ` : ''}
                             {formatHealthDate(item.date)}
                             {item.content ? ` · ${item.content}` : ''}
                           </span>
@@ -310,7 +433,9 @@ export default function HealthPage() {
                   <div>
                     <p>Selected note</p>
                     <h2>{selectedNote.title}</h2>
-                    <span>{formatHealthDate(selectedNote.date)}</span>
+                    <span>
+                      {getPersonLabel(people, selectedNote.person_id)} · {formatHealthDate(selectedNote.date)}
+                    </span>
                   </div>
 
                   <div className="healthDetailIcon" aria-hidden="true">
@@ -320,8 +445,8 @@ export default function HealthPage() {
 
                 <div className="healthDetailMetaGrid">
                   <div>
-                    <span>Date</span>
-                    <strong>{formatHealthDate(selectedNote.date)}</strong>
+                    <span>Person</span>
+                    <strong>{getPersonLabel(people, selectedNote.person_id)}</strong>
                   </div>
 
                   <div>
@@ -341,7 +466,7 @@ export default function HealthPage() {
 
         {!isPageLoading && !pageError && activeSection === 'allergies' && (
           <GlassCard className="healthPanelCard">
-            <SectionHeader title="Allergies" />
+            <SectionHeader title={`Allergies · ${selectedPersonLabel}`} />
 
             <div className="healthCleanForm healthCleanFormAllergy">
               <input
@@ -370,28 +495,31 @@ export default function HealthPage() {
                 aria-label="Allergy notes"
               />
 
-              <button type="button" onClick={handleAddAllergy} disabled={!allergyName.trim()}>
+              <button type="button" onClick={handleAddAllergy} disabled={!allergyName.trim() || !effectiveAddPersonId}>
                 Add
               </button>
             </div>
 
             <div className="healthCompactList healthCleanList">
-              {allergies.length === 0 ? (
+              {filteredAllergies.length === 0 ? (
                 <div className="healthCompactEmptyRow">
                   <div className="healthCompactIcon tintGreen">!</div>
                   <div>
                     <strong>No allergies saved</strong>
-                    <span>Add the important ones before everyone forgets. Again.</span>
+                    <span>Nothing saved for {selectedPersonLabel.toLowerCase()} yet.</span>
                   </div>
                 </div>
               ) : (
-                allergies.map((allergy) => (
+                filteredAllergies.map((allergy) => (
                   <div key={allergy.id} className="healthCompactRow healthCleanRow">
                     <div className="healthCompactIcon tintOrange">!</div>
 
                     <div className="healthCompactText">
                       <strong>{allergy.name}</strong>
-                      <span>{getAllergySummary(allergy)}</span>
+                      <span>
+                        {selectedPersonId === ALL_PEOPLE_FILTER ? `${getPersonLabel(people, allergy.person_id)} · ` : ''}
+                        {getAllergySummary(allergy)}
+                      </span>
                     </div>
 
                     <span className={`healthSeverityPill healthSeverity${allergy.severity}`}>{allergy.severity}</span>
@@ -413,7 +541,7 @@ export default function HealthPage() {
 
         {!isPageLoading && !pageError && activeSection === 'medications' && (
           <GlassCard className="healthPanelCard">
-            <SectionHeader title="Medications" />
+            <SectionHeader title={`Medications · ${selectedPersonLabel}`} />
 
             <div className="healthCleanForm healthCleanFormMedication">
               <input
@@ -444,28 +572,31 @@ export default function HealthPage() {
                 aria-label="Medication notes"
               />
 
-              <button type="button" onClick={handleAddMedication} disabled={!medicationName.trim()}>
+              <button type="button" onClick={handleAddMedication} disabled={!medicationName.trim() || !effectiveAddPersonId}>
                 Add
               </button>
             </div>
 
             <div className="healthCompactList healthCleanList">
-              {medications.length === 0 ? (
+              {filteredMedications.length === 0 ? (
                 <div className="healthCompactEmptyRow">
                   <div className="healthCompactIcon tintBlue">Rx</div>
                   <div>
                     <strong>No medications saved</strong>
-                    <span>Add name, dosage, and frequency when needed.</span>
+                    <span>Nothing saved for {selectedPersonLabel.toLowerCase()} yet.</span>
                   </div>
                 </div>
               ) : (
-                medications.map((medication) => (
+                filteredMedications.map((medication) => (
                   <div key={medication.id} className="healthCompactRow healthMedicationRow healthCleanRow">
                     <div className="healthCompactIcon tintBlue">Rx</div>
 
                     <div className="healthCompactText">
                       <strong>{medication.name}</strong>
-                      <span>{getMedicationSummary(medication)}</span>
+                      <span>
+                        {selectedPersonId === ALL_PEOPLE_FILTER ? `${getPersonLabel(people, medication.person_id)} · ` : ''}
+                        {getMedicationSummary(medication)}
+                      </span>
                     </div>
 
                     <button

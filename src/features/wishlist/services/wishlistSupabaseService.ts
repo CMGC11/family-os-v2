@@ -46,10 +46,10 @@ export async function fetchWishlistItems(): Promise<WishlistItem[]> {
   return (data ?? []).map(mapRowToWishlistItem);
 }
 
-export async function insertWishlistItem(title: string, note = '') {
+export async function insertWishlistItem(title: string, note = '', ownerId?: string) {
   const supabase = requireSupabaseClient();
   const householdId = await getCurrentHouseholdId();
-  const personId = await getCurrentPersonId();
+  const personId = ownerId || (await getCurrentPersonId());
 
   const { data, error } = await supabase
     .from('wishlist_items')

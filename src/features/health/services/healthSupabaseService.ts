@@ -86,10 +86,10 @@ export async function fetchMedicalNotes(): Promise<MedicalNote[]> {
   return (data ?? []).map(mapRowToMedicalNote);
 }
 
-export async function insertMedicalNote(title: string, content: string, date: string) {
+export async function insertMedicalNote(title: string, content: string, date: string, personIdOverride?: string) {
   const supabase = requireSupabaseClient();
   const householdId = await getCurrentHouseholdId();
-  const personId = await getCurrentPersonId();
+  const personId = personIdOverride || (await getCurrentPersonId());
 
   const { data, error } = await supabase
     .from('medical_notes')
@@ -126,10 +126,10 @@ export async function fetchAllergies(): Promise<Allergy[]> {
   return (data ?? []).map(mapRowToAllergy);
 }
 
-export async function insertAllergy(name: string, severity: string, notes: string): Promise<Allergy> {
+export async function insertAllergy(name: string, severity: string, notes: string, personIdOverride?: string): Promise<Allergy> {
   const supabase = requireSupabaseClient();
   const householdId = await getCurrentHouseholdId();
-  const personId = await getCurrentPersonId();
+  const personId = personIdOverride || (await getCurrentPersonId());
 
   const { data, error } = await supabase
     .from('allergies')
@@ -171,10 +171,11 @@ export async function insertMedication(
   dosage: string,
   frequency: string,
   notes: string,
+  personIdOverride?: string,
 ): Promise<Medication> {
   const supabase = requireSupabaseClient();
   const householdId = await getCurrentHouseholdId();
-  const personId = await getCurrentPersonId();
+  const personId = personIdOverride || (await getCurrentPersonId());
 
   const { data, error } = await supabase
     .from('medications')

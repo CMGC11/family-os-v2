@@ -5629,3 +5629,206 @@ button {
     font-size: 24px;
   }
 }
+
+/* Recipes AddSheet pattern */
+.recipeSummaryCard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+}
+
+.recipeSummaryCard h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 36px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.recipeSummaryCard span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.recipeSummaryAction {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 22px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 450;
+  line-height: 1;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.16);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.recipeSummaryAction:active {
+  transform: scale(0.97);
+}
+
+.recipeAddSheetOverlay {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.24);
+  padding: 0 16px 16px;
+  backdrop-filter: blur(10px);
+}
+
+.recipeAddSheet {
+  width: min(398px, 100%);
+  max-height: min(82vh, 720px);
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 34px;
+  background: rgba(245, 245, 247, 0.94);
+  padding: 10px 14px 14px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(28px);
+}
+
+.recipeAddSheetHandle {
+  width: 44px;
+  height: 5px;
+  margin: 0 auto 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.recipeAddSheetHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 0 2px 14px;
+}
+
+.recipeAddSheetHeader > div {
+  min-width: 0;
+}
+
+.recipeAddSheetHeader p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.recipeAddSheetHeader h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 27px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.recipeAddSheetHeader span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.48);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.recipeAddSheetHeader button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.055);
+  color: rgba(17, 17, 19, 0.62);
+  font-size: 26px;
+  font-weight: 450;
+}
+
+.recipeAddSheetForm {
+  display: grid;
+  gap: 10px;
+}
+
+.recipeAddSheetGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 96px;
+  gap: 10px;
+}
+
+.recipeAddSheetForm input,
+.recipeAddSheetForm textarea {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0 14px;
+  color: #111113;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.035);
+}
+
+.recipeAddSheetForm input {
+  min-height: 48px;
+}
+
+.recipeAddSheetForm textarea {
+  min-height: 104px;
+  padding-top: 13px;
+  resize: vertical;
+}
+
+.recipeAddSheetForm input:focus,
+.recipeAddSheetForm textarea:focus {
+  box-shadow:
+    0 0 0 3px rgba(251, 146, 60, 0.16),
+    0 1px 8px rgba(0, 0, 0, 0.035);
+}
+
+.recipeAddSheetForm button {
+  min-height: 48px;
+  border-radius: 999px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.recipeAddSheetForm button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+@media (max-width: 380px) {
+  .recipeAddSheetOverlay {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .recipeAddSheetHeader h2 {
+    font-size: 24px;
+  }
+
+  .recipeAddSheetGrid {
+    grid-template-columns: 1fr;
+  }
+}

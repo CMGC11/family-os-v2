@@ -95,7 +95,7 @@ export function useMedicalNotes() {
     };
   }, []);
 
-  async function addItem(title: string, content = '', date = '') {
+  async function addItem(title: string, content = '', date = '', personId?: string) {
     const cleanTitle = title.trim();
     const cleanContent = content.trim();
     const cleanDate = date.trim();
@@ -105,7 +105,7 @@ export function useMedicalNotes() {
     try {
       setErrorMessage('');
 
-      const newItem = await insertMedicalNote(cleanTitle, cleanContent, cleanDate);
+      const newItem = await insertMedicalNote(cleanTitle, cleanContent, cleanDate, personId);
 
       setItems((current) => {
         const withoutDuplicate = current.filter((item) => item.id !== newItem.id);
