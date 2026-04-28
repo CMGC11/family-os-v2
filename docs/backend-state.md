@@ -443,6 +443,28 @@ Current Calendar limits:
 - No drag/drop.
 - No calendar sharing or participants UI.
 
+## Calendar multi-day baseline
+
+Implemented:
+- Calendar schema supports multi-day events with `date`, `end_date`, and `is_multi_day`.
+- Create/edit forms support start date, end date, start time, end time, and all-day.
+- Calendar saves `date` as the start date.
+- Calendar saves `end_date` as the selected end date.
+- Calendar saves `is_multi_day` based on whether `end_date > date`.
+- Agenda includes events where the selected day falls between `date` and `end_date`.
+- Existing single-day events remain supported.
+- No recurrence logic was implemented.
+
+Known limitation:
+- Month grid multi-day bar rendering is partially implemented but not visually final.
+- Older or inconsistent multi-day rows may not always render exactly as one continuous Apple-style block yet.
+- Multi-day rendering should be revisited as a dedicated visual/calendar rendering slice.
+
+Current rule:
+- Do not implement recurrence until multi-day rendering is stable.
+- Do not fake multi-day by creating duplicate event rows.
+- One event row should represent the full date range.
+
 ---
 
 ## Home
