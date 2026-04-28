@@ -3,6 +3,8 @@ import {
   deleteWishlistItem,
   fetchWishlistItems,
   insertWishlistItem,
+  updateWishlistItem,
+  type WishlistItemInput,
 } from '../services/wishlistSupabaseService';
 import { requireSupabaseClient } from '../../../lib/supabase/client';
 import { getCurrentHouseholdId } from '../../../lib/supabase/household';
@@ -95,16 +97,15 @@ export function useWishlistItems() {
     };
   }, []);
 
-  async function addItem(title: string, note = '', ownerId?: string) {
-    const cleanTitle = title.trim();
-    const cleanNote = note.trim();
+  async function addItem(input: WishlistItemInput) {
+    const cleanTitle = input.title.trim();
 
     if (!cleanTitle) return null;
 
     try {
       setErrorMessage('');
 
-      const newItem = await insertWishlistItem(cleanTitle, cleanNote, ownerId);
+      const newItem = await insertWishlistItem(input);
 
       setItems((current) => {
         const withoutDuplicate = current.filter((item) => item.id !== newItem.id);
@@ -115,6 +116,31 @@ export function useWishlistItems() {
     } catch (error) {
       console.error('Failed to insert wishlist item:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Failed to add wishlist item.');
+      return null;
+    }
+  }
+
+  async function editItem(id: string, input: WishlistItemInput) {
+    const cleanTitle = input.title.trim();
+
+    if (!cleanTitle) return null;
+
+    const previousItems = items;
+
+    try {
+      setErrorMessage('');
+
+      const updatedItem = await updateWishlistItem(id, input);
+
+      setItems((current) =>
+        current.map((item) => (item.id === updatedItem.id ? updatedItem : item)),
+      );
+
+      return updatedItem;
+    } catch (error) {
+      console.error('Failed to update wishlist item:', error);
+      setItems(previousItems);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to update wishlist item.');
       return null;
     }
   }
@@ -140,6 +166,7 @@ export function useWishlistItems() {
     isLoading,
     errorMessage,
     addItem,
+    editItem,
     deleteItem,
   };
 }

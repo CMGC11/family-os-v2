@@ -6448,3 +6448,64 @@ button {
   }
 }
 
+/* Wishlist edit support */
+.wishlistDetailActionsClean {
+  display: grid;
+  gap: 8px;
+}
+
+.wishlistDetailActionsClean button {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.055);
+  color: rgba(17, 17, 19, 0.78);
+  font-size: 15px;
+  font-weight: 850;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.wishlistDetailActionsClean button:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #111113;
+}
+
+.wishlistDetailActionsClean button:active {
+  transform: scale(0.985);
+}
+
+.wishlistAddSheetGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr);
+  gap: 10px;
+}
+
+.wishlistAddSheetForm select {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0 14px;
+  color: #111113;
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.035);
+}
+
+.wishlistAddSheetForm select:focus {
+  box-shadow:
+    0 0 0 3px rgba(236, 72, 153, 0.14),
+    0 1px 8px rgba(0, 0, 0, 0.035);
+}
+
+@media (max-width: 380px) {
+  .wishlistAddSheetGrid {
+    grid-template-columns: 1fr;
+  }
+}

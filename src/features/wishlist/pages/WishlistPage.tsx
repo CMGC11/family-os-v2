@@ -10,6 +10,9 @@ import PageShell from '../../../ui/layout/PageShell';
 import SectionHeader from '../../../ui/layout/SectionHeader';
 
 const ALL_PEOPLE_FILTER = 'all';
+const PRIORITY_OPTIONS = ['low', 'medium', 'high'];
+
+type SheetMode = 'create' | 'edit';
 
 function formatCreatedDate(dateString: string) {
   if (!dateString) return 'Unknown';
@@ -51,7 +54,7 @@ function getPersonLabel(people: HouseholdPerson[], personId: string) {
 }
 
 export default function WishlistPage() {
-  const { items, isLoading, errorMessage, addItem, deleteItem } = useWishlistItems();
+  const { items, isLoading, errorMessage, addItem, editItem, deleteItem } = useWishlistItems();
   const [searchParams, setSearchParams] = useSearchParams();
   const [people, setPeople] = useState<HouseholdPerson[]>([]);
   const [currentPersonId, setCurrentPersonId] = useState<string | null>(null);
@@ -59,8 +62,14 @@ export default function WishlistPage() {
   const [peopleError, setPeopleError] = useState('');
   const [isLoadingPeople, setIsLoadingPeople] = useState(true);
 
+  const [sheetMode, setSheetMode] = useState<SheetMode>('create');
+  const [editingWishId, setEditingWishId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [note, setNote] = useState('');
+  const [link, setLink] = useState('');
+  const [occasion, setOccasion] = useState('');
+  const [priority, setPriority] = useState('medium');
+  const [formOwnerId, setFormOwnerId] = useState('');
   const [selectedWishId, setSelectedWishId] = useState<string | null>(null);
 
   const isAddSheetOpen = searchParams.get('create') === 'wishlist';
@@ -79,6 +88,7 @@ export default function WishlistPage() {
           setPeople(nextPeople);
           setCurrentPersonId(nextCurrentPersonId);
           setSelectedOwnerId(nextCurrentPersonId);
+          setFormOwnerId(nextCurrentPersonId);
         }
       } catch (error) {
         console.error('Failed to load household people for wishlist:', error);
@@ -101,9 +111,10 @@ export default function WishlistPage() {
   }, []);
 
   const effectiveAddOwnerId = useMemo(() => {
+    if (formOwnerId) return formOwnerId;
     if (selectedOwnerId !== ALL_PEOPLE_FILTER) return selectedOwnerId;
     return currentPersonId ?? people[0]?.id ?? '';
-  }, [currentPersonId, people, selectedOwnerId]);
+  }, [currentPersonId, formOwnerId, people, selectedOwnerId]);
 
   const filteredItems = useMemo(() => {
     if (selectedOwnerId === ALL_PEOPLE_FILTER) return items;
@@ -121,6 +132,11 @@ export default function WishlistPage() {
     return filteredItems.find((item) => item.id === selectedWishId) ?? filteredItems[0];
   }, [filteredItems, selectedWishId]);
 
+  const editingWish = useMemo(() => {
+    if (!editingWishId) return null;
+    return items.find((item) => item.id === editingWishId) ?? null;
+  }, [editingWishId, items]);
+
   const wishesWithLinks = useMemo(
     () => filteredItems.filter((item) => item.link.trim()).length,
     [filteredItems],
@@ -128,6 +144,8 @@ export default function WishlistPage() {
 
   const isPageLoading = isLoading || isLoadingPeople;
   const pageError = errorMessage || peopleError;
+  const sheetTitle = sheetMode === 'edit' ? 'Edit idea' : 'New idea';
+  const sheetOwnerLabel = sheetMode === 'edit' && editingWish ? getPersonLabel(people, editingWish.owner_id) : addOwnerLabel;
 
   function setAddSheetOpen(open: boolean) {
     const nextSearchParams = new URLSearchParams(searchParams);
@@ -141,14 +159,45 @@ export default function WishlistPage() {
     setSearchParams(nextSearchParams, { replace: true });
   }
 
+  function resetForm() {
+    setTitle('');
+    setNote('');
+    setLink('');
+    setOccasion('');
+    setPriority('medium');
+    setFormOwnerId(selectedOwnerId !== ALL_PEOPLE_FILTER ? selectedOwnerId : currentPersonId ?? people[0]?.id ?? '');
+    setEditingWishId(null);
+    setSheetMode('create');
+  }
+
   function openAddSheet() {
+    setSheetMode('create');
+    setEditingWishId(null);
+    setTitle('');
+    setNote('');
+    setLink('');
+    setOccasion('');
+    setPriority('medium');
+    setFormOwnerId(selectedOwnerId !== ALL_PEOPLE_FILTER ? selectedOwnerId : currentPersonId ?? people[0]?.id ?? '');
+    setAddSheetOpen(true);
+  }
+
+  function openEditSheet(item: WishlistItem) {
+    setSheetMode('edit');
+    setEditingWishId(item.id);
+    setTitle(item.title);
+    setNote(item.note);
+    setLink(item.link);
+    setOccasion(item.occasion);
+    setPriority(item.priority || 'medium');
+    setFormOwnerId(item.owner_id);
+    setSelectedWishId(item.id);
     setAddSheetOpen(true);
   }
 
   function closeAddSheet() {
     setAddSheetOpen(false);
-    setTitle('');
-    setNote('');
+    resetForm();
   }
 
   function handleOwnerChange(ownerId: string) {
@@ -156,28 +205,54 @@ export default function WishlistPage() {
     setSelectedWishId(null);
   }
 
-  async function handleAddItem() {
+  async function handleSaveItem() {
     const cleanTitle = title.trim();
 
     if (!cleanTitle || !effectiveAddOwnerId) return;
 
-    const newItem = await addItem(cleanTitle, note.trim(), effectiveAddOwnerId);
+    const input = {
+      title: cleanTitle,
+      note: note.trim(),
+      link: link.trim(),
+      occasion: occasion.trim(),
+      priority,
+      ownerId: effectiveAddOwnerId,
+    };
+
+    if (sheetMode === 'edit' && editingWishId) {
+      const updatedItem = await editItem(editingWishId, input);
+
+      if (!updatedItem) return;
+
+      setSelectedWishId(updatedItem.id);
+      closeAddSheet();
+
+      if (selectedOwnerId !== ALL_PEOPLE_FILTER && updatedItem.owner_id !== selectedOwnerId) {
+        setSelectedOwnerId(updatedItem.owner_id);
+      }
+
+      return;
+    }
+
+    const newItem = await addItem(input);
 
     if (!newItem) return;
 
-    setTitle('');
-    setNote('');
     setSelectedWishId(newItem.id);
     closeAddSheet();
 
     if (selectedOwnerId === ALL_PEOPLE_FILTER) {
-      setSelectedOwnerId(effectiveAddOwnerId);
+      setSelectedOwnerId(newItem.owner_id);
     }
   }
 
   function handleDeleteItem(item: WishlistItem) {
     if (selectedWishId === item.id) {
       setSelectedWishId(null);
+    }
+
+    if (editingWishId === item.id) {
+      closeAddSheet();
     }
 
     deleteItem(item.id);
@@ -357,6 +432,12 @@ export default function WishlistPage() {
                 Open saved link
               </a>
             )}
+
+            <div className="wishlistDetailActionsClean">
+              <button type="button" onClick={() => openEditSheet(selectedWish)}>
+                Edit idea
+              </button>
+            </div>
           </GlassCard>
         )}
       </PageShell>
@@ -368,12 +449,12 @@ export default function WishlistPage() {
 
             <div className="wishlistAddSheetHeader">
               <div>
-                <p>New idea</p>
-                <h2>For {selectedOwnerId === ALL_PEOPLE_FILTER ? addOwnerLabel : selectedOwnerLabel}</h2>
-                <span>Save a gift idea, useful link, or future want.</span>
+                <p>{sheetTitle}</p>
+                <h2>For {sheetOwnerLabel}</h2>
+                <span>{sheetMode === 'edit' ? 'Update this saved idea.' : 'Save a gift idea, useful link, or future want.'}</span>
               </div>
 
-              <button type="button" onClick={closeAddSheet} aria-label="Close wishlist add sheet">
+              <button type="button" onClick={closeAddSheet} aria-label="Close wishlist sheet">
                 ×
               </button>
             </div>
@@ -383,7 +464,7 @@ export default function WishlistPage() {
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
                 onKeyDown={(event) => {
-                  if (event.key === 'Enter') handleAddItem();
+                  if (event.key === 'Enter') handleSaveItem();
                 }}
                 placeholder="Idea title"
                 autoFocus
@@ -393,13 +474,49 @@ export default function WishlistPage() {
               <textarea
                 value={note}
                 onChange={(event) => setNote(event.target.value)}
-                placeholder="Note or link"
-                aria-label="Wishlist item note or link"
-                rows={4}
+                placeholder="Note"
+                aria-label="Wishlist item note"
+                rows={3}
               />
 
-              <button type="button" onClick={handleAddItem} disabled={!title.trim() || !effectiveAddOwnerId}>
-                Add idea
+              <input
+                value={link}
+                onChange={(event) => setLink(event.target.value)}
+                placeholder="Link"
+                aria-label="Wishlist item link"
+              />
+
+              <div className="wishlistAddSheetGrid">
+                <select value={priority} onChange={(event) => setPriority(event.target.value)} aria-label="Priority">
+                  {PRIORITY_OPTIONS.map((priorityOption) => (
+                    <option key={priorityOption} value={priorityOption}>
+                      {getPriorityLabel(priorityOption)}
+                    </option>
+                  ))}
+                </select>
+
+                <input
+                  value={occasion}
+                  onChange={(event) => setOccasion(event.target.value)}
+                  placeholder="Occasion"
+                  aria-label="Occasion"
+                />
+              </div>
+
+              <select
+                value={effectiveAddOwnerId}
+                onChange={(event) => setFormOwnerId(event.target.value)}
+                aria-label="Wishlist owner"
+              >
+                {people.map((person) => (
+                  <option key={person.id} value={person.id}>
+                    {person.label}
+                  </option>
+                ))}
+              </select>
+
+              <button type="button" onClick={handleSaveItem} disabled={!title.trim() || !effectiveAddOwnerId}>
+                {sheetMode === 'edit' ? 'Save changes' : 'Add idea'}
               </button>
             </div>
           </section>
