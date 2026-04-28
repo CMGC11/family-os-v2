@@ -101,45 +101,6 @@ Used for:
 
 ---
 
-## Person-specific data model
-
-FamilyOS v2 is household-visible by default.
-
-Some data is person-specific, but not private:
-- Health records belong to a person.
-- Allergies belong to a person.
-- Medications belong to a person.
-- Wishlist items belong to an owner/person.
-- Future assigned tasks and packing items may belong to a person.
-
-Current V2 rule:
-- Separate person-specific data for clarity.
-- Do not restrict visibility by person yet.
-- All household members can view person-specific data unless future privacy rules are explicitly added.
-
-Implemented:
-- Health now loads household people.
-- Health defaults to the current logged-in person.
-- Health supports All / person filtering.
-- New health notes, allergies, and medications are saved against the selected person.
-- If All is selected, new Health records default to the current person.
-
-Not implemented yet:
-- Wishlist owner/person filtering.
-- To-do assignment.
-- Calendar participants.
-- Trip packing assignment UI.
-- Private/restricted visibility.
-
-Updated:
-- Wishlist now loads household people.
-- Wishlist defaults to the current logged-in person.
-- Wishlist supports All / person filtering.
-- New wishlist items are saved against the selected owner/person.
-- If All is selected, new Wishlist items default to the current person.
-
----
-
 ## RLS Model
 
 Most household-scoped modules follow:
@@ -209,21 +170,6 @@ Calendar:
 ---
 
 # Module State
-
-## AddSheet interaction baseline
-
-Implemented:
-- Wishlist now uses a bottom-sheet add flow instead of an inline add card.
-- The Wishlist AddSheet preserves owner filtering logic.
-- The sheet can open from the page summary action, section action, or global create route query.
-- No backend or schema changes were made.
-
-Current AddSheet rule:
-- Use bottom sheets for richer add forms that feel cramped inline.
-- Start one module at a time.
-- Keep save logic inside the existing module page/hook flow.
-- Do not introduce a global AddSheet abstraction until at least two or three modules use the same pattern cleanly.
-- Do not replace `globals.css`; append scoped CSS only.
 
 ## Grocery
 
@@ -645,7 +591,7 @@ Current styling rules:
 
 ## General UI
 
-- Forms are still mostly inline.
+- Forms are mixed: Wishlist, Recipes, and Trips use AddSheet flows; other forms remain mostly inline.
 - Detail views are local selections, not route-based pages.
 - Some visual polish remains, especially Health.
 - `globals.css` remains fragile and should be handled carefully.
@@ -672,6 +618,7 @@ FamilyOS v2 now has:
 - Health allergies and medications wired.
 - Cleaned module list-row grammar.
 - Scoped visual repair strategy.
+- AddSheet pattern for Wishlist, Recipes, and Trips.
 
 Current focus:
 
@@ -682,6 +629,26 @@ Careful module-specific refinements
 No broad rewrites
 No new major modules
 ```
+
+---
+
+## AddSheet rollout baseline
+
+Implemented:
+- Wishlist uses a bottom-sheet add flow.
+- Recipes uses a bottom-sheet add flow.
+- Trips uses a bottom-sheet add flow.
+- Existing backend hooks/services were preserved.
+- Global create route query behavior is preserved for supported modules.
+- AddSheet CSS is currently scoped per module and appended to `globals.css`.
+
+Current AddSheet rule:
+- Use bottom sheets for richer add forms that feel cramped inline.
+- Start one module at a time.
+- Keep save logic inside the existing module page/hook flow.
+- Do not introduce a global AddSheet abstraction until at least two or three modules use the same pattern cleanly and one cleanup pass confirms the structure is actually shared.
+- Do not replace `globals.css`; append scoped CSS only.
+- Do not leave temporary paste-source CSS files inside `src/styles`.
 
 ---
 
