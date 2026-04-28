@@ -666,6 +666,27 @@ Current AddSheet rule:
 
 ---
 
+## To-do ownership baseline
+
+Current To-do model:
+- To-do items are household-level shared tasks.
+- Everyone in the household can see all tasks.
+- Completion is household-wide.
+- There is no `assigned_to` field yet.
+- `created_by` exists but is not currently used as the task owner/assignee model.
+
+Current rule:
+- Do not implement To-do person filtering yet.
+- Do not treat `created_by` as assignment.
+- Keep To-do shared until a proper assignment model is designed.
+
+Future possible model:
+- Add nullable `assigned_to` referencing `people.id`.
+- Support All / Assigned to person filtering.
+- Keep unassigned tasks visible as shared household tasks.
+
+---
+
 # Summary
 
 FamilyOS v2 now has a stable backend foundation and a usable Apple-style mobile UI baseline.
