@@ -6037,3 +6037,173 @@ button {
   }
 }
 
+/* Health create sheet: wires the visible + into note/allergy/medication creation. */
+.healthSummaryAddButton {
+  border: 0;
+  cursor: pointer;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.healthSummaryAddButton:active {
+  transform: scale(0.97);
+}
+
+.healthCreateSheetOverlay {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.24);
+  padding: 0 16px 16px;
+  backdrop-filter: blur(10px);
+}
+
+.healthCreateSheet {
+  width: min(398px, 100%);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 34px;
+  background: rgba(245, 245, 247, 0.94);
+  padding: 10px 14px 14px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(28px);
+}
+
+.healthCreateSheetHandle {
+  width: 44px;
+  height: 5px;
+  margin: 0 auto 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.healthCreateSheetHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 0 2px 14px;
+}
+
+.healthCreateSheetHeader > div {
+  min-width: 0;
+}
+
+.healthCreateSheetHeader p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.healthCreateSheetHeader h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 27px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.healthCreateSheetHeader span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.48);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.healthCreateSheetHeader button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.055);
+  color: rgba(17, 17, 19, 0.62);
+  font-size: 26px;
+  font-weight: 450;
+}
+
+.healthCreateSheetList {
+  display: grid;
+  gap: 8px;
+}
+
+.healthCreateSheetList button {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 44px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 12px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 12px;
+  text-align: left;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.healthCreateSheetList button:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.healthCreateSheetList button:active {
+  transform: scale(0.99);
+}
+
+.healthCreateSheetIcon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 18px;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 850;
+}
+
+.healthCreateSheetList button div:nth-child(2) {
+  min-width: 0;
+}
+
+.healthCreateSheetList strong {
+  display: block;
+  overflow: hidden;
+  color: #111113;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.healthCreateSheetList span:not(.chevron) {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.46);
+  font-size: 13px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+  .healthCreateSheetOverlay {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .healthCreateSheetHeader h2 {
+    font-size: 24px;
+  }
+}

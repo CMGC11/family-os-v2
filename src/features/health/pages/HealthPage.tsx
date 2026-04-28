@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useHealthItems } from '../hooks/useHealthItems';
 import { useMedicalNotes } from '../hooks/useMedicalNotes';
 import type { Allergy, MedicalNote, Medication } from '../types';
@@ -70,6 +71,7 @@ function getPersonLabel(people: HouseholdPerson[], personId: string) {
 }
 
 export default function HealthPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { items, isLoading, errorMessage, addItem, deleteItem } = useMedicalNotes();
   const {
     allergies,
@@ -102,6 +104,8 @@ export default function HealthPage() {
   const [medicationDosage, setMedicationDosage] = useState('');
   const [medicationFrequency, setMedicationFrequency] = useState('');
   const [medicationNotes, setMedicationNotes] = useState('');
+
+  const isHealthCreateOpen = searchParams.get('create') === 'health';
 
   useEffect(() => {
     let cancelled = false;
@@ -181,6 +185,31 @@ export default function HealthPage() {
     setSelectedNoteId(null);
   }
 
+  function setHealthCreateOpen(open: boolean) {
+    const nextSearchParams = new URLSearchParams(searchParams);
+
+    if (open) {
+      nextSearchParams.set('create', 'health');
+    } else {
+      nextSearchParams.delete('create');
+    }
+
+    setSearchParams(nextSearchParams, { replace: true });
+  }
+
+  function openHealthCreateSheet() {
+    setHealthCreateOpen(true);
+  }
+
+  function closeHealthCreateSheet() {
+    setHealthCreateOpen(false);
+  }
+
+  function chooseHealthCreateSection(section: HealthSection) {
+    setActiveSection(section);
+    setHealthCreateOpen(false);
+  }
+
   function handleAddItem() {
     const cleanTitle = title.trim();
 
@@ -258,9 +287,14 @@ export default function HealthPage() {
             </span>
           </div>
 
-          <div className="healthSummaryIcon" aria-hidden="true">
+          <button
+            type="button"
+            className="healthSummaryIcon healthSummaryAddButton"
+            onClick={openHealthCreateSheet}
+            aria-label="Add health record"
+          >
             +
-          </div>
+          </button>
         </GlassCard>
 
         <GlassCard className="healthPeopleCard">
@@ -612,6 +646,56 @@ export default function HealthPage() {
               )}
             </div>
           </GlassCard>
+        )}
+
+
+        {isHealthCreateOpen && (
+          <div className="healthCreateSheetOverlay" onClick={closeHealthCreateSheet}>
+            <section className="healthCreateSheet" onClick={(event) => event.stopPropagation()}>
+              <div className="healthCreateSheetHandle" />
+
+              <div className="healthCreateSheetHeader">
+                <div>
+                  <p>Add health record</p>
+                  <h2>What do you want to save?</h2>
+                  <span>Choose the type first, then fill the form for {selectedPersonLabel.toLowerCase()}.</span>
+                </div>
+
+                <button type="button" onClick={closeHealthCreateSheet} aria-label="Close health create sheet">
+                  ×
+                </button>
+              </div>
+
+              <div className="healthCreateSheetList">
+                <button type="button" onClick={() => chooseHealthCreateSection('notes')}>
+                  <div className="healthCreateSheetIcon tintGreen">+</div>
+                  <div>
+                    <strong>Medical note</strong>
+                    <span>Save an appointment, symptom, measurement, or care detail.</span>
+                  </div>
+                  <span className="chevron">›</span>
+                </button>
+
+                <button type="button" onClick={() => chooseHealthCreateSection('allergies')}>
+                  <div className="healthCreateSheetIcon tintOrange">!</div>
+                  <div>
+                    <strong>Allergy</strong>
+                    <span>Add an allergy, severity, and notes.</span>
+                  </div>
+                  <span className="chevron">›</span>
+                </button>
+
+                <button type="button" onClick={() => chooseHealthCreateSection('medications')}>
+                  <div className="healthCreateSheetIcon tintBlue">Rx</div>
+                  <div>
+                    <strong>Medication</strong>
+                    <span>Add dosage, frequency, and medication notes.</span>
+                  </div>
+                  <span className="chevron">›</span>
+                </button>
+              </div>
+            </section>
+          </div>
         )}
       </PageShell>
     </main>

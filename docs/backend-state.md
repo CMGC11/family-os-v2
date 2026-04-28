@@ -216,6 +216,28 @@ Current UX:
 - Compact task rows.
 - Small trailing delete actions.
 
+### To-do ownership baseline
+
+Current To-do model:
+
+- To-do items are household-level shared tasks.
+- Everyone in the household can see all tasks.
+- Completion is household-wide.
+- There is no `assigned_to` field yet.
+- `created_by` exists but is not currently used as the task owner/assignee model.
+
+Current rule:
+
+- Do not implement To-do person filtering yet.
+- Do not treat `created_by` as assignment.
+- Keep To-do shared until a proper assignment model is designed.
+
+Future possible model:
+
+- Add nullable `assigned_to` referencing `people.id`.
+- Support All / Assigned to person filtering.
+- Keep unassigned tasks visible as shared household tasks.
+
 ---
 
 ## Wishlist
@@ -591,7 +613,7 @@ Current styling rules:
 
 ## General UI
 
-- Forms are mixed: Wishlist, Recipes, and Trips use AddSheet flows; other forms remain mostly inline.
+- Forms are still mostly inline.
 - Detail views are local selections, not route-based pages.
 - Some visual polish remains, especially Health.
 - `globals.css` remains fragile and should be handled carefully.
@@ -618,7 +640,6 @@ FamilyOS v2 now has:
 - Health allergies and medications wired.
 - Cleaned module list-row grammar.
 - Scoped visual repair strategy.
-- AddSheet pattern for Wishlist, Recipes, and Trips.
 
 Current focus:
 
@@ -629,26 +650,6 @@ Careful module-specific refinements
 No broad rewrites
 No new major modules
 ```
-
----
-
-## AddSheet rollout baseline
-
-Implemented:
-- Wishlist uses a bottom-sheet add flow.
-- Recipes uses a bottom-sheet add flow.
-- Trips uses a bottom-sheet add flow.
-- Existing backend hooks/services were preserved.
-- Global create route query behavior is preserved for supported modules.
-- AddSheet CSS is currently scoped per module and appended to `globals.css`.
-
-Current AddSheet rule:
-- Use bottom sheets for richer add forms that feel cramped inline.
-- Start one module at a time.
-- Keep save logic inside the existing module page/hook flow.
-- Do not introduce a global AddSheet abstraction until at least two or three modules use the same pattern cleanly and one cleanup pass confirms the structure is actually shared.
-- Do not replace `globals.css`; append scoped CSS only.
-- Do not leave temporary paste-source CSS files inside `src/styles`.
 
 ---
 
@@ -663,27 +664,6 @@ Current AddSheet rule:
    - Trip documents/bookings/itinerary
    - Calendar participants/recurrence
 6. Keep CSS changes scoped and module-specific.
-
----
-
-## To-do ownership baseline
-
-Current To-do model:
-- To-do items are household-level shared tasks.
-- Everyone in the household can see all tasks.
-- Completion is household-wide.
-- There is no `assigned_to` field yet.
-- `created_by` exists but is not currently used as the task owner/assignee model.
-
-Current rule:
-- Do not implement To-do person filtering yet.
-- Do not treat `created_by` as assignment.
-- Keep To-do shared until a proper assignment model is designed.
-
-Future possible model:
-- Add nullable `assigned_to` referencing `people.id`.
-- Support All / Assigned to person filtering.
-- Keep unassigned tasks visible as shared household tasks.
 
 ---
 
