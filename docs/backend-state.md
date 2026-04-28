@@ -131,6 +131,13 @@ Not implemented yet:
 - Trip packing assignment UI.
 - Private/restricted visibility.
 
+Updated:
+- Wishlist now loads household people.
+- Wishlist defaults to the current logged-in person.
+- Wishlist supports All / person filtering.
+- New wishlist items are saved against the selected owner/person.
+- If All is selected, new Wishlist items default to the current person.
+
 ---
 
 ## RLS Model
