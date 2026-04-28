@@ -210,6 +210,21 @@ Calendar:
 
 # Module State
 
+## AddSheet interaction baseline
+
+Implemented:
+- Wishlist now uses a bottom-sheet add flow instead of an inline add card.
+- The Wishlist AddSheet preserves owner filtering logic.
+- The sheet can open from the page summary action, section action, or global create route query.
+- No backend or schema changes were made.
+
+Current AddSheet rule:
+- Use bottom sheets for richer add forms that feel cramped inline.
+- Start one module at a time.
+- Keep save logic inside the existing module page/hook flow.
+- Do not introduce a global AddSheet abstraction until at least two or three modules use the same pattern cleanly.
+- Do not replace `globals.css`; append scoped CSS only.
+
 ## Grocery
 
 Table:
