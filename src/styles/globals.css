@@ -6207,3 +6207,244 @@ button {
     font-size: 24px;
   }
 }
+
+/* Calendar multi-day create/edit foundation */
+.calendarCreateFormMulti {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.calendarCreateFormMulti > input:first-child,
+.calendarCreateFormMulti > button {
+  width: 100%;
+}
+
+.calendarDateField,
+.calendarToggleField {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+
+.calendarDateField span,
+.calendarToggleField span {
+  margin-left: 4px;
+  color: rgba(0, 0, 0, 0.42);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.calendarDateField input {
+  width: 100%;
+  min-width: 0;
+}
+
+.calendarToggleField {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.045);
+  padding: 0 14px;
+}
+
+.calendarToggleField input {
+  width: 18px;
+  height: 18px;
+  accent-color: #111113;
+}
+
+.calendarToggleField span {
+  margin: 0;
+  color: #111113;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.calendarMonthGrid .calendarDayCell {
+  min-height: 70px;
+  overflow: hidden;
+}
+
+.calendarMultiDayBlocks {
+  display: grid;
+  width: 100%;
+  gap: 2px;
+  margin-top: 5px;
+}
+
+.calendarMultiDayBlock {
+  display: block;
+  width: 100%;
+  min-height: 13px;
+  overflow: hidden;
+  background: rgba(37, 99, 235, 0.18);
+  color: #1d4ed8;
+  font-size: 9px;
+  font-weight: 850;
+  line-height: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendarMultiDayBlockSingle,
+.calendarMultiDayBlockStart {
+  border-top-left-radius: 999px;
+  border-bottom-left-radius: 999px;
+  padding-left: 5px;
+}
+
+.calendarMultiDayBlockSingle,
+.calendarMultiDayBlockEnd {
+  border-top-right-radius: 999px;
+  border-bottom-right-radius: 999px;
+}
+
+.calendarMultiDayBlockMiddle {
+  border-radius: 0;
+}
+
+.calendarMultiDayBlockMuted {
+  background: rgba(0, 0, 0, 0.09);
+  color: rgba(0, 0, 0, 0.38);
+}
+
+.calendarAgendaTime {
+  min-width: 54px;
+  padding: 0 5px;
+  text-align: center;
+}
+
+@media (min-width: 390px) {
+  .calendarCreateFormClean.calendarCreateFormMulti {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+  }
+
+  .calendarCreateFormMulti > input:first-child,
+  .calendarCreateFormMulti > button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 380px) {
+  .calendarMonthGrid .calendarDayCell {
+    min-height: 66px;
+  }
+
+  .calendarMultiDayBlock {
+    min-height: 12px;
+    font-size: 8px;
+    line-height: 12px;
+  }
+}
+
+/* Calendar multi-day foundation - infer from date range, not only is_multi_day */
+.calendarCreateFormFull {
+  grid-template-columns: 1fr;
+}
+
+.calendarDateField {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.calendarDateField span {
+  margin-left: 4px;
+  color: rgba(0, 0, 0, 0.42);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.calendarToggleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 0 12px;
+  color: rgba(0, 0, 0, 0.62);
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.calendarToggleRow input {
+  width: 18px !important;
+  min-height: 18px !important;
+  accent-color: #2563eb;
+}
+
+.calendarTimeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.calendarDayCell {
+  overflow: hidden;
+}
+
+.calendarMultiDayBars {
+  display: grid;
+  width: 100%;
+  gap: 2px;
+  margin-top: 5px;
+  padding: 0 1px;
+}
+
+.calendarMultiDayBar {
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  min-height: 10px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.9);
+  padding: 1px 4px;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 850;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendarMultiDayBarMuted {
+  background: rgba(37, 99, 235, 0.34);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.calendarAgendaRowMultiDay {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.calendarAgendaRowMultiDay .calendarAgendaTime {
+  background: #2563eb;
+}
+
+@media (min-width: 390px) {
+  .calendarCreateFormClean.calendarCreateFormFull {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .calendarCreateFormFull > input,
+  .calendarCreateFormFull .calendarToggleRow,
+  .calendarCreateFormFull .calendarTimeGrid,
+  .calendarCreateFormFull > button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 380px) {
+  .calendarTimeGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .calendarMultiDayBar {
+    font-size: 0;
+    padding: 0;
+  }
+}
+

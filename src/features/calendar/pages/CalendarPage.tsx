@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useCalendarItems } from '../hooks/useCalendarItems';
-import type { CalendarEvent } from '../types';
+import type { CalendarEvent, CalendarEventInput } from '../types';
 import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
@@ -11,6 +11,15 @@ type MonthDay = {
   dateString: string;
   dayNumber: number;
   isCurrentMonth: boolean;
+};
+
+type EventFormState = {
+  title: string;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+  allDay: boolean;
 };
 
 const WEEK_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -123,8 +132,67 @@ function buildMonthDays(viewMonth: Date): MonthDay[] {
   return days;
 }
 
+function getEffectiveEndDate(event: CalendarEvent) {
+  return event.end_date || event.date;
+}
+
+function isEventMultiDay(event: CalendarEvent) {
+  return getEffectiveEndDate(event) > event.date;
+}
+
+function isEventOnDate(event: CalendarEvent, dateString: string) {
+  return event.date <= dateString && getEffectiveEndDate(event) >= dateString;
+}
+
 function sortEventsByTime(events: CalendarEvent[]) {
-  return [...events].sort((a, b) => a.time.localeCompare(b.time));
+  return [...events].sort((a, b) => getEventTimeLabel(a).localeCompare(getEventTimeLabel(b)));
+}
+
+function getEventTimeLabel(event: CalendarEvent) {
+  if (event.all_day) return 'All day';
+  return event.start_time?.trim() || event.time || '12:00';
+}
+
+function getEventTimeRangeLabel(event: CalendarEvent) {
+  if (event.all_day) return 'All day';
+
+  const startTime = event.start_time?.trim() || event.time || '12:00';
+  const endTime = event.end_time?.trim();
+
+  return endTime ? `${startTime}–${endTime}` : startTime;
+}
+
+function createEmptyFormState(selectedDate: string): EventFormState {
+  return {
+    title: '',
+    startDate: selectedDate,
+    endDate: selectedDate,
+    startTime: '12:00',
+    endTime: '',
+    allDay: false,
+  };
+}
+
+function createFormStateFromEvent(event: CalendarEvent): EventFormState {
+  return {
+    title: event.title,
+    startDate: event.date,
+    endDate: getEffectiveEndDate(event),
+    startTime: event.start_time?.trim() || event.time || '12:00',
+    endTime: event.end_time?.trim() || '',
+    allDay: Boolean(event.all_day),
+  };
+}
+
+function formStateToInput(formState: EventFormState): CalendarEventInput {
+  return {
+    title: formState.title,
+    date: formState.startDate,
+    end_date: formState.endDate || formState.startDate,
+    start_time: formState.allDay ? null : formState.startTime,
+    end_time: formState.allDay ? null : formState.endTime,
+    all_day: formState.allDay,
+  };
 }
 
 export default function CalendarPage() {
@@ -147,12 +215,10 @@ export default function CalendarPage() {
     return new Date(selected.getFullYear(), selected.getMonth(), 1, 12, 0, 0, 0);
   });
 
-  const [title, setTitle] = useState('');
-  const [time, setTime] = useState('12:00');
+  const [createForm, setCreateForm] = useState<EventFormState>(() => createEmptyFormState(selectedDate));
   const [isSavingEvent, setIsSavingEvent] = useState(false);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
-  const [editTitle, setEditTitle] = useState('');
-  const [editTime, setEditTime] = useState('12:00');
+  const [editForm, setEditForm] = useState<EventFormState>(() => createEmptyFormState(selectedDate));
   const [isUpdatingEvent, setIsUpdatingEvent] = useState(false);
 
   const isCreating = searchParams.get('create') === 'event';
@@ -163,17 +229,12 @@ export default function CalendarPage() {
   const eventsByDate = useMemo(() => {
     const groupedEvents = new Map<string, CalendarEvent[]>();
 
-    events.forEach((event) => {
-      const currentEvents = groupedEvents.get(event.date) ?? [];
-      groupedEvents.set(event.date, [...currentEvents, event]);
-    });
-
-    groupedEvents.forEach((dateEvents, date) => {
-      groupedEvents.set(date, sortEventsByTime(dateEvents));
+    monthDays.forEach((day) => {
+      groupedEvents.set(day.dateString, sortEventsByTime(events.filter((event) => isEventOnDate(event, day.dateString))));
     });
 
     return groupedEvents;
-  }, [events]);
+  }, [events, monthDays]);
 
   const currentMonthTitle = getMonthTitle(viewMonth);
   const headerMonthTitle = getMonthHeaderTitle(viewMonth);
@@ -193,26 +254,48 @@ export default function CalendarPage() {
 
   function openCreateForm() {
     closeEditForm();
+    setCreateForm(createEmptyFormState(selectedDate));
     setCreateFormOpen(true);
   }
 
   function closeCreateForm() {
     setCreateFormOpen(false);
-    setTitle('');
-    setTime('12:00');
+    setCreateForm(createEmptyFormState(selectedDate));
   }
 
   function openEditForm(event: CalendarEvent) {
     setCreateFormOpen(false);
     setEditingEventId(event.id);
-    setEditTitle(event.title);
-    setEditTime(event.time || '12:00');
+    setEditForm(createFormStateFromEvent(event));
   }
 
   function closeEditForm() {
     setEditingEventId(null);
-    setEditTitle('');
-    setEditTime('12:00');
+    setEditForm(createEmptyFormState(selectedDate));
+  }
+
+  function updateCreateForm(updates: Partial<EventFormState>) {
+    setCreateForm((current) => {
+      const next = { ...current, ...updates };
+
+      if (updates.startDate && next.endDate < updates.startDate) {
+        next.endDate = updates.startDate;
+      }
+
+      return next;
+    });
+  }
+
+  function updateEditForm(updates: Partial<EventFormState>) {
+    setEditForm((current) => {
+      const next = { ...current, ...updates };
+
+      if (updates.startDate && next.endDate < updates.startDate) {
+        next.endDate = updates.startDate;
+      }
+
+      return next;
+    });
   }
 
   function selectDate(dateString: string) {
@@ -262,13 +345,13 @@ export default function CalendarPage() {
   }
 
   async function handleAddEvent() {
-    const cleanTitle = title.trim();
+    const cleanTitle = createForm.title.trim();
 
-    if (!cleanTitle || isSavingEvent) return;
+    if (!cleanTitle || createForm.endDate < createForm.startDate || isSavingEvent) return;
 
     setIsSavingEvent(true);
 
-    const wasAdded = await addEvent(cleanTitle, time);
+    const wasAdded = await addEvent(formStateToInput(createForm));
 
     setIsSavingEvent(false);
 
@@ -278,13 +361,13 @@ export default function CalendarPage() {
   }
 
   async function handleUpdateEvent() {
-    const cleanTitle = editTitle.trim();
+    const cleanTitle = editForm.title.trim();
 
-    if (!editingEventId || !cleanTitle || isUpdatingEvent) return;
+    if (!editingEventId || !cleanTitle || editForm.endDate < editForm.startDate || isUpdatingEvent) return;
 
     setIsUpdatingEvent(true);
 
-    const wasUpdated = await editEvent(editingEventId, cleanTitle, editTime);
+    const wasUpdated = await editEvent(editingEventId, formStateToInput(editForm));
 
     setIsUpdatingEvent(false);
 
@@ -301,6 +384,87 @@ export default function CalendarPage() {
     deleteEvent(eventId);
   }
 
+  function renderEventForm(
+    formState: EventFormState,
+    updateForm: (updates: Partial<EventFormState>) => void,
+    submitLabel: string,
+    isSubmitting: boolean,
+    onSubmit: () => void,
+  ) {
+    return (
+      <div className="calendarCreateFormClean calendarCreateFormFull">
+        <input
+          value={formState.title}
+          onChange={(event) => updateForm({ title: event.target.value })}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') onSubmit();
+          }}
+          placeholder="Event title"
+          autoFocus
+          aria-label="Event title"
+        />
+
+        <label className="calendarDateField">
+          <span>Starts</span>
+          <input
+            value={formState.startDate}
+            onChange={(event) => updateForm({ startDate: event.target.value })}
+            type="date"
+            aria-label="Event start date"
+          />
+        </label>
+
+        <label className="calendarDateField">
+          <span>Ends</span>
+          <input
+            value={formState.endDate}
+            onChange={(event) => updateForm({ endDate: event.target.value })}
+            min={formState.startDate}
+            type="date"
+            aria-label="Event end date"
+          />
+        </label>
+
+        <label className="calendarToggleRow">
+          <input
+            checked={formState.allDay}
+            onChange={(event) => updateForm({ allDay: event.target.checked })}
+            type="checkbox"
+          />
+          <span>All-day event</span>
+        </label>
+
+        {!formState.allDay && (
+          <div className="calendarTimeGrid">
+            <label className="calendarDateField">
+              <span>Start time</span>
+              <input
+                value={formState.startTime}
+                onChange={(event) => updateForm({ startTime: event.target.value })}
+                type="time"
+                aria-label="Event start time"
+              />
+            </label>
+
+            <label className="calendarDateField">
+              <span>End time</span>
+              <input
+                value={formState.endTime}
+                onChange={(event) => updateForm({ endTime: event.target.value })}
+                type="time"
+                aria-label="Event end time"
+              />
+            </label>
+          </div>
+        )}
+
+        <button type="button" onClick={onSubmit} disabled={!formState.title.trim() || formState.endDate < formState.startDate || isSubmitting}>
+          {isSubmitting ? 'Saving...' : submitLabel}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <main>
       <PageHeader
@@ -315,7 +479,7 @@ export default function CalendarPage() {
             <div className="calendarCreateHeaderClean">
               <div>
                 <p>New event</p>
-                <h2>{formatSelectedDayLabel(selectedDate)}</h2>
+                <h2>{formatSelectedDayLabel(createForm.startDate)}</h2>
               </div>
 
               <button type="button" onClick={closeCreateForm}>
@@ -323,29 +487,7 @@ export default function CalendarPage() {
               </button>
             </div>
 
-            <div className="calendarCreateFormClean">
-              <input
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') handleAddEvent();
-                }}
-                placeholder="Event title"
-                autoFocus
-                aria-label="New event title"
-              />
-
-              <input
-                value={time}
-                onChange={(event) => setTime(event.target.value)}
-                type="time"
-                aria-label="New event time"
-              />
-
-              <button type="button" onClick={handleAddEvent} disabled={!title.trim() || isSavingEvent}>
-                {isSavingEvent ? 'Saving...' : 'Add'}
-              </button>
-            </div>
+            {renderEventForm(createForm, updateCreateForm, 'Add', isSavingEvent, handleAddEvent)}
           </GlassCard>
         )}
 
@@ -354,7 +496,7 @@ export default function CalendarPage() {
             <div className="calendarCreateHeaderClean">
               <div>
                 <p>Edit event</p>
-                <h2>{formatSelectedDayLabel(editingEvent.date)}</h2>
+                <h2>{formatSelectedDayLabel(editForm.startDate)}</h2>
               </div>
 
               <button type="button" onClick={closeEditForm}>
@@ -362,29 +504,7 @@ export default function CalendarPage() {
               </button>
             </div>
 
-            <div className="calendarCreateFormClean">
-              <input
-                value={editTitle}
-                onChange={(event) => setEditTitle(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') handleUpdateEvent();
-                }}
-                placeholder="Event title"
-                autoFocus
-                aria-label="Edit event title"
-              />
-
-              <input
-                value={editTime}
-                onChange={(event) => setEditTime(event.target.value)}
-                type="time"
-                aria-label="Edit event time"
-              />
-
-              <button type="button" onClick={handleUpdateEvent} disabled={!editTitle.trim() || isUpdatingEvent}>
-                {isUpdatingEvent ? 'Saving...' : 'Save'}
-              </button>
-            </div>
+            {renderEventForm(editForm, updateEditForm, 'Save', isUpdatingEvent, handleUpdateEvent)}
           </GlassCard>
         )}
 
@@ -429,9 +549,12 @@ export default function CalendarPage() {
           <div className="calendarMonthGrid">
             {monthDays.map((day) => {
               const dayEvents = eventsByDate.get(day.dateString) ?? [];
+              const singleDayEvents = dayEvents.filter((event) => !isEventMultiDay(event));
+              const multiDayEvents = dayEvents.filter(isEventMultiDay);
               const isSelected = selectedDate === day.dateString;
               const isToday = todayDateString === day.dateString;
-              const visibleDots = dayEvents.slice(0, 3);
+              const visibleDots = singleDayEvents.slice(0, 3);
+              const visibleBars = multiDayEvents.slice(0, 2);
 
               return (
                 <button
@@ -463,21 +586,33 @@ export default function CalendarPage() {
                     {day.dayNumber}
                   </span>
 
-                  <span className="calendarEventDots" aria-hidden="true">
-                    {visibleDots.map((event, eventIndex) => (
-                      <span
-                        key={event.id}
-                        className={[
-                          'calendarEventDot',
-                          eventIndex === 1 ? 'calendarEventDotGreen' : '',
-                          eventIndex === 2 ? 'calendarEventDotAmber' : '',
-                          !day.isCurrentMonth ? 'calendarEventDotMuted' : '',
-                        ]
-                          .filter(Boolean)
-                          .join(' ')}
-                      />
-                    ))}
-                  </span>
+                  {visibleBars.length > 0 && (
+                    <span className="calendarMultiDayBars" aria-hidden="true">
+                      {visibleBars.map((event) => (
+                        <span key={event.id} className={!day.isCurrentMonth ? 'calendarMultiDayBar calendarMultiDayBarMuted' : 'calendarMultiDayBar'}>
+                          {event.title}
+                        </span>
+                      ))}
+                    </span>
+                  )}
+
+                  {visibleDots.length > 0 && (
+                    <span className="calendarEventDots" aria-hidden="true">
+                      {visibleDots.map((event, eventIndex) => (
+                        <span
+                          key={event.id}
+                          className={[
+                            'calendarEventDot',
+                            eventIndex === 1 ? 'calendarEventDotGreen' : '',
+                            eventIndex === 2 ? 'calendarEventDotAmber' : '',
+                            !day.isCurrentMonth ? 'calendarEventDotMuted' : '',
+                          ]
+                            .filter(Boolean)
+                            .join(' ')}
+                        />
+                      ))}
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -508,12 +643,16 @@ export default function CalendarPage() {
                 </div>
               ) : (
                 selectedDayEvents.map((event) => (
-                  <div key={event.id} className="calendarAgendaRow">
-                    <span className="calendarAgendaTime">{event.time}</span>
+                  <div key={event.id} className={isEventMultiDay(event) ? 'calendarAgendaRow calendarAgendaRowMultiDay' : 'calendarAgendaRow'}>
+                    <span className="calendarAgendaTime">{getEventTimeRangeLabel(event)}</span>
 
                     <div className="calendarAgendaText">
                       <strong>{event.title}</strong>
-                      <p>{formatShortDateLabel(event.date)}</p>
+                      <p>
+                        {isEventMultiDay(event)
+                          ? `${formatShortDateLabel(event.date)} – ${formatShortDateLabel(getEffectiveEndDate(event))}`
+                          : formatShortDateLabel(event.date)}
+                      </p>
                     </div>
 
                     <div className="calendarAgendaActionGroup">

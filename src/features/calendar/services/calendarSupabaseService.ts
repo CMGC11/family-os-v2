@@ -12,54 +12,98 @@ type EventRow = {
   start_time: string | null;
   end_time: string | null;
   all_day: boolean | null;
+  category: string | null;
+  visibility: string | null;
+  responsible_id: string | null;
+  location: string | null;
+  notes: string | null;
+  reminder: string | null;
+  is_busy: boolean | null;
   created_at: string | null;
+  updated_at: string | null;
+  recurrence: string | null;
+  recurrence_end: string | null;
+  recurrence_parent_id: string | null;
 };
 
-const EVENT_SELECT =
-  'id, household_id, title, date, end_date, is_multi_day, start_time, end_time, all_day, created_at';
+const EVENT_SELECT = `
+  id,
+  household_id,
+  title,
+  date,
+  end_date,
+  is_multi_day,
+  start_time,
+  end_time,
+  all_day,
+  category,
+  visibility,
+  responsible_id,
+  location,
+  notes,
+  reminder,
+  is_busy,
+  created_at,
+  updated_at,
+  recurrence,
+  recurrence_end,
+  recurrence_parent_id
+`;
 
-function getCleanEndDate(date: string, endDate?: string | null) {
-  return endDate?.trim() || date;
+function getEffectiveEndDate(date: string, endDate?: string | null) {
+  return endDate || date;
 }
 
-function isMultiDay(date: string, endDate: string) {
-  return endDate > date;
+function isMultiDayRange(date: string, endDate?: string | null) {
+  return getEffectiveEndDate(date, endDate) > date;
 }
 
 function mapRowToEvent(row: EventRow): CalendarEvent {
-  const date = row.date;
-  const endDate = getCleanEndDate(date, row.end_date);
-  const allDay = Boolean(row.all_day);
+  const title = row.title?.trim() || 'Untitled event';
   const startTime = row.start_time?.trim() || '12:00';
+  const effectiveEndDate = getEffectiveEndDate(row.date, row.end_date);
+  const isMultiDay = Boolean(row.is_multi_day) || effectiveEndDate > row.date;
 
   return {
     id: row.id,
     household_id: row.household_id,
-    title: row.title?.trim() || 'Untitled event',
-    date,
-    end_date: endDate,
-    is_multi_day: Boolean(row.is_multi_day) || isMultiDay(date, endDate),
-    time: allDay ? 'All day' : startTime,
-    start_time: startTime,
-    end_time: row.end_time?.trim() || null,
-    all_day: allDay,
+    title,
+    date: row.date,
+    time: startTime,
     created_at: row.created_at ?? new Date().toISOString(),
+    end_date: effectiveEndDate,
+    is_multi_day: isMultiDay,
+    start_time: row.start_time,
+    end_time: row.end_time,
+    all_day: Boolean(row.all_day),
+    category: row.category,
+    visibility: row.visibility,
+    responsible_id: row.responsible_id,
+    location: row.location,
+    notes: row.notes,
+    reminder: row.reminder,
+    is_busy: row.is_busy,
+    updated_at: row.updated_at,
+    recurrence: row.recurrence,
+    recurrence_end: row.recurrence_end,
+    recurrence_parent_id: row.recurrence_parent_id,
   };
 }
 
-function toDatabasePayload(input: CalendarEventInput) {
-  const cleanTitle = input.title.trim();
+function normalizeEventInput(input: CalendarEventInput) {
+  const title = input.title.trim();
   const date = input.date;
-  const endDate = getCleanEndDate(date, input.end_date);
+  const endDate = input.end_date || input.date;
   const allDay = Boolean(input.all_day);
   const startTime = allDay ? null : input.start_time?.trim() || '12:00';
   const endTime = allDay ? null : input.end_time?.trim() || null;
+  const isMultiDay = isMultiDayRange(date, endDate);
 
   return {
-    title: cleanTitle,
+    title,
     date,
     end_date: endDate,
-    is_multi_day: isMultiDay(date, endDate),
+    is_multi_day: isMultiDay,
     start_time: startTime,
     end_time: endTime,
     all_day: allDay,
@@ -81,18 +125,25 @@ export async function fetchCalendarEvents(): Promise<CalendarEvent[]> {
     throw error;
   }
 
-  return ((data ?? []) as unknown as EventRow[]).map(mapRowToEvent);
+  return ((data ?? []) as EventRow[]).map(mapRowToEvent);
 }
 
 export async function insertCalendarEvent(input: CalendarEventInput): Promise<CalendarEvent> {
   const supabase = requireSupabaseClient();
   const householdId = await getCurrentHouseholdId();
+  const normalized = normalizeEventInput(input);
 
   const { data, error } = await supabase
     .from('events')
     .insert({
       household_id: householdId,
-      ...toDatabasePayload(input),
+      title: normalized.title,
+      date: normalized.date,
+      end_date: normalized.end_date,
+      is_multi_day: normalized.is_multi_day,
+      start_time: normalized.start_time,
+      end_time: normalized.end_time,
+      all_day: normalized.all_day,
       visibility: 'shared',
       is_busy: false,
     })
@@ -103,16 +154,26 @@ export async function insertCalendarEvent(input: CalendarEventInput): Promise<Ca
     throw error;
   }
 
-  return mapRowToEvent(data as unknown as EventRow);
+  return mapRowToEvent(data as EventRow);
 }
 
 export async function updateCalendarEvent(id: string, input: CalendarEventInput): Promise<CalendarEvent> {
   const supabase = requireSupabaseClient();
   const householdId = await getCurrentHouseholdId();
+  const normalized = normalizeEventInput(input);
 
   const { data, error } = await supabase
     .from('events')
-    .update(toDatabasePayload(input))
+    .update({
+      title: normalized.title,
+      date: normalized.date,
+      end_date: normalized.end_date,
+      is_multi_day: normalized.is_multi_day,
+      start_time: normalized.start_time,
+      end_time: normalized.end_time,
+      all_day: normalized.all_day,
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', id)
     .eq('household_id', householdId)
     .select(EVENT_SELECT)
@@ -122,7 +183,7 @@ export async function updateCalendarEvent(id: string, input: CalendarEventInput)
     throw error;
   }
 
-  return mapRowToEvent(data as unknown as EventRow);
+  return mapRowToEvent(data as EventRow);
 }
 
 export async function deleteCalendarEvent(id: string): Promise<void> {

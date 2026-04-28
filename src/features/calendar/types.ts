@@ -35,5 +35,4 @@ export type CalendarEventInput = {
 };
 
 export type CreateCalendarEventInput = CalendarEventInput;
-
 export type UpdateCalendarEventInput = CalendarEventInput;

@@ -23,18 +23,13 @@ function isEventOnDate(event: CalendarEvent, dateString: string) {
   return event.date <= dateString && getEffectiveEndDate(event) >= dateString;
 }
 
-function sortEvents(events: CalendarEvent[]) {
-  return [...events].sort((a, b) => {
-    if (a.all_day !== b.all_day) return a.all_day ? -1 : 1;
-    return a.time.localeCompare(b.time);
-  });
+function getEventSortTime(event: CalendarEvent) {
+  if (event.all_day) return '00:00';
+  return event.start_time?.trim() || event.time || '12:00';
 }
 
-function isValidCalendarInput(input: CalendarEventInput) {
-  const cleanTitle = input.title.trim();
-  const effectiveEndDate = input.end_date || input.date;
-
-  return Boolean(cleanTitle) && effectiveEndDate >= input.date;
+function sortEventsByTime(events: CalendarEvent[]) {
+  return [...events].sort((a, b) => getEventSortTime(a).localeCompare(getEventSortTime(b)));
 }
 
 export function useCalendarItems() {
@@ -142,26 +137,29 @@ export function useCalendarItems() {
   }, [refreshEvents]);
 
   const selectedDayEvents = useMemo(
-    () => sortEvents(events.filter((event) => isEventOnDate(event, selectedDate))),
+    () => sortEventsByTime(events.filter((event) => isEventOnDate(event, selectedDate))),
     [events, selectedDate],
   );
 
   async function addEvent(input: CalendarEventInput) {
     const cleanTitle = input.title.trim();
+    const effectiveEndDate = input.end_date || input.date;
 
-    if (!isValidCalendarInput(input)) return false;
+    if (!cleanTitle || effectiveEndDate < input.date) return false;
 
     try {
       setErrorMessage('');
 
-      const newEvent = await insertCalendarEvent({ ...input, title: cleanTitle });
+      const newEvent = await insertCalendarEvent({
+        ...input,
+        title: cleanTitle,
+        end_date: effectiveEndDate,
+      });
 
       setEvents((current) => {
         const withoutDuplicate = current.filter((event) => event.id !== newEvent.id);
-        return sortEvents([...withoutDuplicate, newEvent]);
+        return sortEventsByTime([...withoutDuplicate, newEvent]);
       });
-
-      setSelectedDate(newEvent.date);
 
       return true;
     } catch (error) {
@@ -173,16 +171,22 @@ export function useCalendarItems() {
 
   async function editEvent(id: string, input: CalendarEventInput) {
     const cleanTitle = input.title.trim();
+    const effectiveEndDate = input.end_date || input.date;
 
-    if (!isValidCalendarInput(input)) return false;
+    if (!cleanTitle || effectiveEndDate < input.date) return false;
 
     try {
       setErrorMessage('');
 
-      const updatedEvent = await updateCalendarEvent(id, { ...input, title: cleanTitle });
+      const updatedEvent = await updateCalendarEvent(id, {
+        ...input,
+        title: cleanTitle,
+        end_date: effectiveEndDate,
+      });
 
-      setEvents((current) => sortEvents(current.map((event) => (event.id === updatedEvent.id ? updatedEvent : event))));
-      setSelectedDate(updatedEvent.date);
+      setEvents((current) =>
+        sortEventsByTime(current.map((event) => (event.id === updatedEvent.id ? updatedEvent : event))),
+      );
 
       return true;
     } catch (error) {
