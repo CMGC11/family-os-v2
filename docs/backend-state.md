@@ -101,6 +101,38 @@ Used for:
 
 ---
 
+## Person-specific data model
+
+FamilyOS v2 is household-visible by default.
+
+Some data is person-specific, but not private:
+- Health records belong to a person.
+- Allergies belong to a person.
+- Medications belong to a person.
+- Wishlist items belong to an owner/person.
+- Future assigned tasks and packing items may belong to a person.
+
+Current V2 rule:
+- Separate person-specific data for clarity.
+- Do not restrict visibility by person yet.
+- All household members can view person-specific data unless future privacy rules are explicitly added.
+
+Implemented:
+- Health now loads household people.
+- Health defaults to the current logged-in person.
+- Health supports All / person filtering.
+- New health notes, allergies, and medications are saved against the selected person.
+- If All is selected, new Health records default to the current person.
+
+Not implemented yet:
+- Wishlist owner/person filtering.
+- To-do assignment.
+- Calendar participants.
+- Trip packing assignment UI.
+- Private/restricted visibility.
+
+---
+
 ## RLS Model
 
 Most household-scoped modules follow:
