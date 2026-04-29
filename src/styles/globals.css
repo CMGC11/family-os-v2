@@ -6509,3 +6509,121 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* Calendar multi-day visual pass: week-level bars instead of broken per-cell chunks */
+.calendarMonthGrid.calendarMonthGridWeeks {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  padding: 4px 14px 18px;
+}
+
+.calendarWeekRow {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  min-height: 74px;
+}
+
+.calendarWeekRow .calendarDayCell {
+  position: relative;
+  z-index: 2;
+  min-height: 74px;
+  border-radius: 18px;
+  background: transparent;
+  padding: 7px 2px 5px;
+}
+
+.calendarWeekRow .calendarDayCell:hover {
+  background: rgba(0, 0, 0, 0.035);
+}
+
+.calendarWeekRow .calendarDayCellSelected {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.calendarWeekRow .calendarDayNumber {
+  position: relative;
+  z-index: 5;
+}
+
+.calendarWeekRow .calendarEventDots {
+  position: relative;
+  z-index: 5;
+  margin-top: 32px;
+}
+
+.calendarWeekMultiDayLayer {
+  position: absolute;
+  top: 39px;
+  right: 0;
+  left: 0;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-auto-rows: 14px;
+  row-gap: 2px;
+  pointer-events: none;
+}
+
+.calendarWeekMultiDayBar {
+  display: block;
+  height: 14px;
+  overflow: hidden;
+  background: rgba(65, 105, 225, 0.9);
+  padding: 0 7px;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 850;
+  line-height: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.16);
+}
+
+.calendarWeekMultiDayBarStart {
+  margin-left: 8px;
+  border-top-left-radius: 999px;
+  border-bottom-left-radius: 999px;
+}
+
+.calendarWeekMultiDayBarEnd {
+  margin-right: 8px;
+  border-top-right-radius: 999px;
+  border-bottom-right-radius: 999px;
+}
+
+.calendarWeekMultiDayBarContinuesBefore {
+  padding-left: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.calendarWeekMultiDayBarContinuesAfter {
+  padding-right: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.calendarWeekMultiDayBarMuted {
+  background: rgba(65, 105, 225, 0.34);
+  color: rgba(255, 255, 255, 0.72);
+  box-shadow: none;
+}
+
+@media (max-width: 380px) {
+  .calendarWeekRow,
+  .calendarWeekRow .calendarDayCell {
+    min-height: 70px;
+  }
+
+  .calendarWeekMultiDayLayer {
+    top: 38px;
+  }
+
+  .calendarWeekMultiDayBar {
+    font-size: 0;
+    padding-right: 0;
+    padding-left: 0;
+  }
+}

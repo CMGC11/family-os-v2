@@ -13,6 +13,21 @@ type MonthDay = {
   isCurrentMonth: boolean;
 };
 
+type CalendarWeek = {
+  key: string;
+  days: MonthDay[];
+};
+
+type MultiDayWeekSegment = {
+  event: CalendarEvent;
+  startIndex: number;
+  endIndex: number;
+  rowIndex: number;
+  startsInWeek: boolean;
+  endsInWeek: boolean;
+  isMuted: boolean;
+};
+
 type EventFormState = {
   title: string;
   startDate: string;
@@ -132,6 +147,63 @@ function buildMonthDays(viewMonth: Date): MonthDay[] {
   return days;
 }
 
+function buildCalendarWeeks(days: MonthDay[]): CalendarWeek[] {
+  const weeks: CalendarWeek[] = [];
+
+  for (let index = 0; index < days.length; index += 7) {
+    const weekDays = days.slice(index, index + 7);
+
+    weeks.push({
+      key: weekDays.map((day) => day.dateString).join('-'),
+      days: weekDays,
+    });
+  }
+
+  return weeks;
+}
+
+function getMultiDaySegmentsForWeek(events: CalendarEvent[], weekDays: MonthDay[]): MultiDayWeekSegment[] {
+  const weekStart = weekDays[0]?.dateString;
+  const weekEnd = weekDays[weekDays.length - 1]?.dateString;
+
+  if (!weekStart || !weekEnd) return [];
+
+  return events
+    .filter((event) => isEventMultiDay(event))
+    .filter((event) => event.date <= weekEnd && getEffectiveEndDate(event) >= weekStart)
+    .sort((a, b) => {
+      const dateCompare = a.date.localeCompare(b.date);
+      if (dateCompare !== 0) return dateCompare;
+
+      const durationCompare = getEffectiveEndDate(b).localeCompare(getEffectiveEndDate(a));
+      if (durationCompare !== 0) return durationCompare;
+
+      return a.title.localeCompare(b.title);
+    })
+    .slice(0, 2)
+    .map((event, rowIndex) => {
+      const effectiveEndDate = getEffectiveEndDate(event);
+      const startIndex = weekDays.findIndex((day) => day.dateString >= event.date && day.dateString <= effectiveEndDate);
+      const reversedEndIndex = [...weekDays].reverse().findIndex((day) => day.dateString >= event.date && day.dateString <= effectiveEndDate);
+      const endIndex = reversedEndIndex === -1 ? startIndex : weekDays.length - 1 - reversedEndIndex;
+      const safeStartIndex = Math.max(startIndex, 0);
+      const safeEndIndex = Math.max(endIndex, safeStartIndex);
+      const startsInWeek = event.date >= weekStart;
+      const endsInWeek = effectiveEndDate <= weekEnd;
+      const isMuted = weekDays.slice(safeStartIndex, safeEndIndex + 1).every((day) => !day.isCurrentMonth);
+
+      return {
+        event,
+        startIndex: safeStartIndex,
+        endIndex: safeEndIndex,
+        rowIndex,
+        startsInWeek,
+        endsInWeek,
+        isMuted,
+      };
+    });
+}
+
 function getEffectiveEndDate(event: CalendarEvent) {
   return event.end_date || event.date;
 }
@@ -225,6 +297,7 @@ export default function CalendarPage() {
   const todayDateString = getTodayDateString();
 
   const monthDays = useMemo(() => buildMonthDays(viewMonth), [viewMonth]);
+  const calendarWeeks = useMemo(() => buildCalendarWeeks(monthDays), [monthDays]);
 
   const eventsByDate = useMemo(() => {
     const groupedEvents = new Map<string, CalendarEvent[]>();
@@ -546,74 +619,94 @@ export default function CalendarPage() {
             ))}
           </div>
 
-          <div className="calendarMonthGrid">
-            {monthDays.map((day) => {
-              const dayEvents = eventsByDate.get(day.dateString) ?? [];
-              const singleDayEvents = dayEvents.filter((event) => !isEventMultiDay(event));
-              const multiDayEvents = dayEvents.filter(isEventMultiDay);
-              const isSelected = selectedDate === day.dateString;
-              const isToday = todayDateString === day.dateString;
-              const visibleDots = singleDayEvents.slice(0, 3);
-              const visibleBars = multiDayEvents.slice(0, 2);
+          <div className="calendarMonthGrid calendarMonthGridWeeks">
+            {calendarWeeks.map((week) => {
+              const weekSegments = getMultiDaySegmentsForWeek(events, week.days);
 
               return (
-                <button
-                  key={day.dateString}
-                  type="button"
-                  className={[
-                    'calendarDayCell',
-                    !day.isCurrentMonth ? 'calendarDayCellMuted' : '',
-                    isSelected ? 'calendarDayCellSelected' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                  onClick={() => selectDate(day.dateString)}
-                  aria-label={`${formatSelectedDayLabel(day.dateString)}${
-                    dayEvents.length > 0
-                      ? `, ${dayEvents.length} event${dayEvents.length === 1 ? '' : 's'}`
-                      : ', no events'
-                  }`}
-                >
-                  <span
-                    className={[
-                      'calendarDayNumber',
-                      isSelected ? 'calendarDayNumberSelected' : '',
-                      isToday && !isSelected ? 'calendarDayNumberToday' : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                  >
-                    {day.dayNumber}
-                  </span>
+                <div key={week.key} className="calendarWeekRow">
+                  {week.days.map((day) => {
+                    const dayEvents = eventsByDate.get(day.dateString) ?? [];
+                    const singleDayEvents = dayEvents.filter((event) => !isEventMultiDay(event));
+                    const isSelected = selectedDate === day.dateString;
+                    const isToday = todayDateString === day.dateString;
+                    const visibleDots = singleDayEvents.slice(0, 3);
 
-                  {visibleBars.length > 0 && (
-                    <span className="calendarMultiDayBars" aria-hidden="true">
-                      {visibleBars.map((event) => (
-                        <span key={event.id} className={!day.isCurrentMonth ? 'calendarMultiDayBar calendarMultiDayBarMuted' : 'calendarMultiDayBar'}>
-                          {event.title}
+                    return (
+                      <button
+                        key={day.dateString}
+                        type="button"
+                        className={[
+                          'calendarDayCell',
+                          !day.isCurrentMonth ? 'calendarDayCellMuted' : '',
+                          isSelected ? 'calendarDayCellSelected' : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                        onClick={() => selectDate(day.dateString)}
+                        aria-label={`${formatSelectedDayLabel(day.dateString)}${
+                          dayEvents.length > 0
+                            ? `, ${dayEvents.length} event${dayEvents.length === 1 ? '' : 's'}`
+                            : ', no events'
+                        }`}
+                      >
+                        <span
+                          className={[
+                            'calendarDayNumber',
+                            isSelected ? 'calendarDayNumberSelected' : '',
+                            isToday && !isSelected ? 'calendarDayNumberToday' : '',
+                          ]
+                            .filter(Boolean)
+                            .join(' ')}
+                        >
+                          {day.dayNumber}
+                        </span>
+
+                        {visibleDots.length > 0 && (
+                          <span className="calendarEventDots" aria-hidden="true">
+                            {visibleDots.map((event, eventIndex) => (
+                              <span
+                                key={event.id}
+                                className={[
+                                  'calendarEventDot',
+                                  eventIndex === 1 ? 'calendarEventDotGreen' : '',
+                                  eventIndex === 2 ? 'calendarEventDotAmber' : '',
+                                  !day.isCurrentMonth ? 'calendarEventDotMuted' : '',
+                                ]
+                                  .filter(Boolean)
+                                  .join(' ')}
+                              />
+                            ))}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+
+                  {weekSegments.length > 0 && (
+                    <span className="calendarWeekMultiDayLayer" aria-hidden="true">
+                      {weekSegments.map((segment) => (
+                        <span
+                          key={`${segment.event.id}-${week.key}`}
+                          className={[
+                            'calendarWeekMultiDayBar',
+                            segment.startsInWeek ? 'calendarWeekMultiDayBarStart' : 'calendarWeekMultiDayBarContinuesBefore',
+                            segment.endsInWeek ? 'calendarWeekMultiDayBarEnd' : 'calendarWeekMultiDayBarContinuesAfter',
+                            segment.isMuted ? 'calendarWeekMultiDayBarMuted' : '',
+                          ]
+                            .filter(Boolean)
+                            .join(' ')}
+                          style={{
+                            gridColumn: `${segment.startIndex + 1} / ${segment.endIndex + 2}`,
+                            gridRow: `${segment.rowIndex + 1}`,
+                          }}
+                        >
+                          {segment.startsInWeek ? segment.event.title : ''}
                         </span>
                       ))}
                     </span>
                   )}
-
-                  {visibleDots.length > 0 && (
-                    <span className="calendarEventDots" aria-hidden="true">
-                      {visibleDots.map((event, eventIndex) => (
-                        <span
-                          key={event.id}
-                          className={[
-                            'calendarEventDot',
-                            eventIndex === 1 ? 'calendarEventDotGreen' : '',
-                            eventIndex === 2 ? 'calendarEventDotAmber' : '',
-                            !day.isCurrentMonth ? 'calendarEventDotMuted' : '',
-                          ]
-                            .filter(Boolean)
-                            .join(' ')}
-                        />
-                      ))}
-                    </span>
-                  )}
-                </button>
+                </div>
               );
             })}
           </div>
