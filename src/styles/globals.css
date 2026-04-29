@@ -6706,3 +6706,148 @@ button {
 .tripAddSheetForm textarea:focus {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
 }
+
+/* Health medical notes edit support */
+.healthInlineEditHint {
+  margin: -4px 0 2px;
+  color: rgba(0, 0, 0, 0.48);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.healthCleanForm .healthSecondaryFormButton {
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.72);
+}
+
+.healthRowActions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.healthRowEditButton {
+  min-height: 34px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  padding: 0 12px;
+  color: #047857;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.healthRowEditButton:active {
+  transform: scale(0.96);
+}
+
+.healthDetailActions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.healthDetailActions > button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 0 14px;
+  color: #111113;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+@media (min-width: 390px) {
+  .healthCleanFormNote.healthCleanFormNoteEditing {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 380px) {
+  .healthRowActions {
+    gap: 4px;
+  }
+
+  .healthRowEditButton {
+    min-height: 32px;
+    padding: 0 9px;
+  }
+
+  .healthDetailActions {
+    align-items: flex-end;
+    flex-direction: column-reverse;
+  }
+}
+
+/* Health medical notes edit layout repair */
+.healthNoteRow {
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.healthNoteRow .moduleMainButton {
+  min-width: 0;
+}
+
+.healthNoteRow .healthRowActions {
+  min-width: 0;
+  justify-self: end;
+}
+
+.healthNoteRow .moduleDeleteButton {
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+}
+
+.healthNoteRow .healthRowEditButton {
+  min-width: 0;
+  min-height: 32px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.healthDetailActions .healthDetailAddButton {
+  width: 48px;
+  height: 48px;
+  min-height: 48px;
+  padding: 0;
+  border-radius: 20px;
+  background: #111113;
+  color: #ffffff;
+  font-size: 25px;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.healthDetailActions .healthDetailAddButton:active {
+  transform: scale(0.96);
+}
+
+@media (max-width: 380px) {
+  .healthNoteRow {
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .healthNoteRow .healthRowActions {
+    gap: 3px;
+  }
+
+  .healthNoteRow .healthRowEditButton {
+    padding: 0 8px;
+    font-size: 11px;
+  }
+
+  .healthNoteRow .moduleDeleteButton {
+    flex-basis: 28px;
+    width: 28px;
+    height: 28px;
+  }
+}

@@ -72,7 +72,7 @@ function getPersonLabel(people: HouseholdPerson[], personId: string) {
 
 export default function HealthPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { items, isLoading, errorMessage, addItem, deleteItem } = useMedicalNotes();
+  const { items, isLoading, errorMessage, addItem, editItem, deleteItem } = useMedicalNotes();
   const {
     allergies,
     medications,
@@ -95,6 +95,7 @@ export default function HealthPage() {
   const [content, setContent] = useState('');
   const [date, setDate] = useState('');
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
 
   const [allergyName, setAllergyName] = useState('');
   const [allergySeverity, setAllergySeverity] = useState('moderate');
@@ -183,6 +184,7 @@ export default function HealthPage() {
   function handlePersonChange(personId: string) {
     setSelectedPersonId(personId);
     setSelectedNoteId(null);
+    resetNoteForm();
   }
 
   function setHealthCreateOpen(open: boolean) {
@@ -210,25 +212,65 @@ export default function HealthPage() {
     setHealthCreateOpen(false);
   }
 
-  function handleAddItem() {
-    const cleanTitle = title.trim();
-
-    if (!cleanTitle || !effectiveAddPersonId) return;
-
-    addItem(cleanTitle, content.trim(), date, effectiveAddPersonId);
+  function resetNoteForm() {
     setTitle('');
     setContent('');
     setDate('');
-    setActiveSection('notes');
+    setEditingNoteId(null);
+  }
 
-    if (selectedPersonId === ALL_PEOPLE_FILTER) {
-      setSelectedPersonId(effectiveAddPersonId);
+  async function handleSaveItem() {
+    const cleanTitle = title.trim();
+
+    if (!cleanTitle) return;
+
+    if (editingNoteId) {
+      const updatedItem = await editItem(editingNoteId, cleanTitle, content.trim(), date);
+
+      if (updatedItem) {
+        setSelectedNoteId(updatedItem.id);
+        resetNoteForm();
+        setActiveSection('notes');
+      }
+
+      return;
     }
+
+    if (!effectiveAddPersonId) return;
+
+    const newItem = await addItem(cleanTitle, content.trim(), date, effectiveAddPersonId);
+
+    if (newItem) {
+      setSelectedNoteId(newItem.id);
+      resetNoteForm();
+      setActiveSection('notes');
+
+      if (selectedPersonId === ALL_PEOPLE_FILTER) {
+        setSelectedPersonId(effectiveAddPersonId);
+      }
+    }
+  }
+
+  function handleStartEditItem(item: MedicalNote) {
+    setActiveSection('notes');
+    setSelectedNoteId(item.id);
+    setEditingNoteId(item.id);
+    setTitle(item.title);
+    setContent(item.content);
+    setDate(item.date);
+  }
+
+  function handleCancelEditItem() {
+    resetNoteForm();
   }
 
   function handleDeleteItem(item: MedicalNote) {
     if (selectedNoteId === item.id) {
       setSelectedNoteId(null);
+    }
+
+    if (editingNoteId === item.id) {
+      resetNoteForm();
     }
 
     deleteItem(item.id);
@@ -376,14 +418,26 @@ export default function HealthPage() {
         {!isPageLoading && !pageError && activeSection === 'notes' && (
           <>
             <GlassCard className="healthPanelCard">
-              <SectionHeader title={`Add note for ${selectedPersonId === ALL_PEOPLE_FILTER ? getPersonLabel(people, effectiveAddPersonId) : selectedPersonLabel}`} />
+              <SectionHeader
+                title={
+                  editingNoteId
+                    ? 'Edit medical note'
+                    : `Add note for ${
+                        selectedPersonId === ALL_PEOPLE_FILTER ? getPersonLabel(people, effectiveAddPersonId) : selectedPersonLabel
+                      }`
+                }
+              />
 
-              <div className="healthCleanForm healthCleanFormNote">
+              {editingNoteId && (
+                <p className="healthInlineEditHint">Editing keeps this note attached to {getPersonLabel(people, selectedNote?.person_id ?? '')}.</p>
+              )}
+
+              <div className={`healthCleanForm healthCleanFormNote ${editingNoteId ? 'healthCleanFormNoteEditing' : ''}`}>
                 <input
                   value={title}
                   onChange={(event) => setTitle(event.target.value)}
                   onKeyDown={(event) => {
-                    if (event.key === 'Enter') handleAddItem();
+                    if (event.key === 'Enter') handleSaveItem();
                   }}
                   placeholder="Note title"
                   aria-label="Health note title"
@@ -393,7 +447,7 @@ export default function HealthPage() {
                   value={content}
                   onChange={(event) => setContent(event.target.value)}
                   onKeyDown={(event) => {
-                    if (event.key === 'Enter') handleAddItem();
+                    if (event.key === 'Enter') handleSaveItem();
                   }}
                   placeholder="Details"
                   aria-label="Health note details"
@@ -406,9 +460,15 @@ export default function HealthPage() {
                   aria-label="Health note date"
                 />
 
-                <button type="button" onClick={handleAddItem} disabled={!title.trim() || !effectiveAddPersonId}>
-                  Add
+                <button type="button" onClick={handleSaveItem} disabled={!title.trim() || (!editingNoteId && !effectiveAddPersonId)}>
+                  {editingNoteId ? 'Save' : 'Add'}
                 </button>
+
+                {editingNoteId && (
+                  <button type="button" className="healthSecondaryFormButton" onClick={handleCancelEditItem}>
+                    Cancel
+                  </button>
+                )}
               </div>
             </GlassCard>
 
@@ -429,7 +489,7 @@ export default function HealthPage() {
                     const isSelected = selectedNote?.id === item.id;
 
                     return (
-                      <div key={item.id} className={`moduleRow ${isSelected ? 'moduleRowSelected' : ''}`}>
+                      <div key={item.id} className={`moduleRow healthNoteRow ${isSelected ? 'moduleRowSelected' : ''}`}>
                         <div className="moduleIcon tintGreen">+</div>
 
                         <button
@@ -446,14 +506,25 @@ export default function HealthPage() {
                           </span>
                         </button>
 
-                        <button
-                          type="button"
-                          className="moduleDeleteButton"
-                          onClick={() => handleDeleteItem(item)}
-                          aria-label={`Delete ${item.title}`}
-                        >
-                          ×
-                        </button>
+                        <div className="healthRowActions">
+                          <button
+                            type="button"
+                            className="healthRowEditButton"
+                            onClick={() => handleStartEditItem(item)}
+                            aria-label={`Edit ${item.title}`}
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            type="button"
+                            className="moduleDeleteButton"
+                            onClick={() => handleDeleteItem(item)}
+                            aria-label={`Delete ${item.title}`}
+                          >
+                            ×
+                          </button>
+                        </div>
                       </div>
                     );
                   })
@@ -472,8 +543,19 @@ export default function HealthPage() {
                     </span>
                   </div>
 
-                  <div className="healthDetailIcon" aria-hidden="true">
-                    +
+                  <div className="healthDetailActions">
+                    <button type="button" onClick={() => handleStartEditItem(selectedNote)}>
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      className="healthDetailAddButton"
+                      onClick={openHealthCreateSheet}
+                      aria-label="Add health record"
+                    >
+                      +
+                    </button>
                   </div>
                 </div>
 
