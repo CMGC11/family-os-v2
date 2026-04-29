@@ -4,9 +4,9 @@
 
 FamilyOS v2 is connected to the existing Supabase backend and runs on real household data across all core modules.
 
-Authentication, household resolution, person resolution, CRUD flows, and realtime sync are implemented for most modules. Calendar uses a polling fallback because events realtime has been unreliable.
+Authentication, household resolution, person resolution, CRUD flows, edit support, and realtime sync are implemented for most modules. Calendar uses a polling fallback because events realtime has been unreliable.
 
-The current focus has shifted from backend wiring to UI stability, detail views, and module-level UX refinement.
+The current focus has shifted from backend wiring to UI stability, module-level UX refinement, careful visual QA, and keeping the app snappy and stable.
 
 ---
 
@@ -19,7 +19,7 @@ VITE_SUPABASE_URL
 VITE_SUPABASE_ANON_KEY
 ```
 
-Loaded from:
+Loaded locally from:
 
 ```txt
 .env.local
@@ -34,6 +34,8 @@ src/lib/supabase/auth.ts
 src/lib/supabase/household.ts
 src/lib/supabase/person.ts
 ```
+
+Do not commit `.env.local`.
 
 ---
 
@@ -97,7 +99,17 @@ Used for:
 - Wishlist `owner_id`
 - Health `person_id`
 - Health allergies/medications
-- Future sharing/person-specific features
+- Future person-specific grouping and filtering
+
+Current product rule:
+
+```txt
+Everyone in the household can see everything for now.
+Some information belongs to a person and should be filtered/grouped by person.
+This is separation, not privacy.
+```
+
+No privacy or restricted visibility layer is implemented yet.
 
 ---
 
@@ -121,7 +133,7 @@ auth.users.id
 Special cases:
 
 - `packing_items` are scoped through `trip_id → trips.household_id`.
-- `medical_shares` are scoped through `person_id → people.household_id`, but are not wired in the UI yet.
+- `medical_shares` are scoped through `person_id → people.household_id`, but are intentionally not wired in the UI yet.
 
 ---
 
@@ -171,25 +183,135 @@ Calendar:
 
 # Module State
 
-## Grocery
+## Home
 
-Table:
+Reads aggregated data from modules.
+
+Files:
 
 ```txt
-public.grocery_items
+src/features/home/hooks/useHomeSnapshot.ts
+src/features/home/pages/HomePage.tsx
 ```
 
 Status:
 
-- CRUD ✅
-- Realtime ✅
-- Clean list-only UI ✅
-- No detail view by design ✅
+- Real module counts ✅
+- Real calendar integration ✅
+- Home dashboard polish ✅
+- Family Hub preview ✅
 
-Current role:
+Current Home UX:
 
-- Execution checklist for shared shopping.
-- Intentionally does not have a detail screen.
+- Uses real module snapshot data.
+- Shows today/calendar/task/grocery/hub summary.
+- Shows upcoming calendar items.
+- Shows Family Hub module counts.
+- Bottom Family Hub layout was polished so the final Grocery card spans full width and clears the bottom nav.
+
+---
+
+## Calendar
+
+Table:
+
+```txt
+public.events
+```
+
+Important columns:
+
+```txt
+id
+household_id
+title
+date
+start_time
+end_time
+all_day
+category
+visibility
+responsible_id
+location
+notes
+reminder
+is_busy
+recurrence
+recurrence_end
+recurrence_parent_id
+end_date
+is_multi_day
+created_at
+updated_at
+```
+
+Files:
+
+```txt
+src/features/calendar/types.ts
+src/features/calendar/services/calendarSupabaseService.ts
+src/features/calendar/hooks/useCalendarItems.ts
+src/features/calendar/pages/CalendarPage.tsx
+```
+
+Status:
+
+- Read ✅
+- Create ✅
+- Delete ✅
+- Single-event edit ✅
+- Multi-day create/edit foundation ✅
+- Dynamic month grid ✅
+- Selected-day agenda ✅
+- Agenda range logic for multi-day events ✅
+- Week-level multi-day month bars ✅
+- Realtime ⚠️ unreliable
+- Polling fallback ✅
+- Recurrence ❌
+- Participants UI ❌
+- Availability checks ❌
+- Drag/drop ❌
+
+Current Calendar behavior:
+
+- Calendar has a real dynamic month grid.
+- Users can navigate months.
+- Users can select a day.
+- Selected-day agenda shows events for that date.
+- Users can create events for the selected day.
+- Users can delete events.
+- Users can edit event title, date range, time, and all-day state.
+- Multi-day events are represented by one row with `date`, `end_date`, and `is_multi_day`.
+- Agenda includes events where the selected day falls between `date` and `end_date`.
+- Month grid renders multi-day events as week-level bars instead of duplicate per-day rows.
+
+Calendar multi-day rule:
+
+```txt
+Do not implement recurrence until multi-day behavior remains stable.
+Do not fake multi-day by creating duplicate event rows.
+One event row should represent the full date range.
+```
+
+Known Calendar limitations:
+
+- Events realtime remains unreliable.
+- Older or inconsistent multi-day rows may still need QA.
+- Week-level bar rendering is the current baseline, but minor visual cleanup may still be needed after real-device testing.
+- No recurrence editing.
+- No participants UI.
+- No availability checks.
+- No drag/drop.
+
+Important technical note:
+
+```txt
+Legacy local calendar data exists in:
+src/features/calendar/services/calendarLocalService.ts
+src/lib/store/familyStore.ts
+
+CalendarEvent type fields for newer event properties should stay optional unless those mock/local files are updated.
+```
 
 ---
 
@@ -201,11 +323,23 @@ Table:
 public.todo_items
 ```
 
+Files:
+
+```txt
+src/features/todo/types.ts
+src/features/todo/services/todoSupabaseService.ts
+src/features/todo/hooks/useTodoItems.ts
+src/features/todo/pages/TodoPage.tsx
+```
+
 Status:
 
 - CRUD ✅
+- Edit support ✅
 - Realtime ✅
 - Compact filtered UI ✅
+- Shared household tasks ✅
+- Person assignment ❌
 
 Current UX:
 
@@ -214,7 +348,9 @@ Current UX:
   - Week
   - Done
 - Compact task rows.
-- Small trailing delete actions.
+- Rows support edit, toggle done, and delete.
+- Edit loads title, area, and due date into the existing composer.
+- Save updates the existing row without creating duplicates.
 
 ### To-do ownership baseline
 
@@ -240,6 +376,40 @@ Future possible model:
 
 ---
 
+## Grocery
+
+Table:
+
+```txt
+public.grocery_items
+```
+
+Files:
+
+```txt
+src/features/grocery/types.ts
+src/features/grocery/services/grocerySupabaseService.ts
+src/features/grocery/hooks/useGroceryItems.ts
+src/features/grocery/pages/GroceryPage.tsx
+```
+
+Status:
+
+- CRUD ✅
+- Realtime ✅
+- Clean list-only UI ✅
+- No detail view by design ✅
+- No edit support by design ✅
+
+Current role:
+
+- Execution checklist for shared shopping.
+- Intentionally does not have a detail screen.
+- Current flow is add → check off → delete.
+- Do not overbuild Grocery unless the product need becomes clear.
+
+---
+
 ## Wishlist
 
 Table:
@@ -254,21 +424,152 @@ Notes:
 owner_id = people.id
 ```
 
+Files:
+
+```txt
+src/features/wishlist/services/wishlistSupabaseService.ts
+src/features/wishlist/hooks/useWishlistItems.ts
+src/features/wishlist/pages/WishlistPage.tsx
+```
+
 Status:
 
 - CRUD ✅
+- Edit support ✅
 - Realtime ✅
+- Owner/person filter ✅
+- AddSheet ✅
 - Detail card ✅
 - Visual cleanup ✅
+- Shared visibility, separated by owner ✅
+- Privacy rules ❌
+- Purchasing/sharing workflow ❌
 
 Current UX:
 
 - Compact list rows.
 - Selecting an idea opens a local detail card.
 - Detail card can show priority, occasion, note, created date, and saved link if present.
+- Edit reuses the Wishlist sheet.
+- Edit supports title, note, link, priority, occasion, and owner/person.
 - No purchasing workflow.
 - No sharing workflow.
 - No schema changes were made for detail view.
+
+---
+
+## Recipes
+
+Table:
+
+```txt
+public.recipes
+```
+
+Files:
+
+```txt
+src/features/recipes/types.ts
+src/features/recipes/services/recipesSupabaseService.ts
+src/features/recipes/hooks/useRecipes.ts
+src/features/recipes/pages/RecipesPage.tsx
+```
+
+Status:
+
+- CRUD ✅
+- Edit support ✅
+- Realtime ✅
+- Detail card ✅
+- AddSheet ✅
+- Recipe book only ✅
+- Meal planning ❌
+- Grocery integration ❌
+
+Current UX:
+
+- Recipe book only.
+- No meal-planning logic.
+- Compact recipe list.
+- Selecting a recipe opens a local detail card.
+- Detail can show title, category, serves, ingredients, steps, notes/tags/source link when present.
+- Add/Edit sheet supports recipe title, category, serves, ingredients, and steps.
+- Save updates the existing recipe without creating duplicates.
+- No grocery integration.
+- No schema changes were made for detail view.
+
+Important:
+
+```txt
+Recipes page previously broke because TSX and CSS drifted.
+Keep the current TSX/CSS class contract aligned.
+Do not add legacy compatibility CSS unless absolutely necessary.
+```
+
+---
+
+## Trips
+
+Primary table:
+
+```txt
+public.trips
+```
+
+Subtables:
+
+```txt
+public.packing_items
+public.prep_items
+```
+
+Files:
+
+```txt
+src/features/trips/types.ts
+src/features/trips/services/tripsSupabaseService.ts
+src/features/trips/hooks/useTrips.ts
+src/features/trips/hooks/useTripDetailItems.ts
+src/features/trips/pages/TripsPage.tsx
+```
+
+Status:
+
+- Trips CRUD ✅
+- Trips edit support ✅
+- Trips realtime ✅
+- Trip detail card ✅
+- AddSheet ✅
+- Packing items CRUD ✅
+- Prep items CRUD ✅
+- Packing/prep styled ✅
+- Documents/itinerary/bookings/sharing ❌
+
+Current Trips state:
+
+- Trips detail view loads packing items and prep items for the selected trip.
+- Trip edit reuses the existing trip sheet.
+- Trip edit supports title, destination, start date, end date, accommodation link, and notes.
+- Packing items support:
+  - add
+  - packed/unpacked toggle
+  - delete
+- Prep items support:
+  - add
+  - done/open toggle
+  - delete
+- Packing items are scoped through `trip_id → trips.household_id`.
+- Prep items are scoped directly by `household_id`.
+- No schema changes were made.
+- No documents, itinerary, bookings, or sharing logic yet.
+
+Important:
+
+```txt
+Trips page previously broke because TSX and CSS drifted.
+Keep the current TSX/CSS class contract aligned.
+Do not touch packing/prep logic during trip edit or visual slices unless explicitly scoped.
+```
 
 ---
 
@@ -288,25 +589,51 @@ Not wired:
 public.medical_shares
 ```
 
+Files:
+
+```txt
+src/features/health/types.ts
+src/features/health/services/healthSupabaseService.ts
+src/features/health/hooks/useMedicalNotes.ts
+src/features/health/hooks/useHealthItems.ts
+src/features/health/pages/HealthPage.tsx
+```
+
 Status:
 
 - Medical notes CRUD ✅
+- Medical notes edit support ✅
 - Medical notes realtime ✅
 - Allergies CRUD ✅
+- Allergies edit support ✅
 - Allergies realtime ✅
 - Medications CRUD ✅
+- Medications edit support ✅
 - Medications realtime ✅
 - Detail card for selected medical note ✅
+- Person filter ✅
 - Visual cleanup mostly complete ✅
+- `medical_shares` wired ❌
 
 Current Health state:
 
-- Health now loads medical notes, allergies, and medications.
+- Health loads medical notes, allergies, and medications.
+- Health records are separated by `person_id`.
+- Everyone in the household can currently see all health records.
+- New records use the selected person.
+- If All is selected, new records default to the current person.
+- Medical notes support:
+  - add
+  - list
+  - selected note detail
+  - edit
+  - delete
 - Allergies support:
   - add
   - list
   - severity
   - notes
+  - edit
   - delete
 - Medications support:
   - add
@@ -314,9 +641,9 @@ Current Health state:
   - dosage
   - frequency
   - notes
+  - edit
   - delete
 - Allergies and medications are scoped by `household_id` and `person_id`.
-- Existing medical notes and note detail view remain intact.
 - `medical_shares` is intentionally not wired yet.
 
 Current Health UX:
@@ -328,162 +655,44 @@ Current Health UX:
 - Notes retain compact list + selected note detail card.
 - Allergies and medications use compact section layouts.
 - Severe allergies are surfaced with an alert-style card when present.
-- Add forms remain inline and compact.
-- Delete actions remain small trailing actions.
+- Add/edit forms remain inline and compact.
+- Row actions have been repaired so edit/delete controls stay inside cards.
 - More advanced sharing/permissions should not be implemented until product rules are defined.
 
 ---
 
-## Recipes
+## Global Create Sheet
 
-Table:
-
-```txt
-public.recipes
-```
-
-Status:
-
-- CRUD ✅
-- Realtime ✅
-- Detail card ✅
-- Form cleanup ✅
-
-Current UX:
-
-- Recipe book only.
-- No meal-planning logic.
-- Compact recipe list.
-- Selecting a recipe opens a local detail card.
-- Detail can show title, category, serves, ingredients, steps, notes/tags/source link when present.
-- Add form supports recipe title, category, serves, ingredients, and steps.
-- No grocery integration.
-- No schema changes were made for detail view.
-
----
-
-## Trips
-
-Primary table:
+File:
 
 ```txt
-public.trips
+src/ui/navigation/CreateActionSheet.tsx
 ```
 
-Subtables:
+Current global create actions:
 
 ```txt
-public.packing_items
-public.prep_items
+Event → /calendar?create=event
+Task → /todo?create=task
+Grocery → /family/grocery?create=grocery
+Wishlist → /family/wishlist?create=wishlist
+Recipe → /family/recipes?create=recipe
+Trip → /family/trips?create=trip
+Health note → /family/health?create=health
 ```
 
-Status:
-
-- Trips CRUD ✅
-- Trips realtime ✅
-- Trip detail card ✅
-- Packing items CRUD ✅
-- Prep items CRUD ✅
-- Packing/prep styled ✅
-
-Current Trips state:
-
-- Trips detail view loads packing items and prep items for the selected trip.
-- Packing items support:
-  - add
-  - packed/unpacked toggle
-  - delete
-- Prep items support:
-  - add
-  - done/open toggle
-  - delete
-- Packing items are scoped through `trip_id → trips.household_id`.
-- Prep items are scoped directly by `household_id`.
-- No schema changes were made.
-- No documents, itinerary, bookings, or sharing logic yet.
-
----
-
-## Calendar
-
-Table:
+Rule:
 
 ```txt
-public.events
+Every visible + must either open the correct form/sheet or not exist.
+No decorative plus buttons.
 ```
 
-Status:
+Recent visual QA:
 
-- Read ✅
-- Create ✅
-- Delete ✅
-- Single-event edit ✅
-- Dynamic month grid ✅
-- Selected-day agenda ✅
-- Realtime ⚠️ unreliable
-- Polling fallback ✅
-
-Current Calendar behavior:
-
-- Calendar has a real dynamic month grid.
-- Users can navigate months.
-- Users can select a day.
-- Selected-day agenda shows events for that date.
-- Users can create events for the selected day.
-- Users can delete events.
-- Users can edit a single event’s title and time.
-- Event date stays unchanged during edit.
-- No schema changes were made for single-event editing.
-
-Current Calendar limits:
-
-- No recurrence editing.
-- No multi-day events.
-- No availability checks.
-- No drag/drop.
-- No calendar sharing or participants UI.
-
-## Calendar multi-day baseline
-
-Implemented:
-- Calendar schema supports multi-day events with `date`, `end_date`, and `is_multi_day`.
-- Create/edit forms support start date, end date, start time, end time, and all-day.
-- Calendar saves `date` as the start date.
-- Calendar saves `end_date` as the selected end date.
-- Calendar saves `is_multi_day` based on whether `end_date > date`.
-- Agenda includes events where the selected day falls between `date` and `end_date`.
-- Existing single-day events remain supported.
-- No recurrence logic was implemented.
-
-Known limitation:
-- Month grid multi-day bar rendering is partially implemented but not visually final.
-- Older or inconsistent multi-day rows may not always render exactly as one continuous Apple-style block yet.
-- Multi-day rendering should be revisited as a dedicated visual/calendar rendering slice.
-
-Current rule:
-- Do not implement recurrence until multi-day rendering is stable.
-- Do not fake multi-day by creating duplicate event rows.
-- One event row should represent the full date range.
-
----
-
-## Home
-
-Reads aggregated data from modules.
-
-Status:
-
-- Real module counts ✅
-- Real calendar integration ✅
-- Home dashboard polish ✅
-
-Current Home UX:
-
-- Uses real module snapshot data.
-- Shows today/calendar/task/grocery/hub summary.
-- Shows upcoming calendar items.
-- Shows Family Hub module counts.
-- Bottom Family Hub layout was polished so the final Grocery card spans full width and clears the bottom nav.
+- Global create/add sheet height and scrolling were tightened.
+- Bottom nav spacing and safe-area handling were tightened.
+- Fake/decorative plus button issues should remain a hard QA check.
 
 ---
 
@@ -494,17 +703,21 @@ Current Home UX:
 Completed:
 
 - Home dashboard uses real module snapshot data.
-- Calendar has real dynamic month grid, selected-day agenda, create/delete/edit flow, and isolated calendar styles.
-- To-do uses compact filtered rows for Today / Week / Done.
+- Calendar has real dynamic month grid, selected-day agenda, create/delete/edit flow, multi-day foundation, and week-level multi-day bars.
+- To-do uses compact filtered rows for Today / Week / Done and supports edit.
 - Family Hub has module cards and account/sign-out section.
 - Grocery, Wishlist, Health, Recipes, and Trips use compact module-row grammar.
+- Wishlist, Recipes, Trips, Health notes, Health allergies, Health medications, and To-do support edit.
 - Recipes, Trips, Health, and Wishlist have local detail cards.
 - Floating logout button was removed.
 - Sign out now lives inside Family/account area.
-- Recipes form layout was repaired with scoped recipe CSS.
-- Health visual layout was repaired with scoped health CSS.
+- Recipes form/layout was repaired with scoped recipe CSS.
+- Health visual layout and row action overflow were repaired with scoped health CSS.
 - Wishlist layout was cleaned with scoped wishlist CSS.
+- Trip packing/prep styling was added to `globals.css`.
 - Home bottom layout was polished.
+- Bottom nav spacing and safe-area behavior received a visual QA pass.
+- Global create sheet received a visual QA pass.
 
 Current visual direction:
 
@@ -512,7 +725,7 @@ Current visual direction:
 - Glass cards.
 - Large readable headers.
 - Compact mobile-first rows.
-- Small trailing delete actions.
+- Small trailing destructive actions.
 - Black active nav.
 - Blue primary actions.
 - Stability and speed over decorative complexity.
@@ -539,14 +752,58 @@ Current detail-view rules:
 
 ---
 
+## Add/Edit Sheet Baseline
+
+Implemented AddSheet-style flows:
+
+```txt
+Wishlist ✅
+Recipes ✅
+Trips ✅
+Health create choice sheet ✅
+```
+
+Edit support implemented:
+
+```txt
+Wishlist ✅
+Recipes ✅
+Trips ✅
+Health notes ✅
+Health allergies ✅
+Health medications ✅
+To-do ✅
+```
+
+Intentionally not implemented:
+
+```txt
+Grocery edit ❌ by design
+```
+
+Rules:
+
+- Do not extract a universal shared AddSheet component yet.
+- Do not create a mega-form component.
+- Keep forms local to the module.
+- Keep CSS scoped.
+- Avoid broad CSS rewrites.
+- Build after every slice.
+- Commit after every clean slice.
+
+---
+
 ## Current Visual Repair Baseline
 
 Completed:
 
-- Recipes form layout was repaired with scoped recipe CSS.
-- Health visual layout was repaired with scoped health CSS.
-- Wishlist layout was repaired with scoped wishlist CSS.
-- Trip packing/prep styling was added to `globals.css`.
+- Calendar week-level multi-day bar CSS restored and preserved after prior regressions.
+- Recipes form/detail edit styling repaired with scoped recipe CSS.
+- Health row/action styling repaired with scoped health CSS.
+- Wishlist layout repaired with scoped wishlist CSS.
+- Trip packing/prep styling added to `globals.css`.
+- To-do edit row containment styling added.
+- Bottom nav spacing and global create sheet behavior polished.
 - Current CSS strategy is append-only scoped repair blocks unless a full stylesheet replacement is explicitly necessary.
 
 Current styling rules:
@@ -557,6 +814,14 @@ Current styling rules:
 - Remove temporary paste-source CSS files after copying their content into `globals.css`.
 - Avoid shared class names that let one module accidentally break another.
 - No orphan CSS files should remain in `src/styles` unless explicitly imported.
+- When adding/editing CSS, verify Calendar, Recipes, Trips, Health, To-do, and bottom nav still render correctly.
+
+Known CSS pain points:
+
+- Full `globals.css` replacements repeatedly broke pages.
+- AddSheet CSS consolidation previously broke Recipes/Trips.
+- Calendar week bars regressed when a later CSS slice did not preserve the matching styles.
+- If a page looks raw/broken, compare TSX class names against CSS before adding compatibility junk.
 
 ---
 
@@ -574,6 +839,9 @@ Current styling rules:
 - Blue primary actions.
 - No random per-module styling chaos.
 - Prefer stable and readable over fancy.
+- Snappy and stable over decorative complexity.
+- No fake buttons.
+- No broad redesign while core QA remains open.
 
 ---
 
@@ -593,6 +861,10 @@ Current styling rules:
 - Prefer scoped CSS over global rewrites.
 - Build after every slice.
 - Commit after every clean slice.
+- Push after every clean checkpoint.
+- Do not stack new work on top of a broken Vercel deploy.
+- Preserve existing CSS coverage when replacing `globals.css`.
+- Prefer full replacement files when applying coding slices.
 
 ---
 
@@ -603,15 +875,16 @@ Current styling rules:
 - Events realtime remains unreliable.
 - Polling fallback is used.
 - No recurrence.
-- No multi-day events.
 - No availability checks.
 - No participants UI.
 - No drag/drop.
+- Multi-day week bars are implemented but should still receive real-device QA.
 
 ## Health
 
 - `medical_shares` is not wired.
 - Sharing/permissions need product rules before implementation.
+- Health is functional but can still become visually crowded.
 
 ## Trips
 
@@ -623,21 +896,34 @@ Current styling rules:
 
 ## Recipes
 
-- Recipe detail exists.
+- Recipe detail and edit exist.
 - No meal planning.
 - No grocery integration.
 
 ## Wishlist
 
-- Detail exists.
+- Detail and edit exist.
 - No purchasing flow.
 - No sharing flow.
 
+## To-do
+
+- Edit exists.
+- No person assignment.
+- No person filtering.
+- `created_by` is not assignment.
+
+## Grocery
+
+- Add/check/delete only by design.
+- No detail.
+- No edit.
+
 ## General UI
 
-- Forms are still mostly inline.
+- Forms are still mostly inline except modules using AddSheet-style patterns.
 - Detail views are local selections, not route-based pages.
-- Some visual polish remains, especially Health.
+- Some visual polish may remain, especially Health and Calendar edge cases.
 - `globals.css` remains fragile and should be handled carefully.
 
 ---
@@ -651,10 +937,21 @@ FamilyOS v2 now has:
 - Dynamic person resolution.
 - Real household data.
 - CRUD across core modules.
+- Edit support across the main content modules:
+  - Wishlist
+  - Recipes
+  - Trips
+  - Health notes
+  - Health allergies
+  - Health medications
+  - To-do
+- Grocery intentionally remains simple: add/check/delete.
 - Realtime sync across most modules.
 - Calendar polling fallback.
 - Dynamic Calendar month view.
-- Calendar create/delete/single-event edit.
+- Calendar create/delete/edit.
+- Calendar multi-day foundation.
+- Calendar week-level multi-day bars.
 - Home dashboard using real data.
 - Family Hub with real module routes.
 - Detail cards for Recipes, Trips, Health notes, and Wishlist.
@@ -662,37 +959,85 @@ FamilyOS v2 now has:
 - Health allergies and medications wired.
 - Cleaned module list-row grammar.
 - Scoped visual repair strategy.
+- Visual QA polish pass for bottom nav, global create sheet, Health rows, To-do rows, and Calendar bars.
 
 Current focus:
 
 ```txt
 UI consistency
 Small UX improvements
+Visual QA
 Careful module-specific refinements
 No broad rewrites
 No new major modules
+```
+
+Current recommended checkpoint tag:
+
+```txt
+familyos-v2-main-edit-polish-baseline
 ```
 
 ---
 
 # Suggested Next Steps
 
-1. Health visual polish, if still needed.
-2. Calendar minor QA only, no recurrence yet.
-3. Improve inline add forms into cleaner sheets/detail flows.
-4. Consider route-based detail pages if local detail cards become cramped.
-5. Define rules before wiring:
+1. Deploy/redeploy and smoke test the current main edit + polish baseline.
+2. Calendar QA cleanup only if a specific visual issue remains.
+3. Health visual polish only if still crowded on real device.
+4. Repo/docs checkpoint after deployment.
+5. Consider route-based detail pages only if local detail cards become cramped.
+6. Define rules before wiring:
    - Health sharing
    - Trip documents/bookings/itinerary
    - Calendar participants/recurrence
-6. Keep CSS changes scoped and module-specific.
+7. Keep CSS changes scoped and module-specific.
+8. Avoid new modules until the current flows feel stable.
+
+Do not do next:
+
+```txt
+No recurrence yet.
+No health sharing yet.
+No trip documents yet.
+No broad design rewrite.
+No full globals.css replacement unless inspected and preserved.
+```
+
+---
+
+# Smoke Test Checklist
+
+After deploy:
+
+```txt
+Login
+Home real data
+Calendar month rendering
+Calendar create/edit/delete
+Calendar multi-day create/edit
+Calendar agenda range display
+Global create sheet
+Wishlist add/edit/filter
+Recipes add/edit/detail
+Trips add/edit/detail/packing/prep
+Health add/edit/delete note
+Health add/edit/delete allergy
+Health add/edit/delete medication
+Health person filter
+To-do add/edit/toggle/delete
+Grocery add/check/delete
+Bottom nav spacing
+No fake + buttons
+No black/raw pages
+```
 
 ---
 
 # Summary
 
-FamilyOS v2 now has a stable backend foundation and a usable Apple-style mobile UI baseline.
+FamilyOS v2 now has a stable backend foundation, a usable Apple-style mobile UI baseline, and a practical main edit-support baseline across the active modules.
 
 The app is no longer just wired to Supabase; it now has real household workflows across Home, Calendar, To-do, Family Hub, Grocery, Wishlist, Recipes, Trips, and Health.
 
-Next work should stay narrow, visual, and module-specific. Broad refactors and full stylesheet replacements should be avoided unless absolutely necessary.
+Next work should stay narrow, visual, and module-specific. Broad refactors, new modules, recurrence, sharing, and full stylesheet replacements should be avoided unless explicitly scoped.
