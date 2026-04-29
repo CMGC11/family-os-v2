@@ -5,8 +5,21 @@ import GlassCard from '../../../ui/cards/GlassCard';
 import PageHeader from '../../../ui/layout/PageHeader';
 import PageShell from '../../../ui/layout/PageShell';
 import SectionHeader from '../../../ui/layout/SectionHeader';
+import type { TaskItem } from '../types';
 
 type TodoFilter = 'today' | 'week' | 'done';
+
+type TodoFormState = {
+  title: string;
+  area: string;
+  due: string;
+};
+
+const EMPTY_FORM: TodoFormState = {
+  title: '',
+  area: 'Family',
+  due: 'Today',
+};
 
 const FILTERS: Array<{ key: TodoFilter; label: string }> = [
   { key: 'today', label: 'Today' },
@@ -18,13 +31,24 @@ function isTodayTask(due: string) {
   return due.trim().toLowerCase() === 'today';
 }
 
+function getFormFromTask(task: TaskItem): TodoFormState {
+  return {
+    title: task.title,
+    area: task.area || 'Family',
+    due: task.due || 'Today',
+  };
+}
+
 export default function TodoPage() {
   const [searchParams] = useSearchParams();
-  const { items, isLoading, errorMessage, addItem, toggleItem, deleteItem } = useTodoItems();
-  const [title, setTitle] = useState('');
+  const { items, isLoading, errorMessage, addItem, editItem, toggleItem, deleteItem } = useTodoItems();
+  const [form, setForm] = useState<TodoFormState>(EMPTY_FORM);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<TodoFilter>('today');
 
   const isCreating = searchParams.get('create') === 'task';
+  const isEditing = Boolean(editingTaskId);
+  const showComposer = isCreating || isEditing;
 
   const openItems = useMemo(() => items.filter((item) => !item.done), [items]);
   const doneItems = useMemo(() => items.filter((item) => item.done), [items]);
@@ -52,14 +76,51 @@ export default function TodoPage() {
     },
   }[activeFilter];
 
-  function handleAddTask() {
-    const cleanTitle = title.trim();
+  function updateForm(field: keyof TodoFormState, value: string) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  function resetComposer() {
+    setForm(EMPTY_FORM);
+    setEditingTaskId(null);
+  }
+
+  function startEditTask(task: TaskItem) {
+    setEditingTaskId(task.id);
+    setForm(getFormFromTask(task));
+  }
+
+  async function handleSaveTask() {
+    const cleanTitle = form.title.trim();
 
     if (!cleanTitle) return;
 
-    addItem(cleanTitle);
-    setTitle('');
-    setActiveFilter('today');
+    if (editingTaskId) {
+      const updatedTask = await editItem(editingTaskId, form);
+
+      if (updatedTask) {
+        setForm(getFormFromTask(updatedTask));
+        setEditingTaskId(null);
+        setActiveFilter(updatedTask.done ? 'done' : isTodayTask(updatedTask.due) ? 'today' : 'week');
+      }
+
+      return;
+    }
+
+    const newTask = await addItem(form);
+
+    if (newTask) {
+      setForm(EMPTY_FORM);
+      setActiveFilter(isTodayTask(newTask.due) ? 'today' : 'week');
+    }
+  }
+
+  async function handleDeleteTask(task: TaskItem) {
+    if (editingTaskId === task.id) {
+      resetComposer();
+    }
+
+    await deleteItem(task.id);
   }
 
   return (
@@ -71,22 +132,52 @@ export default function TodoPage() {
       />
 
       <PageShell>
-        {isCreating && (
-          <GlassCard className="todoCreateCard">
-            <div className="todoCreateForm">
+        {showComposer && (
+          <GlassCard className="todoCreateCard todoEditCard">
+            <div className="todoComposerHeader">
+              <div>
+                <p className="mutedLabel">{isEditing ? 'Edit task' : 'New task'}</p>
+                <h2>{isEditing ? 'Update the task' : 'Add a family task'}</h2>
+              </div>
+
+              {isEditing && (
+                <button type="button" className="todoCancelButton" onClick={resetComposer}>
+                  Cancel
+                </button>
+              )}
+            </div>
+
+            <div className="todoCreateForm todoEditForm">
               <input
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
+                value={form.title}
+                onChange={(event) => updateForm('title', event.target.value)}
                 onKeyDown={(event) => {
-                  if (event.key === 'Enter') handleAddTask();
+                  if (event.key === 'Enter') handleSaveTask();
                 }}
-                placeholder="Add task"
+                placeholder="Task title"
                 autoFocus
-                aria-label="New task title"
+                aria-label="Task title"
               />
 
-              <button type="button" onClick={handleAddTask} disabled={!title.trim()}>
-                Add
+              <input
+                value={form.area}
+                onChange={(event) => updateForm('area', event.target.value)}
+                placeholder="Area"
+                aria-label="Task area"
+              />
+
+              <input
+                value={form.due}
+                onChange={(event) => updateForm('due', event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') handleSaveTask();
+                }}
+                placeholder="Due"
+                aria-label="Task due date"
+              />
+
+              <button type="button" onClick={handleSaveTask} disabled={!form.title.trim()}>
+                {isEditing ? 'Save' : 'Add'}
               </button>
             </div>
           </GlassCard>
@@ -151,7 +242,10 @@ export default function TodoPage() {
                 </div>
               ) : (
                 visibleItems.map((task) => (
-                  <div key={task.id} className={`todoRow ${task.done ? 'todoRowDone' : ''}`}>
+                  <div
+                    key={task.id}
+                    className={`todoRow todoEditableRow ${task.done ? 'todoRowDone' : ''} ${editingTaskId === task.id ? 'todoRowEditing' : ''}`}
+                  >
                     <button
                       type="button"
                       className={`todoCheck ${task.done ? 'todoCheckDone' : ''}`}
@@ -168,14 +262,25 @@ export default function TodoPage() {
                       </span>
                     </button>
 
-                    <button
-                      type="button"
-                      className="todoDeleteButton"
-                      onClick={() => deleteItem(task.id)}
-                      aria-label={`Delete ${task.title}`}
-                    >
-                      ×
-                    </button>
+                    <div className="todoRowActions">
+                      <button
+                        type="button"
+                        className="todoEditButton"
+                        onClick={() => startEditTask(task)}
+                        aria-label={`Edit ${task.title}`}
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        type="button"
+                        className="todoDeleteButton"
+                        onClick={() => handleDeleteTask(task)}
+                        aria-label={`Delete ${task.title}`}
+                      >
+                        ×
+                      </button>
+                    </div>
                   </div>
                 ))
               )}

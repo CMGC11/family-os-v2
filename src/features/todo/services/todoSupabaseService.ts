@@ -12,6 +12,8 @@ type TodoRow = {
   created_at: string | null;
 };
 
+const TODO_SELECT = 'id, household_id, title, area, due, is_done, created_at';
+
 function mapRowToTask(row: TodoRow): TaskItem {
   return {
     id: row.id,
@@ -30,7 +32,7 @@ export async function fetchTodoItems(): Promise<TaskItem[]> {
 
   const { data, error } = await supabase
     .from('todo_items')
-    .select('id, household_id, title, area, due, is_done, created_at')
+    .select(TODO_SELECT)
     .eq('household_id', householdId)
     .order('created_at', { ascending: false });
 
@@ -41,7 +43,7 @@ export async function fetchTodoItems(): Promise<TaskItem[]> {
   return (data ?? []).map(mapRowToTask);
 }
 
-export async function insertTodoItem(title: string, area: string, due: string) {
+export async function insertTodoItem(title: string, area: string, due: string): Promise<TaskItem> {
   const supabase = requireSupabaseClient();
   const householdId = await getCurrentHouseholdId();
 
@@ -54,14 +56,40 @@ export async function insertTodoItem(title: string, area: string, due: string) {
       due,
       is_done: false,
     })
-    .select('id, household_id, title, area, due, is_done, created_at')
+    .select(TODO_SELECT)
     .single();
 
   if (error) {
     throw error;
   }
 
-  return data;
+  return mapRowToTask(data);
+}
+
+export async function updateTodoItem(
+  id: string,
+  input: { title: string; area: string; due: string },
+): Promise<TaskItem> {
+  const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
+
+  const { data, error } = await supabase
+    .from('todo_items')
+    .update({
+      title: input.title,
+      area: input.area,
+      due: input.due,
+    })
+    .eq('id', id)
+    .eq('household_id', householdId)
+    .select(TODO_SELECT)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return mapRowToTask(data);
 }
 
 export async function updateTodoItemDone(id: string, done: boolean): Promise<void> {

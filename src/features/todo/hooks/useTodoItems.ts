@@ -3,11 +3,26 @@ import {
   deleteTodoItem,
   fetchTodoItems,
   insertTodoItem,
+  updateTodoItem,
   updateTodoItemDone,
 } from '../services/todoSupabaseService';
 import { requireSupabaseClient } from '../../../lib/supabase/client';
 import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import type { TaskItem } from '../types';
+
+type TodoInput = {
+  title: string;
+  area?: string;
+  due?: string;
+};
+
+function cleanTodoInput(input: TodoInput) {
+  return {
+    title: input.title.trim(),
+    area: input.area?.trim() || 'Family',
+    due: input.due?.trim() || 'Today',
+  };
+}
 
 export function useTodoItems() {
   const [items, setItems] = useState<TaskItem[]>([]);
@@ -96,30 +111,45 @@ export function useTodoItems() {
     };
   }, []);
 
-  async function addItem(title: string, area = 'Family', due = 'Today') {
-    const cleanTitle = title.trim();
+  async function addItem(input: TodoInput): Promise<TaskItem | null> {
+    const cleanInput = cleanTodoInput(input);
 
-    if (!cleanTitle) return;
+    if (!cleanInput.title) return null;
 
     try {
       setErrorMessage('');
 
-      const row = await insertTodoItem(cleanTitle, area, due);
+      const newItem = await insertTodoItem(cleanInput.title, cleanInput.area, cleanInput.due);
 
-      const newItem: TaskItem = {
-        id: row.id,
-        household_id: row.household_id,
-        title: row.title,
-        area: row.area || 'Family',
-        due: row.due || 'Today',
-        done: Boolean(row.is_done),
-        created_at: row.created_at ?? new Date().toISOString(),
-      };
+      setItems((current) => [newItem, ...current.filter((item) => item.id !== newItem.id)]);
 
-      setItems((current) => [newItem, ...current]);
+      return newItem;
     } catch (error) {
       console.error('Failed to insert todo item:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Failed to add task.');
+      return null;
+    }
+  }
+
+  async function editItem(id: string, input: TodoInput): Promise<TaskItem | null> {
+    const cleanInput = cleanTodoInput(input);
+
+    if (!cleanInput.title) return null;
+
+    try {
+      setErrorMessage('');
+
+      const updatedItem = await updateTodoItem(id, cleanInput);
+
+      setItems((current) =>
+        current.map((item) => (item.id === updatedItem.id ? updatedItem : item)),
+      );
+
+      return updatedItem;
+    } catch (error) {
+      console.error('Failed to edit todo item:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to edit task.');
+      return null;
     }
   }
 
@@ -173,6 +203,7 @@ export function useTodoItems() {
     isLoading,
     errorMessage,
     addItem,
+    editItem,
     toggleItem,
     deleteItem,
   };

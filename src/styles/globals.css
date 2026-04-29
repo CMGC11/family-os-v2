@@ -6922,3 +6922,102 @@ button {
     height: 28px;
   }
 }
+
+/* To-do edit support - scoped bottom repair */
+.todoEditCard {
+  display: grid;
+  gap: 14px;
+}
+
+.todoComposerHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.todoComposerHeader h2 {
+  margin: 4px 0 0;
+  color: #111113;
+  font-size: 19px;
+  font-weight: 850;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.todoCancelButton {
+  min-height: 34px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.055);
+  padding: 0 12px;
+  color: rgba(0, 0, 0, 0.58);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.todoCancelButton:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #111113;
+}
+
+.todoEditForm {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.72fr) minmax(0, 0.72fr) 78px;
+}
+
+.todoEditableRow {
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+}
+
+.todoRowEditing {
+  box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.18);
+}
+
+.todoRowActions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+}
+
+.todoEditButton {
+  min-height: 32px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.055);
+  padding: 0 10px;
+  color: rgba(0, 0, 0, 0.58);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.todoEditButton:hover {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+}
+
+.todoEditableRow .todoDeleteButton {
+  justify-self: auto;
+}
+
+@media (max-width: 520px) {
+  .todoEditForm {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .todoEditForm input:first-child,
+  .todoEditForm button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 390px) {
+  .todoEditableRow {
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+
+  .todoRowActions {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+}
