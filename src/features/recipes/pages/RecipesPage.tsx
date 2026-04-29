@@ -30,7 +30,7 @@ function formatRecipeMeta(recipe: Recipe) {
 }
 
 export default function RecipesPage() {
-  const { items, isLoading, errorMessage, addItem, deleteItem } = useRecipes();
+  const { items, isLoading, errorMessage, addItem, editItem, deleteItem } = useRecipes();
   const [searchParams, setSearchParams] = useSearchParams();
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Family');
@@ -38,12 +38,19 @@ export default function RecipesPage() {
   const [ingredients, setIngredients] = useState('');
   const [steps, setSteps] = useState('');
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
+  const [editingRecipeId, setEditingRecipeId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const isAddSheetOpen = searchParams.get('create') === 'recipe';
 
   const selectedRecipe = useMemo(
     () => items.find((item) => item.id === selectedRecipeId) ?? null,
     [items, selectedRecipeId],
+  );
+
+  const editingRecipe = useMemo(
+    () => items.find((item) => item.id === editingRecipeId) ?? null,
+    [items, editingRecipeId],
   );
 
   const sortedItems = useMemo(
@@ -67,15 +74,49 @@ export default function RecipesPage() {
     }
   }, [items, selectedRecipeId]);
 
+  useEffect(() => {
+    if (!editingRecipeId) return;
+
+    const stillExists = items.some((item) => item.id === editingRecipeId);
+
+    if (!stillExists) {
+      closeAddSheet();
+    }
+    // closeAddSheet intentionally omitted because it resets the form and URL.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, editingRecipeId]);
+
   function resetForm() {
     setName('');
     setCategory('Family');
     setServes('');
     setIngredients('');
     setSteps('');
+    setEditingRecipeId(null);
+    setIsSaving(false);
+  }
+
+  function fillFormFromRecipe(recipe: Recipe) {
+    setName(recipe.name);
+    setCategory(recipe.category || 'Family');
+    setServes(recipe.serves ? String(recipe.serves) : '');
+    setIngredients(recipe.ingredients);
+    setSteps(recipe.steps);
+    setEditingRecipeId(recipe.id);
   }
 
   function openAddSheet() {
+    resetForm();
+
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.set('create', 'recipe');
+    setSearchParams(nextSearchParams, { replace: true });
+  }
+
+  function openEditSheet(recipe: Recipe) {
+    fillFormFromRecipe(recipe);
+    setSelectedRecipeId(recipe.id);
+
     const nextSearchParams = new URLSearchParams(searchParams);
     nextSearchParams.set('create', 'recipe');
     setSearchParams(nextSearchParams, { replace: true });
@@ -88,25 +129,38 @@ export default function RecipesPage() {
     resetForm();
   }
 
-  function handleAddItem() {
+  async function handleSaveItem() {
     const cleanName = name.trim();
 
-    if (!cleanName) return;
+    if (!cleanName || isSaving) return;
 
-    addItem({
+    setIsSaving(true);
+
+    const input = {
       name: cleanName,
       ingredients,
       steps,
-      category: category.trim() || 'Family',
+      category,
       serves,
-    });
+    };
 
+    const savedItem = editingRecipeId ? await editItem(editingRecipeId, input) : await addItem(input);
+
+    setIsSaving(false);
+
+    if (!savedItem) return;
+
+    setSelectedRecipeId(savedItem.id);
     closeAddSheet();
   }
 
   async function handleDeleteRecipe(recipe: Recipe) {
     if (selectedRecipeId === recipe.id) {
       setSelectedRecipeId(null);
+    }
+
+    if (editingRecipeId === recipe.id) {
+      closeAddSheet();
     }
 
     await deleteItem(recipe.id);
@@ -156,9 +210,15 @@ export default function RecipesPage() {
                 <h2>{selectedRecipe.name}</h2>
               </div>
 
-              <button type="button" onClick={() => setSelectedRecipeId(null)} aria-label="Close recipe detail">
-                ×
-              </button>
+              <div className="recipeCleanDetailActions">
+                <button type="button" onClick={() => openEditSheet(selectedRecipe)} aria-label="Edit recipe">
+                  Edit
+                </button>
+
+                <button type="button" onClick={() => setSelectedRecipeId(null)} aria-label="Close recipe detail">
+                  ×
+                </button>
+              </div>
             </div>
 
             <div className="recipeCleanDetailContent">
@@ -275,12 +335,16 @@ export default function RecipesPage() {
 
             <div className="recipeAddSheetHeader">
               <div>
-                <p>New recipe</p>
-                <h2>Add a keeper</h2>
-                <span>Save the basic recipe now. The app can become a cookbook diva later.</span>
+                <p>{editingRecipe ? 'Edit recipe' : 'New recipe'}</p>
+                <h2>{editingRecipe ? 'Update keeper' : 'Add a keeper'}</h2>
+                <span>
+                  {editingRecipe
+                    ? 'Fix the useful details without creating duplicate recipe nonsense.'
+                    : 'Save the basic recipe now. The app can become a cookbook diva later.'}
+                </span>
               </div>
 
-              <button type="button" onClick={closeAddSheet} aria-label="Close recipe add sheet">
+              <button type="button" onClick={closeAddSheet} aria-label="Close recipe sheet">
                 ×
               </button>
             </div>
@@ -325,8 +389,8 @@ export default function RecipesPage() {
                 aria-label="Recipe steps"
               />
 
-              <button type="button" onClick={handleAddItem} disabled={!name.trim()}>
-                Add recipe
+              <button type="button" onClick={handleSaveItem} disabled={!name.trim() || isSaving}>
+                {isSaving ? 'Saving...' : editingRecipe ? 'Save changes' : 'Add recipe'}
               </button>
             </div>
           </section>

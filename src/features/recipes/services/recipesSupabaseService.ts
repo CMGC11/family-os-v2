@@ -18,6 +18,17 @@ type RecipeRow = {
   created_at: string | null;
 };
 
+export type RecipeInput = {
+  name: string;
+  ingredients: string;
+  steps: string;
+  category: string;
+  serves: number | null;
+};
+
+const RECIPE_SELECT =
+  'id, household_id, name, ingredients, steps, serves, notes, tags, source_url, category, is_pinned, use_count, created_at';
+
 function mapRowToRecipe(row: RecipeRow): Recipe {
   return {
     id: row.id,
@@ -42,9 +53,7 @@ export async function fetchRecipes(): Promise<Recipe[]> {
 
   const { data, error } = await supabase
     .from('recipes')
-    .select(
-      'id, household_id, name, ingredients, steps, serves, notes, tags, source_url, category, is_pinned, use_count, created_at',
-    )
+    .select(RECIPE_SELECT)
     .eq('household_id', householdId)
     .order('is_pinned', { ascending: false })
     .order('created_at', { ascending: false });
@@ -56,13 +65,7 @@ export async function fetchRecipes(): Promise<Recipe[]> {
   return (data ?? []).map(mapRowToRecipe);
 }
 
-export async function insertRecipe(input: {
-  name: string;
-  ingredients: string;
-  steps: string;
-  category: string;
-  serves: number | null;
-}) {
+export async function insertRecipe(input: RecipeInput): Promise<Recipe> {
   const supabase = requireSupabaseClient();
   const householdId = await getCurrentHouseholdId();
 
@@ -76,9 +79,32 @@ export async function insertRecipe(input: {
       category: input.category,
       serves: input.serves,
     })
-    .select(
-      'id, household_id, name, ingredients, steps, serves, notes, tags, source_url, category, is_pinned, use_count, created_at',
-    )
+    .select(RECIPE_SELECT)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return mapRowToRecipe(data);
+}
+
+export async function updateRecipe(id: string, input: RecipeInput): Promise<Recipe> {
+  const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
+
+  const { data, error } = await supabase
+    .from('recipes')
+    .update({
+      name: input.name,
+      ingredients: input.ingredients,
+      steps: input.steps,
+      category: input.category,
+      serves: input.serves,
+    })
+    .eq('id', id)
+    .eq('household_id', householdId)
+    .select(RECIPE_SELECT)
     .single();
 
   if (error) {
