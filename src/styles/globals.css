@@ -7021,3 +7021,256 @@ button {
     justify-content: flex-start;
   }
 }
+
+/* Visual QA consolidation pass - safe scoped polish */
+:root {
+  --family-nav-safe-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+.appShell,
+.pageShell,
+main {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pageShell {
+  padding-bottom: calc(98px + var(--family-nav-safe-bottom));
+}
+
+.bottomNav {
+  right: max(14px, env(safe-area-inset-right));
+  bottom: calc(10px + var(--family-nav-safe-bottom));
+  left: max(14px, env(safe-area-inset-left));
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  box-shadow:
+    0 18px 50px rgba(15, 23, 42, 0.16),
+    0 5px 18px rgba(15, 23, 42, 0.08);
+}
+
+.bottomNavGrid {
+  gap: 2px;
+}
+
+.bottomNav button,
+.bottomNav a {
+  min-width: 0;
+}
+
+.createActionSheet,
+.healthCreateSheet,
+.wishlistAddSheet,
+.recipeAddSheet,
+.tripAddSheet {
+  max-height: min(82vh, 720px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  box-shadow:
+    0 -24px 70px rgba(15, 23, 42, 0.18),
+    0 -4px 18px rgba(15, 23, 42, 0.08);
+}
+
+.createActionRow,
+.healthCreateSheetList button {
+  min-height: 64px;
+}
+
+.calendarMonthCard {
+  overflow: hidden;
+}
+
+.calendarMonthGrid.calendarMonthGridWeeks {
+  gap: 1px;
+  padding: 4px 12px 18px;
+}
+
+.calendarWeekRow,
+.calendarWeekRow .calendarDayCell {
+  min-height: 76px;
+}
+
+.calendarWeekRow .calendarDayCell {
+  border-radius: 16px;
+}
+
+.calendarWeekRow .calendarDayCellSelected {
+  background: rgba(37, 99, 235, 0.075);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.12);
+}
+
+.calendarWeekMultiDayLayer {
+  top: 37px;
+  grid-auto-rows: 13px;
+  row-gap: 2px;
+  padding: 0 1px;
+}
+
+.calendarWeekMultiDayBar {
+  height: 13px;
+  background: rgba(52, 99, 220, 0.86);
+  font-size: 8.5px;
+  line-height: 13px;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.12);
+}
+
+.calendarWeekMultiDayBarStart {
+  margin-left: 6px;
+}
+
+.calendarWeekMultiDayBarEnd {
+  margin-right: 6px;
+}
+
+.calendarWeekRow .calendarEventDots {
+  margin-top: 31px;
+}
+
+.healthCleanForm,
+.todoCreateForm,
+.todoEditForm,
+.recipeAddSheetForm,
+.tripAddSheetForm,
+.wishlistAddSheetForm {
+  align-items: stretch;
+}
+
+.healthCleanForm input,
+.healthCleanForm select,
+.healthCleanForm button,
+.todoCreateForm input,
+.todoCreateForm button,
+.todoEditForm input,
+.todoEditForm button {
+  min-height: 44px;
+}
+
+.healthCleanList,
+.todoList {
+  gap: 9px;
+}
+
+.healthNoteRow,
+.healthCompactRow.healthAllergyRow,
+.healthCompactRow.healthMedicationRow.healthCleanRow,
+.todoEditableRow {
+  align-items: center;
+  min-width: 0;
+}
+
+.healthNoteRow .moduleMainButton,
+.healthCompactText,
+.todoMainButton {
+  min-width: 0;
+}
+
+.healthNoteRow .moduleMainButton strong,
+.healthCompactText strong,
+.todoMainButton strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.healthNoteRow .moduleMainButton span,
+.healthCompactText span,
+.todoMainButton span {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.healthRowActions,
+.todoRowActions,
+.recipeCleanDetailActions,
+.tripDetailActions,
+.healthDetailActions {
+  flex-wrap: nowrap;
+}
+
+.healthRowEditButton,
+.todoEditButton,
+.moduleDeleteButton,
+.healthDeleteButton,
+.todoDeleteButton {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.healthDeleteButton,
+.moduleDeleteButton,
+.todoDeleteButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recipeCleanDetailTop,
+.tripDetailTop,
+.healthDetailHeader {
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.recipeCleanDetailTop > div:first-child,
+.tripDetailTop > div:first-child,
+.healthDetailHeader > div:first-child {
+  min-width: 0;
+}
+
+@media (max-width: 430px) {
+  .pageShell {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .calendarMonthGrid.calendarMonthGridWeeks {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .calendarWeekRow,
+  .calendarWeekRow .calendarDayCell {
+    min-height: 72px;
+  }
+
+  .calendarWeekMultiDayLayer {
+    top: 36px;
+  }
+
+  .calendarWeekRow .calendarEventDots {
+    margin-top: 30px;
+  }
+
+  .healthCompactRow.healthAllergyRow,
+  .healthCompactRow.healthMedicationRow.healthCleanRow,
+  .healthNoteRow,
+  .todoEditableRow {
+    border-radius: 18px;
+  }
+
+  .healthRowEditButton,
+  .todoEditButton {
+    min-height: 30px;
+    padding: 0 9px;
+    font-size: 11px;
+  }
+
+  .healthDeleteButton,
+  .moduleDeleteButton,
+  .todoDeleteButton {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 360px) {
+  .calendarWeekMultiDayBar {
+    font-size: 0;
+  }
+
+  .bottomNav {
+    right: 10px;
+    left: 10px;
+  }
+}
