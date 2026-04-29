@@ -6,31 +6,10 @@ export type FamilyMember = {
   color: string;
 };
 
-export type CalendarDay = {
-  date: number;
-  muted?: boolean;
-  selected?: boolean;
-  today?: boolean;
-  events: string[];
-};
-
-export type Task = {
-  title: string;
-  area: string;
-  due: string;
-  done: boolean;
-};
-
 export type HubItem = {
-  key: string;
+  key: 'wishlist' | 'trips' | 'health' | 'recipes' | 'grocery';
   title: string;
   subtitle: string;
   icon: string;
   tint: string;
-};
-
-export type QuickCard = {
-  label: string;
-  value: string;
-  detail: string;
 };
