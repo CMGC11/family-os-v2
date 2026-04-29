@@ -3,6 +3,10 @@ import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import { getCurrentPersonId } from '../../../lib/supabase/person';
 import type { Allergy, MedicalNote, Medication } from '../types';
 
+const MEDICAL_NOTE_SELECT = 'id, household_id, person_id, title, content, date, created_at';
+const ALLERGY_SELECT = 'id, household_id, person_id, name, severity, notes, created_at';
+const MEDICATION_SELECT = 'id, household_id, person_id, name, dosage, frequency, notes, created_at';
+
 type MedicalNoteRow = {
   id: string;
   household_id: string;
@@ -77,7 +81,7 @@ export async function fetchMedicalNotes(): Promise<MedicalNote[]> {
 
   const { data, error } = await supabase
     .from('medical_notes')
-    .select('id, household_id, person_id, title, content, date, created_at')
+    .select(MEDICAL_NOTE_SELECT)
     .eq('household_id', householdId)
     .order('created_at', { ascending: false });
 
@@ -94,7 +98,24 @@ export async function insertMedicalNote(title: string, content: string, date: st
   const { data, error } = await supabase
     .from('medical_notes')
     .insert({ household_id: householdId, person_id: personId, title, content, date })
-    .select('id, household_id, person_id, title, content, date, created_at')
+    .select(MEDICAL_NOTE_SELECT)
+    .single();
+
+  if (error) throw error;
+
+  return mapRowToMedicalNote(data);
+}
+
+export async function updateMedicalNote(id: string, title: string, content: string, date: string): Promise<MedicalNote> {
+  const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
+
+  const { data, error } = await supabase
+    .from('medical_notes')
+    .update({ title, content, date })
+    .eq('id', id)
+    .eq('household_id', householdId)
+    .select(MEDICAL_NOTE_SELECT)
     .single();
 
   if (error) throw error;
@@ -117,7 +138,7 @@ export async function fetchAllergies(): Promise<Allergy[]> {
 
   const { data, error } = await supabase
     .from('allergies')
-    .select('id, household_id, person_id, name, severity, notes, created_at')
+    .select(ALLERGY_SELECT)
     .eq('household_id', householdId)
     .order('created_at', { ascending: false });
 
@@ -134,7 +155,7 @@ export async function insertAllergy(name: string, severity: string, notes: strin
   const { data, error } = await supabase
     .from('allergies')
     .insert({ household_id: householdId, person_id: personId, name, severity, notes })
-    .select('id, household_id, person_id, name, severity, notes, created_at')
+    .select(ALLERGY_SELECT)
     .single();
 
   if (error) throw error;
@@ -157,7 +178,7 @@ export async function fetchMedications(): Promise<Medication[]> {
 
   const { data, error } = await supabase
     .from('medications')
-    .select('id, household_id, person_id, name, dosage, frequency, notes, created_at')
+    .select(MEDICATION_SELECT)
     .eq('household_id', householdId)
     .order('created_at', { ascending: false });
 
@@ -180,7 +201,7 @@ export async function insertMedication(
   const { data, error } = await supabase
     .from('medications')
     .insert({ household_id: householdId, person_id: personId, name, dosage, frequency, notes })
-    .select('id, household_id, person_id, name, dosage, frequency, notes, created_at')
+    .select(MEDICATION_SELECT)
     .single();
 
   if (error) throw error;

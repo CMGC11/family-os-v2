@@ -3,6 +3,7 @@ import {
   deleteMedicalNote,
   fetchMedicalNotes,
   insertMedicalNote,
+  updateMedicalNote,
 } from '../services/healthSupabaseService';
 import { requireSupabaseClient } from '../../../lib/supabase/client';
 import { getCurrentHouseholdId } from '../../../lib/supabase/household';
@@ -100,7 +101,7 @@ export function useMedicalNotes() {
     const cleanContent = content.trim();
     const cleanDate = date.trim();
 
-    if (!cleanTitle) return;
+    if (!cleanTitle) return null;
 
     try {
       setErrorMessage('');
@@ -111,9 +112,34 @@ export function useMedicalNotes() {
         const withoutDuplicate = current.filter((item) => item.id !== newItem.id);
         return [newItem, ...withoutDuplicate];
       });
+
+      return newItem;
     } catch (error) {
       console.error('Failed to insert medical note:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Failed to add health note.');
+      return null;
+    }
+  }
+
+  async function editItem(id: string, title: string, content = '', date = '') {
+    const cleanTitle = title.trim();
+    const cleanContent = content.trim();
+    const cleanDate = date.trim();
+
+    if (!cleanTitle) return null;
+
+    try {
+      setErrorMessage('');
+
+      const updatedItem = await updateMedicalNote(id, cleanTitle, cleanContent, cleanDate);
+
+      setItems((current) => current.map((item) => (item.id === updatedItem.id ? updatedItem : item)));
+
+      return updatedItem;
+    } catch (error) {
+      console.error('Failed to update medical note:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to update health note.');
+      return null;
     }
   }
 
@@ -138,6 +164,7 @@ export function useMedicalNotes() {
     isLoading,
     errorMessage,
     addItem,
+    editItem,
     deleteItem,
   };
 }
