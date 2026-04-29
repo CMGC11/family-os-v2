@@ -79,6 +79,7 @@ export default function HealthPage() {
     isLoading: isLoadingHealthItems,
     errorMessage: healthItemsError,
     addAllergy,
+    editAllergy,
     removeAllergy,
     addMedication,
     removeMedication,
@@ -100,6 +101,7 @@ export default function HealthPage() {
   const [allergyName, setAllergyName] = useState('');
   const [allergySeverity, setAllergySeverity] = useState('moderate');
   const [allergyNotes, setAllergyNotes] = useState('');
+  const [editingAllergyId, setEditingAllergyId] = useState<string | null>(null);
 
   const [medicationName, setMedicationName] = useState('');
   const [medicationDosage, setMedicationDosage] = useState('');
@@ -185,6 +187,7 @@ export default function HealthPage() {
     setSelectedPersonId(personId);
     setSelectedNoteId(null);
     resetNoteForm();
+    resetAllergyForm();
   }
 
   function setHealthCreateOpen(open: boolean) {
@@ -217,6 +220,13 @@ export default function HealthPage() {
     setContent('');
     setDate('');
     setEditingNoteId(null);
+  }
+
+  function resetAllergyForm() {
+    setAllergyName('');
+    setAllergySeverity('moderate');
+    setAllergyNotes('');
+    setEditingAllergyId(null);
   }
 
   async function handleSaveItem() {
@@ -276,20 +286,54 @@ export default function HealthPage() {
     deleteItem(item.id);
   }
 
-  function handleAddAllergy() {
+  async function handleSaveAllergy() {
     const cleanName = allergyName.trim();
 
-    if (!cleanName || !effectiveAddPersonId) return;
+    if (!cleanName) return;
 
-    addAllergy(cleanName, allergySeverity, allergyNotes, effectiveAddPersonId);
-    setAllergyName('');
-    setAllergySeverity('moderate');
-    setAllergyNotes('');
-    setActiveSection('allergies');
+    if (editingAllergyId) {
+      const updatedAllergy = await editAllergy(editingAllergyId, cleanName, allergySeverity, allergyNotes);
 
-    if (selectedPersonId === ALL_PEOPLE_FILTER) {
-      setSelectedPersonId(effectiveAddPersonId);
+      if (updatedAllergy) {
+        resetAllergyForm();
+        setActiveSection('allergies');
+      }
+
+      return;
     }
+
+    if (!effectiveAddPersonId) return;
+
+    const newAllergy = await addAllergy(cleanName, allergySeverity, allergyNotes, effectiveAddPersonId);
+
+    if (newAllergy) {
+      resetAllergyForm();
+      setActiveSection('allergies');
+
+      if (selectedPersonId === ALL_PEOPLE_FILTER) {
+        setSelectedPersonId(effectiveAddPersonId);
+      }
+    }
+  }
+
+  function handleStartEditAllergy(allergy: Allergy) {
+    setActiveSection('allergies');
+    setEditingAllergyId(allergy.id);
+    setAllergyName(allergy.name);
+    setAllergySeverity(allergy.severity || 'moderate');
+    setAllergyNotes(allergy.notes);
+  }
+
+  function handleCancelEditAllergy() {
+    resetAllergyForm();
+  }
+
+  function handleDeleteAllergy(allergy: Allergy) {
+    if (editingAllergyId === allergy.id) {
+      resetAllergyForm();
+    }
+
+    removeAllergy(allergy.id);
   }
 
   function handleAddMedication() {
@@ -582,9 +626,22 @@ export default function HealthPage() {
 
         {!isPageLoading && !pageError && activeSection === 'allergies' && (
           <GlassCard className="healthPanelCard">
-            <SectionHeader title={`Allergies · ${selectedPersonLabel}`} />
+            <SectionHeader
+              title={
+                editingAllergyId
+                  ? 'Edit allergy'
+                  : `Allergies · ${selectedPersonLabel}`
+              }
+            />
 
-            <div className="healthCleanForm healthCleanFormAllergy">
+            {editingAllergyId && (
+              <p className="healthInlineEditHint">
+                Editing keeps this allergy attached to{' '}
+                {getPersonLabel(people, allergies.find((allergy) => allergy.id === editingAllergyId)?.person_id ?? '')}.
+              </p>
+            )}
+
+            <div className={`healthCleanForm healthCleanFormAllergy ${editingAllergyId ? 'healthCleanFormAllergyEditing' : ''}`}>
               <input
                 value={allergyName}
                 onChange={(event) => setAllergyName(event.target.value)}
@@ -611,9 +668,15 @@ export default function HealthPage() {
                 aria-label="Allergy notes"
               />
 
-              <button type="button" onClick={handleAddAllergy} disabled={!allergyName.trim() || !effectiveAddPersonId}>
-                Add
+              <button type="button" onClick={handleSaveAllergy} disabled={!allergyName.trim() || (!editingAllergyId && !effectiveAddPersonId)}>
+                {editingAllergyId ? 'Save' : 'Add'}
               </button>
+
+              {editingAllergyId && (
+                <button type="button" className="healthSecondaryFormButton" onClick={handleCancelEditAllergy}>
+                  Cancel
+                </button>
+              )}
             </div>
 
             <div className="healthCompactList healthCleanList">
@@ -627,7 +690,7 @@ export default function HealthPage() {
                 </div>
               ) : (
                 filteredAllergies.map((allergy) => (
-                  <div key={allergy.id} className="healthCompactRow healthCleanRow">
+                  <div key={allergy.id} className="healthCompactRow healthCleanRow healthAllergyRow">
                     <div className="healthCompactIcon tintOrange">!</div>
 
                     <div className="healthCompactText">
@@ -640,14 +703,25 @@ export default function HealthPage() {
 
                     <span className={`healthSeverityPill healthSeverity${allergy.severity}`}>{allergy.severity}</span>
 
-                    <button
-                      type="button"
-                      className="healthDeleteButton"
-                      onClick={() => removeAllergy(allergy.id)}
-                      aria-label={`Delete ${allergy.name}`}
-                    >
-                      ×
-                    </button>
+                    <div className="healthCompactActions">
+                      <button
+                        type="button"
+                        className="healthRowEditButton"
+                        onClick={() => handleStartEditAllergy(allergy)}
+                        aria-label={`Edit ${allergy.name}`}
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        type="button"
+                        className="healthDeleteButton"
+                        onClick={() => handleDeleteAllergy(allergy)}
+                        aria-label={`Delete ${allergy.name}`}
+                      >
+                        ×
+                      </button>
+                    </div>
                   </div>
                 ))
               )}

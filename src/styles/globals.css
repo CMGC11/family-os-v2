@@ -6851,3 +6851,77 @@ button {
     height: 28px;
   }
 }
+
+/* Health allergy edit support */
+.healthCleanFormAllergy.healthCleanFormAllergyEditing {
+  align-items: stretch;
+}
+
+.healthCompactActions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  justify-self: end;
+}
+
+.healthAllergyRow {
+  grid-template-columns: 38px minmax(0, 1fr) auto auto;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.healthAllergyRow .healthCompactText {
+  min-width: 0;
+}
+
+.healthAllergyRow .healthSeverityPill {
+  white-space: nowrap;
+}
+
+.healthAllergyRow .healthDeleteButton {
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+}
+
+.healthAllergyRow .healthRowEditButton {
+  min-height: 32px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+@media (min-width: 390px) {
+  .healthCleanFormAllergy.healthCleanFormAllergyEditing {
+    grid-template-columns: minmax(0, 1fr) 132px;
+  }
+}
+
+@media (max-width: 430px) {
+  .healthAllergyRow {
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .healthAllergyRow .healthSeverityPill {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .healthAllergyRow .healthCompactActions {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    gap: 4px;
+  }
+
+  .healthAllergyRow .healthRowEditButton {
+    padding: 0 8px;
+    font-size: 11px;
+  }
+
+  .healthAllergyRow .healthDeleteButton {
+    flex-basis: 28px;
+    width: 28px;
+    height: 28px;
+  }
+}

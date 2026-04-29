@@ -8,6 +8,7 @@ import {
   fetchMedications,
   insertAllergy,
   insertMedication,
+  updateAllergy,
 } from '../services/healthSupabaseService';
 import type { Allergy, Medication } from '../types';
 
@@ -109,17 +110,37 @@ export function useHealthItems() {
     };
   }, [refreshItems]);
 
-  async function addAllergy(name: string, severity: string, notes: string, personId?: string) {
+  async function addAllergy(name: string, severity: string, notes: string, personId?: string): Promise<Allergy | null> {
     const cleanName = name.trim();
-    if (!cleanName) return;
+    if (!cleanName) return null;
 
     try {
       setErrorMessage('');
       const newAllergy = await insertAllergy(cleanName, severity.trim() || 'moderate', notes.trim(), personId);
       setAllergies((current) => [newAllergy, ...current.filter((item) => item.id !== newAllergy.id)]);
+      return newAllergy;
     } catch (error) {
       console.error('Failed to insert allergy:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Failed to add allergy.');
+      return null;
+    }
+  }
+
+  async function editAllergy(id: string, name: string, severity: string, notes: string): Promise<Allergy | null> {
+    const cleanName = name.trim();
+    if (!cleanName) return null;
+
+    try {
+      setErrorMessage('');
+      const updatedAllergy = await updateAllergy(id, cleanName, severity.trim() || 'moderate', notes.trim());
+      setAllergies((current) =>
+        current.map((item) => (item.id === updatedAllergy.id ? updatedAllergy : item)),
+      );
+      return updatedAllergy;
+    } catch (error) {
+      console.error('Failed to update allergy:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to update allergy.');
+      return null;
     }
   }
 
@@ -171,6 +192,7 @@ export function useHealthItems() {
     isLoading,
     errorMessage,
     addAllergy,
+    editAllergy,
     removeAllergy,
     addMedication,
     removeMedication,

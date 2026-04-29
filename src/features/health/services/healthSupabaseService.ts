@@ -163,6 +163,23 @@ export async function insertAllergy(name: string, severity: string, notes: strin
   return mapRowToAllergy(data);
 }
 
+export async function updateAllergy(id: string, name: string, severity: string, notes: string): Promise<Allergy> {
+  const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
+
+  const { data, error } = await supabase
+    .from('allergies')
+    .update({ name, severity, notes })
+    .eq('id', id)
+    .eq('household_id', householdId)
+    .select(ALLERGY_SELECT)
+    .single();
+
+  if (error) throw error;
+
+  return mapRowToAllergy(data);
+}
+
 export async function deleteAllergy(id: string): Promise<void> {
   const supabase = requireSupabaseClient();
   const householdId = await getCurrentHouseholdId();
