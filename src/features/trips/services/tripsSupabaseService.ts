@@ -15,6 +15,9 @@ type TripRow = {
   created_at: string | null;
 };
 
+const TRIP_SELECT =
+  'id, household_id, title, destination, start_date, end_date, participant_ids, accommodation_link, notes, created_at';
+
 type PackingItemRow = {
   id: string;
   trip_id: string | null;
@@ -78,9 +81,7 @@ export async function fetchTrips(): Promise<Trip[]> {
 
   const { data, error } = await supabase
     .from('trips')
-    .select(
-      'id, household_id, title, destination, start_date, end_date, participant_ids, accommodation_link, notes, created_at',
-    )
+    .select(TRIP_SELECT)
     .eq('household_id', householdId)
     .order('start_date', { ascending: true });
 
@@ -112,9 +113,41 @@ export async function insertTrip(input: {
       accommodation_link: '',
       notes: '',
     })
-    .select(
-      'id, household_id, title, destination, start_date, end_date, participant_ids, accommodation_link, notes, created_at',
-    )
+    .select(TRIP_SELECT)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return mapRowToTrip(data);
+}
+
+export async function updateTrip(input: {
+  id: string;
+  title: string;
+  destination: string;
+  start_date: string;
+  end_date: string;
+  accommodation_link?: string;
+  notes?: string;
+}): Promise<Trip> {
+  const supabase = requireSupabaseClient();
+  const householdId = await getCurrentHouseholdId();
+
+  const { data, error } = await supabase
+    .from('trips')
+    .update({
+      title: input.title,
+      destination: input.destination,
+      start_date: input.start_date,
+      end_date: input.end_date,
+      accommodation_link: input.accommodation_link ?? '',
+      notes: input.notes ?? '',
+    })
+    .eq('id', input.id)
+    .eq('household_id', householdId)
+    .select(TRIP_SELECT)
     .single();
 
   if (error) {

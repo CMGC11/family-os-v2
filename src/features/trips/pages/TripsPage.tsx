@@ -163,17 +163,22 @@ function TripChecklistSection({
 }
 
 export default function TripsPage() {
-  const { items, isLoading, errorMessage, addItem, deleteItem } = useTrips();
+  const { items, isLoading, errorMessage, addItem, editItem, deleteItem } = useTrips();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [destination, setDestination] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [accommodationLink, setAccommodationLink] = useState('');
+  const [notes, setNotes] = useState('');
+  const [editingTripId, setEditingTripId] = useState<string | null>(null);
   const [newPackingName, setNewPackingName] = useState('');
   const [newPrepName, setNewPrepName] = useState('');
 
   const isAddSheetOpen = searchParams.get('create') === 'trip';
+  const editingTrip = editingTripId ? items.find((item) => item.id === editingTripId) ?? null : null;
+  const isEditingTrip = Boolean(editingTrip);
   const selectedTrip = items.find((item) => item.id === selectedTripId) ?? null;
   const upcomingTripsCount = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
@@ -210,9 +215,32 @@ export default function TripsPage() {
     setDestination('');
     setStartDate('');
     setEndDate('');
+    setAccommodationLink('');
+    setNotes('');
+    setEditingTripId(null);
+  }
+
+  function fillFormFromTrip(trip: Trip) {
+    setTitle(trip.title);
+    setDestination(trip.destination);
+    setStartDate(trip.start_date);
+    setEndDate(trip.end_date);
+    setAccommodationLink(trip.accommodation_link);
+    setNotes(trip.notes);
   }
 
   function openAddSheet() {
+    resetForm();
+
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.set('create', 'trip');
+    setSearchParams(nextSearchParams, { replace: true });
+  }
+
+  function openEditSheet(trip: Trip) {
+    fillFormFromTrip(trip);
+    setEditingTripId(trip.id);
+
     const nextSearchParams = new URLSearchParams(searchParams);
     nextSearchParams.set('create', 'trip');
     setSearchParams(nextSearchParams, { replace: true });
@@ -225,19 +253,41 @@ export default function TripsPage() {
     resetForm();
   }
 
-  function handleAddItem() {
+  async function handleSaveTrip() {
     const cleanTitle = title.trim();
 
-    if (!cleanTitle) return;
+    if (!cleanTitle || !startDate || !endDate) return;
 
-    addItem({
+    if (editingTripId) {
+      const updatedItem = await editItem({
+        id: editingTripId,
+        title: cleanTitle,
+        destination: destination.trim(),
+        start_date: startDate,
+        end_date: endDate,
+        accommodation_link: accommodationLink.trim(),
+        notes: notes.trim(),
+      });
+
+      if (updatedItem) {
+        setSelectedTripId(updatedItem.id);
+        closeAddSheet();
+      }
+
+      return;
+    }
+
+    const newItem = await addItem({
       title: cleanTitle,
       destination: destination.trim(),
       start_date: startDate,
       end_date: endDate,
     });
 
-    closeAddSheet();
+    if (newItem) {
+      setSelectedTripId(newItem.id);
+      closeAddSheet();
+    }
   }
 
   async function handleAddPackingItem() {
@@ -296,9 +346,15 @@ export default function TripsPage() {
                 <h2>{selectedTrip.title}</h2>
               </div>
 
-              <button type="button" onClick={() => setSelectedTripId(null)} aria-label="Close trip detail">
-                ×
-              </button>
+              <div className="tripDetailActions">
+                <button type="button" onClick={() => openEditSheet(selectedTrip)}>
+                  Edit
+                </button>
+
+                <button type="button" onClick={() => setSelectedTripId(null)} aria-label="Close trip detail">
+                  ×
+                </button>
+              </div>
             </div>
 
             <div className="tripDetailStats">
@@ -458,12 +514,16 @@ export default function TripsPage() {
 
             <div className="tripAddSheetHeader">
               <div>
-                <p>New trip</p>
-                <h2>Add travel plan</h2>
-                <span>Save the basics first. The packing chaos can happen after.</span>
+                <p>{isEditingTrip ? 'Edit trip' : 'New trip'}</p>
+                <h2>{isEditingTrip ? 'Update travel plan' : 'Add travel plan'}</h2>
+                <span>
+                  {isEditingTrip
+                    ? 'Adjust the trip basics. Packing and prep stay exactly where they are.'
+                    : 'Save the basics first. The packing chaos can happen after.'}
+                </span>
               </div>
 
-              <button type="button" onClick={closeAddSheet} aria-label="Close trip add sheet">
+              <button type="button" onClick={closeAddSheet} aria-label="Close trip sheet">
                 ×
               </button>
             </div>
@@ -506,8 +566,23 @@ export default function TripsPage() {
                 </label>
               </div>
 
-              <button type="button" onClick={handleAddItem} disabled={!title.trim()}>
-                Add trip
+              <input
+                value={accommodationLink}
+                onChange={(event) => setAccommodationLink(event.target.value)}
+                placeholder="Accommodation link"
+                aria-label="Accommodation link"
+              />
+
+              <textarea
+                value={notes}
+                onChange={(event) => setNotes(event.target.value)}
+                placeholder="Notes"
+                aria-label="Trip notes"
+                rows={4}
+              />
+
+              <button type="button" onClick={handleSaveTrip} disabled={!title.trim() || !startDate || !endDate}>
+                {isEditingTrip ? 'Save changes' : 'Add trip'}
               </button>
             </div>
           </section>
