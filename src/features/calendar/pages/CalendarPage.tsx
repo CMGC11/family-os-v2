@@ -661,6 +661,8 @@ export default function CalendarPage() {
                     const singleDayEvents = dayEvents.filter((event) => !isEventMultiDay(event));
                     const isSelected = selectedDate === day.dateString;
                     const isToday = todayDateString === day.dateString;
+                    const isWeekend = day.date.getDay() === 0 || day.date.getDay() === 6;
+                    const isHoliday = dayEvents.some((event) => event.source === 'holiday');
                     const visibleDots = singleDayEvents.slice(0, 3);
 
                     return (
@@ -670,6 +672,8 @@ export default function CalendarPage() {
                         className={[
                           'calendarDayCell',
                           !day.isCurrentMonth ? 'calendarDayCellMuted' : '',
+                          isWeekend ? 'calendarDayCellWeekend' : '',
+                          isHoliday ? 'calendarDayCellHoliday' : '',
                           isSelected ? 'calendarDayCellSelected' : '',
                         ]
                           .filter(Boolean)

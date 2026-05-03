@@ -7308,3 +7308,37 @@ main {
   background: rgba(37, 99, 235, 0.14);
   color: #1d4ed8;
 }
+
+/* Calendar readability shade pass: weekends and national holidays */
+.calendarWeekRow .calendarDayCellWeekend {
+  background: rgba(15, 23, 42, 0.035);
+}
+
+.calendarWeekRow .calendarDayCellHoliday {
+  background: rgba(37, 99, 235, 0.075);
+}
+
+.calendarWeekRow .calendarDayCellWeekend.calendarDayCellMuted {
+  background: rgba(15, 23, 42, 0.025);
+}
+
+.calendarWeekRow .calendarDayCellHoliday.calendarDayCellMuted {
+  background: rgba(37, 99, 235, 0.045);
+}
+
+.calendarWeekRow .calendarDayCellWeekend:hover {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.calendarWeekRow .calendarDayCellHoliday:hover {
+  background: rgba(37, 99, 235, 0.105);
+}
+
+.calendarWeekRow .calendarDayCellSelected,
+.calendarWeekRow .calendarDayCellWeekend.calendarDayCellSelected,
+.calendarWeekRow .calendarDayCellHoliday.calendarDayCellSelected {
+  background: rgba(37, 99, 235, 0.14);
+  box-shadow:
+    inset 0 0 0 1px rgba(37, 99, 235, 0.2),
+    inset 0 0 0 999px rgba(255, 255, 255, 0.22);
+}
