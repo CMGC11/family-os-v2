@@ -132,6 +132,16 @@ function getYearsAroundToday() {
   return [currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
 }
 
+const specialEventsCache = new Map<string, CalendarEvent[]>();
+
+function normalizeYears(years: number[]) {
+  return [...new Set(years)].sort((a, b) => a - b);
+}
+
+function getYearsCacheKey(years: number[]) {
+  return normalizeYears(years).join('|');
+}
+
 function getBirthdayValue(row: BirthdayCandidateRow) {
   for (const column of BIRTHDAY_COLUMN_CANDIDATES) {
     const value = row[column];
@@ -192,9 +202,17 @@ async function fetchBirthdayRows(): Promise<BirthdayCandidateRow[]> {
 }
 
 export async function fetchCalendarSpecialEvents(years = getYearsAroundToday()): Promise<CalendarEvent[]> {
+  const normalizedYears = normalizeYears(years);
+  const cacheKey = getYearsCacheKey(normalizedYears);
+  const cachedEvents = specialEventsCache.get(cacheKey);
+
+  if (cachedEvents) {
+    return cachedEvents;
+  }
+
   const specialEvents: CalendarEvent[] = [];
 
-  years.forEach((year) => {
+  normalizedYears.forEach((year) => {
     getDutchPublicHolidays(year).forEach((holiday) => {
       specialEvents.push(
         createVirtualEvent({
@@ -218,7 +236,7 @@ export async function fetchCalendarSpecialEvents(years = getYearsAroundToday()):
 
       if (!rawBirthday || !person) return;
 
-      years.forEach((year) => {
+      normalizedYears.forEach((year) => {
         const birthdayDate = buildBirthdayDateForYear(rawBirthday, year);
 
         if (!birthdayDate) return;
@@ -238,5 +256,14 @@ export async function fetchCalendarSpecialEvents(years = getYearsAroundToday()):
     console.error('Failed to load birthday calendar events:', error);
   }
 
-  return specialEvents.sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
+  const sortedEvents = specialEvents.sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
+
+  specialEventsCache.set(cacheKey, sortedEvents);
+
+  return sortedEvents;
 }
+
+export function clearCalendarSpecialEventsCache() {
+  specialEventsCache.clear();
+}
+

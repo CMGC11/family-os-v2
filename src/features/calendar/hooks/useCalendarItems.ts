@@ -1,16 +1,21 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   deleteCalendarEvent,
   fetchCalendarEvents,
   insertCalendarEvent,
   updateCalendarEvent,
+  type CalendarEventRange,
 } from '../services/calendarSupabaseService';
 import { fetchCalendarSpecialEvents } from '../services/calendarSpecialEventsService';
 import { requireSupabaseClient } from '../../../lib/supabase/client';
 import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import type { CalendarEvent, CalendarEventInput } from '../types';
 
-const POLL_INTERVAL_MS = 3000;
+const POLL_INTERVAL_MS = 8000;
+
+type UseCalendarItemsOptions = {
+  visibleRange?: CalendarEventRange | null;
+};
 
 function getTodayDateString() {
   return new Date().toISOString().slice(0, 10);
@@ -24,41 +29,91 @@ function isEventOnDate(event: CalendarEvent, dateString: string) {
   return event.date <= dateString && getEffectiveEndDate(event) >= dateString;
 }
 
+function eventOverlapsRange(event: CalendarEvent, range?: CalendarEventRange | null) {
+  if (!range) return true;
+
+  return event.date <= range.toDate && getEffectiveEndDate(event) >= range.fromDate;
+}
+
 function getEventSortTime(event: CalendarEvent) {
   if (event.all_day) return '00:00';
   return event.start_time?.trim() || event.time || '12:00';
 }
 
 function sortEventsByTime(events: CalendarEvent[]) {
-  return [...events].sort((a, b) => getEventSortTime(a).localeCompare(getEventSortTime(b)));
+  return [...events].sort((a, b) => {
+    const dateCompare = a.date.localeCompare(b.date);
+    if (dateCompare !== 0) return dateCompare;
+
+    const timeCompare = getEventSortTime(a).localeCompare(getEventSortTime(b));
+    if (timeCompare !== 0) return timeCompare;
+
+    return a.title.localeCompare(b.title);
+  });
 }
 
-export function useCalendarItems() {
+function getYearsForRange(range?: CalendarEventRange | null) {
+  if (!range) {
+    const currentYear = new Date().getFullYear();
+    return [currentYear - 1, currentYear, currentYear + 1];
+  }
+
+  const startYear = Number(range.fromDate.slice(0, 4));
+  const endYear = Number(range.toDate.slice(0, 4));
+
+  if (!Number.isFinite(startYear) || !Number.isFinite(endYear)) {
+    const currentYear = new Date().getFullYear();
+    return [currentYear];
+  }
+
+  const years: number[] = [];
+
+  for (let year = startYear; year <= endYear; year += 1) {
+    years.push(year);
+  }
+
+  return years;
+}
+
+function getRangeKey(range?: CalendarEventRange | null) {
+  return range ? `${range.fromDate}|${range.toDate}` : 'all';
+}
+
+export function useCalendarItems(options: UseCalendarItemsOptions = {}) {
+  const visibleRange = options.visibleRange ?? null;
+  const visibleRangeRef = useRef<CalendarEventRange | null>(visibleRange);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [specialEvents, setSpecialEvents] = useState<CalendarEvent[]>([]);
   const [selectedDate, setSelectedDate] = useState(() => getTodayDateString());
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const rangeKey = getRangeKey(visibleRange);
 
-  const refreshEvents = useCallback(async () => {
-    const [nextEvents, nextSpecialEvents] = await Promise.all([fetchCalendarEvents(), fetchCalendarSpecialEvents()]);
+  visibleRangeRef.current = visibleRange;
+
+  const refreshRealEvents = useCallback(async () => {
+    const nextEvents = await fetchCalendarEvents(visibleRangeRef.current ?? undefined);
     setEvents(nextEvents);
-    setSpecialEvents(nextSpecialEvents);
   }, []);
 
   useEffect(() => {
     let cancelled = false;
 
-    async function loadEvents() {
+    async function loadVisibleRange() {
       try {
         setIsLoading(true);
         setErrorMessage('');
 
-        const [nextEvents, nextSpecialEvents] = await Promise.all([fetchCalendarEvents(), fetchCalendarSpecialEvents()]);
+        const range = visibleRangeRef.current;
+        const years = getYearsForRange(range);
+        const [nextEvents, nextSpecialEvents] = await Promise.all([
+          fetchCalendarEvents(range ?? undefined),
+          fetchCalendarSpecialEvents(years),
+        ]);
 
         if (!cancelled) {
           setEvents(nextEvents);
-          setSpecialEvents(nextSpecialEvents);
+          setSpecialEvents(nextSpecialEvents.filter((event) => eventOverlapsRange(event, range)));
         }
       } catch (error) {
         console.error('Failed to load calendar events:', error);
@@ -73,12 +128,12 @@ export function useCalendarItems() {
       }
     }
 
-    loadEvents();
+    loadVisibleRange();
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [rangeKey]);
 
   useEffect(() => {
     let cancelled = false;
@@ -103,7 +158,7 @@ export function useCalendarItems() {
             },
             async () => {
               try {
-                await refreshEvents();
+                await refreshRealEvents();
               } catch (error) {
                 console.error('Realtime calendar sync failed:', error);
               }
@@ -124,12 +179,12 @@ export function useCalendarItems() {
         supabase.removeChannel(channel);
       }
     };
-  }, [refreshEvents]);
+  }, [refreshRealEvents]);
 
   useEffect(() => {
     const intervalId = window.setInterval(async () => {
       try {
-        await refreshEvents();
+        await refreshRealEvents();
       } catch (error) {
         console.error('Calendar polling sync failed:', error);
       }
@@ -138,7 +193,7 @@ export function useCalendarItems() {
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [refreshEvents]);
+  }, [refreshRealEvents]);
 
   const allEvents = useMemo(() => sortEventsByTime([...events, ...specialEvents]), [events, specialEvents]);
 
@@ -164,6 +219,11 @@ export function useCalendarItems() {
 
       setEvents((current) => {
         const withoutDuplicate = current.filter((event) => event.id !== newEvent.id);
+
+        if (!eventOverlapsRange(newEvent, visibleRangeRef.current)) {
+          return sortEventsByTime(withoutDuplicate);
+        }
+
         return sortEventsByTime([...withoutDuplicate, newEvent]);
       });
 
@@ -190,9 +250,15 @@ export function useCalendarItems() {
         end_date: effectiveEndDate,
       });
 
-      setEvents((current) =>
-        sortEventsByTime(current.map((event) => (event.id === updatedEvent.id ? updatedEvent : event))),
-      );
+      setEvents((current) => {
+        const withoutUpdatedEvent = current.filter((event) => event.id !== updatedEvent.id);
+
+        if (!eventOverlapsRange(updatedEvent, visibleRangeRef.current)) {
+          return sortEventsByTime(withoutUpdatedEvent);
+        }
+
+        return sortEventsByTime([...withoutUpdatedEvent, updatedEvent]);
+      });
 
       return true;
     } catch (error) {

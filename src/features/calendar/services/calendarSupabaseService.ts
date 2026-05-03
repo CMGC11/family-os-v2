@@ -26,6 +26,11 @@ type EventRow = {
   recurrence_parent_id: string | null;
 };
 
+export type CalendarEventRange = {
+  fromDate: string;
+  toDate: string;
+};
+
 const EVENT_SELECT = `
   id,
   household_id,
@@ -56,6 +61,12 @@ function getEffectiveEndDate(date: string, endDate?: string | null) {
 
 function isMultiDayRange(date: string, endDate?: string | null) {
   return getEffectiveEndDate(date, endDate) > date;
+}
+
+function doesRowOverlapRange(row: EventRow, range?: CalendarEventRange) {
+  if (!range) return true;
+
+  return row.date <= range.toDate && getEffectiveEndDate(row.date, row.end_date) >= range.fromDate;
 }
 
 function mapRowToEvent(row: EventRow): CalendarEvent {
@@ -110,22 +121,28 @@ function normalizeEventInput(input: CalendarEventInput) {
   };
 }
 
-export async function fetchCalendarEvents(): Promise<CalendarEvent[]> {
+export async function fetchCalendarEvents(range?: CalendarEventRange): Promise<CalendarEvent[]> {
   const supabase = requireSupabaseClient();
   const householdId = await getCurrentHouseholdId();
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('events')
     .select(EVENT_SELECT)
     .eq('household_id', householdId)
     .order('date', { ascending: true })
     .order('start_time', { ascending: true });
 
+  if (range) {
+    query = query.lte('date', range.toDate);
+  }
+
+  const { data, error } = await query;
+
   if (error) {
     throw error;
   }
 
-  return ((data ?? []) as EventRow[]).map(mapRowToEvent);
+  return ((data ?? []) as EventRow[]).filter((row) => doesRowOverlapRange(row, range)).map(mapRowToEvent);
 }
 
 export async function insertCalendarEvent(input: CalendarEventInput): Promise<CalendarEvent> {

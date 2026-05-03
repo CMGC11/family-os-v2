@@ -300,6 +300,26 @@ function formStateToInput(formState: EventFormState): CalendarEventInput {
 
 export default function CalendarPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [viewMonth, setViewMonth] = useState(() => {
+    const today = new Date();
+
+    return new Date(today.getFullYear(), today.getMonth(), 1, 12, 0, 0, 0);
+  });
+
+  const monthDays = useMemo(() => buildMonthDays(viewMonth), [viewMonth]);
+  const calendarWeeks = useMemo(() => buildCalendarWeeks(monthDays), [monthDays]);
+  const visibleRange = useMemo(() => {
+    const firstDay = monthDays[0];
+    const lastDay = monthDays[monthDays.length - 1];
+
+    if (!firstDay || !lastDay) return null;
+
+    return {
+      fromDate: firstDay.dateString,
+      toDate: lastDay.dateString,
+    };
+  }, [monthDays]);
+
   const {
     events,
     selectedDayEvents,
@@ -310,13 +330,7 @@ export default function CalendarPage() {
     addEvent,
     editEvent,
     deleteEvent,
-  } = useCalendarItems();
-
-  const [viewMonth, setViewMonth] = useState(() => {
-    const selected = createLocalDate(selectedDate);
-
-    return new Date(selected.getFullYear(), selected.getMonth(), 1, 12, 0, 0, 0);
-  });
+  } = useCalendarItems({ visibleRange });
 
   const [createForm, setCreateForm] = useState<EventFormState>(() => createEmptyFormState(selectedDate));
   const [isSavingEvent, setIsSavingEvent] = useState(false);
@@ -326,9 +340,6 @@ export default function CalendarPage() {
 
   const isCreating = searchParams.get('create') === 'event';
   const todayDateString = getTodayDateString();
-
-  const monthDays = useMemo(() => buildMonthDays(viewMonth), [viewMonth]);
-  const calendarWeeks = useMemo(() => buildCalendarWeeks(monthDays), [monthDays]);
 
   const eventsByDate = useMemo(() => {
     const groupedEvents = new Map<string, CalendarEvent[]>();
