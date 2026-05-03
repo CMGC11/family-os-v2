@@ -217,7 +217,38 @@ function isEventOnDate(event: CalendarEvent, dateString: string) {
 }
 
 function sortEventsByTime(events: CalendarEvent[]) {
-  return [...events].sort((a, b) => getEventTimeLabel(a).localeCompare(getEventTimeLabel(b)));
+  return [...events].sort((a, b) => {
+    const dateCompare = a.date.localeCompare(b.date);
+    if (dateCompare !== 0) return dateCompare;
+
+    const timeCompare = getEventTimeLabel(a).localeCompare(getEventTimeLabel(b));
+    if (timeCompare !== 0) return timeCompare;
+
+    return a.title.localeCompare(b.title);
+  });
+}
+
+function canModifyEvent(event: CalendarEvent) {
+  return !event.is_virtual;
+}
+
+function getEventSourceLabel(event: CalendarEvent) {
+  if (event.source === 'birthday') return 'Birthday';
+  if (event.source === 'holiday') return 'Holiday';
+  return null;
+}
+
+function getEventDotClassName(event: CalendarEvent, eventIndex: number, isMuted: boolean) {
+  return [
+    'calendarEventDot',
+    event.source === 'birthday' ? 'calendarEventDotBirthday' : '',
+    event.source === 'holiday' ? 'calendarEventDotHoliday' : '',
+    !event.source && eventIndex === 1 ? 'calendarEventDotGreen' : '',
+    !event.source && eventIndex === 2 ? 'calendarEventDotAmber' : '',
+    isMuted ? 'calendarEventDotMuted' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
 function getEventTimeLabel(event: CalendarEvent) {
@@ -667,14 +698,7 @@ export default function CalendarPage() {
                             {visibleDots.map((event, eventIndex) => (
                               <span
                                 key={event.id}
-                                className={[
-                                  'calendarEventDot',
-                                  eventIndex === 1 ? 'calendarEventDotGreen' : '',
-                                  eventIndex === 2 ? 'calendarEventDotAmber' : '',
-                                  !day.isCurrentMonth ? 'calendarEventDotMuted' : '',
-                                ]
-                                  .filter(Boolean)
-                                  .join(' ')}
+                                className={getEventDotClassName(event, eventIndex, !day.isCurrentMonth)}
                               />
                             ))}
                           </span>
@@ -735,40 +759,58 @@ export default function CalendarPage() {
                   </div>
                 </div>
               ) : (
-                selectedDayEvents.map((event) => (
-                  <div key={event.id} className={isEventMultiDay(event) ? 'calendarAgendaRow calendarAgendaRowMultiDay' : 'calendarAgendaRow'}>
-                    <span className="calendarAgendaTime">{getEventTimeRangeLabel(event)}</span>
+                selectedDayEvents.map((event) => {
+                  const sourceLabel = getEventSourceLabel(event);
 
-                    <div className="calendarAgendaText">
-                      <strong>{event.title}</strong>
-                      <p>
-                        {isEventMultiDay(event)
-                          ? `${formatShortDateLabel(event.date)} – ${formatShortDateLabel(getEffectiveEndDate(event))}`
-                          : formatShortDateLabel(event.date)}
-                      </p>
+                  return (
+                    <div
+                      key={event.id}
+                      className={[
+                        'calendarAgendaRow',
+                        isEventMultiDay(event) ? 'calendarAgendaRowMultiDay' : '',
+                        event.source === 'birthday' ? 'calendarAgendaRowBirthday' : '',
+                        event.source === 'holiday' ? 'calendarAgendaRowHoliday' : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                    >
+                      <span className="calendarAgendaTime">{getEventTimeRangeLabel(event)}</span>
+
+                      <div className="calendarAgendaText">
+                        <strong>{event.title}</strong>
+                        <p>
+                          {sourceLabel ? `${sourceLabel} • ${formatShortDateLabel(event.date)}` : null}
+                          {!sourceLabel && isEventMultiDay(event)
+                            ? `${formatShortDateLabel(event.date)} – ${formatShortDateLabel(getEffectiveEndDate(event))}`
+                            : null}
+                          {!sourceLabel && !isEventMultiDay(event) ? formatShortDateLabel(event.date) : null}
+                        </p>
+                      </div>
+
+                      {canModifyEvent(event) && (
+                        <div className="calendarAgendaActionGroup">
+                          <button
+                            type="button"
+                            className="calendarAgendaEditButton"
+                            onClick={() => openEditForm(event)}
+                            aria-label={`Edit ${event.title}`}
+                          >
+                            ✎
+                          </button>
+
+                          <button
+                            type="button"
+                            className="calendarAgendaDeleteButton"
+                            onClick={() => handleDeleteEvent(event.id)}
+                            aria-label={`Delete ${event.title}`}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      )}
                     </div>
-
-                    <div className="calendarAgendaActionGroup">
-                      <button
-                        type="button"
-                        className="calendarAgendaEditButton"
-                        onClick={() => openEditForm(event)}
-                        aria-label={`Edit ${event.title}`}
-                      >
-                        ✎
-                      </button>
-
-                      <button
-                        type="button"
-                        className="calendarAgendaDeleteButton"
-                        onClick={() => handleDeleteEvent(event.id)}
-                        aria-label={`Delete ${event.title}`}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </GlassCard>

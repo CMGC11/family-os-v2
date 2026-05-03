@@ -5,6 +5,7 @@ import {
   insertCalendarEvent,
   updateCalendarEvent,
 } from '../services/calendarSupabaseService';
+import { fetchCalendarSpecialEvents } from '../services/calendarSpecialEventsService';
 import { requireSupabaseClient } from '../../../lib/supabase/client';
 import { getCurrentHouseholdId } from '../../../lib/supabase/household';
 import type { CalendarEvent, CalendarEventInput } from '../types';
@@ -34,13 +35,15 @@ function sortEventsByTime(events: CalendarEvent[]) {
 
 export function useCalendarItems() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [specialEvents, setSpecialEvents] = useState<CalendarEvent[]>([]);
   const [selectedDate, setSelectedDate] = useState(() => getTodayDateString());
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
   const refreshEvents = useCallback(async () => {
-    const nextEvents = await fetchCalendarEvents();
+    const [nextEvents, nextSpecialEvents] = await Promise.all([fetchCalendarEvents(), fetchCalendarSpecialEvents()]);
     setEvents(nextEvents);
+    setSpecialEvents(nextSpecialEvents);
   }, []);
 
   useEffect(() => {
@@ -51,10 +54,11 @@ export function useCalendarItems() {
         setIsLoading(true);
         setErrorMessage('');
 
-        const nextEvents = await fetchCalendarEvents();
+        const [nextEvents, nextSpecialEvents] = await Promise.all([fetchCalendarEvents(), fetchCalendarSpecialEvents()]);
 
         if (!cancelled) {
           setEvents(nextEvents);
+          setSpecialEvents(nextSpecialEvents);
         }
       } catch (error) {
         console.error('Failed to load calendar events:', error);
@@ -136,9 +140,11 @@ export function useCalendarItems() {
     };
   }, [refreshEvents]);
 
+  const allEvents = useMemo(() => sortEventsByTime([...events, ...specialEvents]), [events, specialEvents]);
+
   const selectedDayEvents = useMemo(
-    () => sortEventsByTime(events.filter((event) => isEventOnDate(event, selectedDate))),
-    [events, selectedDate],
+    () => sortEventsByTime(allEvents.filter((event) => isEventOnDate(event, selectedDate))),
+    [allEvents, selectedDate],
   );
 
   async function addEvent(input: CalendarEventInput) {
@@ -213,7 +219,7 @@ export function useCalendarItems() {
   }
 
   return {
-    events,
+    events: allEvents,
     selectedDayEvents,
     selectedDate,
     setSelectedDate,

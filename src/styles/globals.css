@@ -7274,3 +7274,37 @@ main {
     left: 10px;
   }
 }
+
+/* Calendar birthday + Dutch holiday repair slice */
+.calendarEventDotBirthday {
+  background: #ec4899;
+}
+
+.calendarEventDotHoliday {
+  background: #2563eb;
+}
+
+.calendarAgendaRowBirthday,
+.calendarAgendaRowHoliday {
+  grid-template-columns: 74px minmax(0, 1fr);
+}
+
+.calendarAgendaRowBirthday {
+  border: 1px solid rgba(236, 72, 153, 0.14);
+  background: rgba(236, 72, 153, 0.07);
+}
+
+.calendarAgendaRowBirthday .calendarAgendaTime {
+  background: rgba(236, 72, 153, 0.14);
+  color: #be185d;
+}
+
+.calendarAgendaRowHoliday {
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  background: rgba(37, 99, 235, 0.07);
+}
+
+.calendarAgendaRowHoliday .calendarAgendaTime {
+  background: rgba(37, 99, 235, 0.14);
+  color: #1d4ed8;
+}

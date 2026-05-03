@@ -1,3 +1,5 @@
+export type CalendarEventSource = 'event' | 'birthday' | 'holiday';
+
 export type CalendarEvent = {
   id: string;
   household_id: string;
@@ -23,6 +25,8 @@ export type CalendarEvent = {
   recurrence?: string | null;
   recurrence_end?: string | null;
   recurrence_parent_id?: string | null;
+  source?: CalendarEventSource;
+  is_virtual?: boolean;
 };
 
 export type CalendarEventInput = {
